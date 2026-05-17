@@ -1,0 +1,470 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const roles = [
+  {
+    n: 1,
+    title: "The Cosmic Camera",
+    subtitle: "How telescopes read the universe",
+    body: "Narrator and visual guide for the group. Explains why we need different telescopes for different wavelengths using the electromagnetic spectrum from Chapter 0.4, and introduces the specific telescopes — Planck, Hubble, JWST, Chandra, ALMA — that the other four students draw from. Frames the entire group presentation: telescopes are time machines, each image a photograph of a different era of cosmic history.",
+    chapter: "0.4",
+  },
+  {
+    n: 2,
+    title: "The Oldest Light",
+    subtitle: "Images of the Particle Age",
+    body: "Works with CMB maps from the Planck satellite — the earliest photograph of the universe at 380,000 years old. Explains what color variations mean (density fluctuations, the seeds of future structure), compares COBE, WMAP, and Planck maps to show improving resolution over decades, and connects the CMB to Big Bang theory.",
+    chapter: "1",
+  },
+  {
+    n: 3,
+    title: "The First Galaxies",
+    subtitle: "Images of the Galactic Age",
+    body: "Works with deep field images — the Hubble Ultra Deep Field and JWST deep fields. Explains that looking deeper into space means looking further back in time, identifies the difference between nearby and distant galaxies in the same image, and connects chaotic early galaxies to the ordered spirals we see today.",
+    chapter: "2",
+  },
+  {
+    n: 4,
+    title: "Stellar Nurseries & Graveyards",
+    subtitle: "Images of the Stellar Age",
+    body: "Works with two contrasting sets of images: star-forming regions (the Pillars of Creation, Orion Nebula in infrared from JWST) and stellar remnants (Crab Nebula from Chandra in X-ray, Hubble planetary nebulae). The narrative arc is the complete stellar lifecycle — from birth to death — told through publicly available images across infrared and X-ray wavelengths.",
+    chapter: "3",
+  },
+  {
+    n: 5,
+    title: "One Object, Many Eyes",
+    subtitle: "A multi-wavelength story",
+    body: "Takes a single famous object — Centaurus A or the Crab Nebula — and shows how it looks completely different across radio, infrared, visible, X-ray, and gamma-ray wavelengths, explaining what each wavelength reveals. Serves as the group's conclusion, synthesizing the central message: the full story of the universe requires the full spectrum of light.",
+    chapter: "0.4",
+  },
+];
+
+const tools = [
+  {
+    label: "Aladin Lite",
+    note: "Browser sky atlas, all wavelengths",
+    href: "https://aladin.cds.unistra.fr/AladinLite/",
+  },
+  {
+    label: "NASA HubbleSite",
+    note: "Hubble image archive",
+    href: "https://hubblesite.org",
+  },
+  {
+    label: "JWST Image Gallery",
+    note: "JWST processed releases",
+    href: "https://webbtelescope.org",
+  },
+  {
+    label: "ESA Image Archive",
+    note: "European Southern Observatory images",
+    href: "https://esahubble.org",
+  },
+  {
+    label: "NASA APOD",
+    note: "Astronomy Picture of the Day",
+    href: "https://apod.nasa.gov",
+  },
+  {
+    label: "Chandra Photo Album",
+    note: "X-ray astronomy gallery",
+    href: "https://chandra.harvard.edu/photo",
+  },
+];
+
+const reportRubric = [
+  { label: "Content & research depth", marks: 6 },
+  { label: "Connection to course material", marks: 5 },
+  { label: "Writing & figure curation", marks: 4 },
+];
+const presentationRubric = [
+  { label: "Content & narrative", marks: 7 },
+  { label: "Delivery & fluency", marks: 4 },
+  { label: "Slide design & visuals", marks: 4 },
+];
+const reportTotal = reportRubric.reduce((s, r) => s + r.marks, 0);
+const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
+---
+
+<Layout
+  title="Midterm Project — Seeing the Seven Ages · AST 100"
+  description="A visual journey through the first half of cosmic history using archival telescope data."
+  current="/mid"
+>
+  {/* ─────────────────────────────  Hero  ───────────────────────────── */}
+  <section class="relative -mt-[72px] pt-[160px] md:pt-[200px] pb-24 md:pb-32 px-6 md:px-10">
+    <div class="max-w-[1100px] mx-auto">
+      <div
+        data-fade
+        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-7 flex items-center gap-3"
+      >
+        <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
+         Midterm project · weeks 1–7
+      </div>
+
+      <h1
+        data-fade
+        style="--delay: 220ms"
+        class="title-gradient font-serif font-medium tracking-tight leading-[1.04]"
+      >
+        <span class="block" style="font-size: clamp(2.4rem, 6vw, 4.6rem);">
+          Seeing the Seven Ages
+        </span>
+        <span
+          class="block italic font-light mt-3"
+          style="font-size: clamp(1.4rem, 3.2vw, 2.2rem); color: var(--c-text-soft);"
+        >
+          a visual journey through the first half of cosmic history
+        </span>
+      </h1>
+
+      <p
+        data-fade
+        style="--delay: 420ms; color: var(--c-text-soft);"
+        class="mt-10 max-w-[68ch] text-[17px] md:text-[19px] leading-[1.65]"
+      >
+        The midterm is a group astrophotography presentation using archival
+        data from the world's largest telescopes. Each group of 5 tells the
+        story of the first three ages of the universe — Particle, Galactic,
+        and Stellar — through real images taken across the full
+        electromagnetic spectrum. The primary tool is{" "}
+        <a
+          href="https://aladin.cds.unistra.fr/AladinLite/"
+          target="_blank"
+          rel="noopener"
+          style="color: var(--c-accent);"
+          class="hover:underline">Aladin Lite</a
+        >, a browser-based sky atlas that lets students view any region of
+        the sky across radio, infrared, visible, X-ray, and microwave
+        wavelengths.
+      </p>
+
+      <div
+        data-fade
+        style="--delay: 620ms"
+        class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
+      >
+        <span class="flex items-center gap-2">
+          <span
+            class="inline-block w-2 h-2 rounded-full"
+            style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"
+          ></span>
+           groups of 5
+        </span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>15 min total</span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>Canva template</span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>30 marks · 15 + 15</span>
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────  Five roles  ─────────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 01 · The Five Roles
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          One spectrum, five voices.
+        </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Each student takes one role. Together the five present a single
+          continuous story.
+        </p>
+      </div>
+
+      <ol class="grid md:grid-cols-2 gap-4">
+        {
+          roles.map((r, i) => (
+            <li data-fade style={`--delay: ${i * 70}ms`} class="surface-card">
+              <div class="flex items-baseline gap-3 mb-3">
+                <span
+                  class="font-mono text-[11px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  Role {r.n}
+                </span>
+                <span
+                  class="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-text-faint);"
+                >
+                  ↳ Ch {r.chapter}
+                </span>
+              </div>
+              <div
+                class="font-serif font-medium leading-tight"
+                style="font-size: 1.45rem; color: var(--c-text-strong);"
+              >
+                {r.title}
+              </div>
+              <div
+                class="font-serif italic mt-1 mb-3"
+                style="color: var(--c-text-soft); font-size: 1.05rem;"
+              >
+                {r.subtitle}
+              </div>
+              <p
+                class="text-[14px] font-sans leading-[1.6]"
+                style="color: var(--c-text-soft);"
+              >
+                {r.body}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────  Tools  ──────────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
+      <div data-fade>
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 02 · Tools
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.6rem, 3vw, 2.1rem);"
+        >
+          Archives & atlases.
+        </h2>
+        <p
+          class="mt-4 text-[14px] max-w-[40ch]"
+          style="color: var(--c-text-soft);"
+        >
+          All images are publicly available — no original capture required.
+        </p>
+      </div>
+
+      <ul data-fade style="--delay: 180ms" class="grid sm:grid-cols-2 gap-3">
+        {
+          tools.map((t) => (
+            <li>
+              <a
+                href={t.href}
+                target="_blank"
+                rel="noopener"
+                class="surface-card is-link block h-full"
+              >
+                <div
+                  class="font-mono text-[11px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {t.label}
+                </div>
+                <div
+                  class="mt-2 text-[13px]"
+                  style="color: var(--c-text-soft);"
+                >
+                  {t.note}
+                </div>
+                <div
+                  class="mt-2 text-[10px] font-mono tracking-[0.2em] uppercase"
+                  style="color: var(--c-text-faint);"
+                >
+                  ↗ open
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* ─────────────────────────  Deliverables  ──────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 03 · Deliverables
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          What each group submits.
+        </h2>
+      </div>
+
+      <div data-fade style="--delay: 180ms" class="grid md:grid-cols-2 gap-4">
+        <div class="surface-card">
+          <div
+            class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
+            style="color: var(--c-accent);"
+          >
+            Report
+          </div>
+          <div
+            class="font-serif font-medium leading-tight mb-2"
+            style="font-size: 1.3rem; color: var(--c-text-strong);"
+          >
+            One PDF, five voices.
+          </div>
+          <p
+            class="text-[14px] font-sans leading-[1.6]"
+            style="color: var(--c-text-soft);"
+          >
+            Each student writes 400–600 words on their assigned role, with
+            embedded figures and captions. The group assembles all five
+            sections plus a shared intro and conclusion into a single PDF,
+            submitted via Google Classroom before the midterm class.
+          </p>
+        </div>
+
+        <div class="surface-card">
+          <div
+            class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
+            style="color: var(--c-accent);"
+          >
+            Presentation
+          </div>
+          <div
+            class="font-serif font-medium leading-tight mb-2"
+            style="font-size: 1.3rem; color: var(--c-text-strong);"
+          >
+            15 minutes, one story.
+          </div>
+          <p
+            class="text-[14px] font-sans leading-[1.6]"
+            style="color: var(--c-text-soft);"
+          >
+            Each student presents their section for 3–4 minutes (Role 1 →
+            Role 5 in order). Minimum 4 slides per student including a title
+            slide. Built in Canva from the provided template.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ───────────────────────────  Grading  ────────────────────────── */}
+  <section
+    id="grading"
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 04 · Grading
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          30 marks, split evenly.
+        </h2>
+        <p
+          class="mt-4 max-w-[60ch] text-[14px]"
+          style="color: var(--c-text-faint);"
+        >
+          Indicative weights below — the detailed rubric will be confirmed
+          before the midterm.
+        </p>
+      </div>
+
+      <div data-fade style="--delay: 180ms" class="grid md:grid-cols-2 gap-4">
+        <div class="surface-card">
+          <div class="flex items-baseline justify-between mb-3">
+            <div
+              class="font-mono text-[10px] tracking-[0.22em] uppercase"
+              style="color: var(--c-accent);"
+            >
+              Report
+            </div>
+            <div
+              class="font-serif font-medium"
+              style="font-size: 2rem; color: var(--c-text-strong);"
+            >
+              {reportTotal}
+              <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
+            </div>
+          </div>
+          <ul class="space-y-2">
+            {
+              reportRubric.map((r) => (
+                <li
+                  class="flex items-center justify-between font-sans text-[13px]"
+                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                >
+                  <span class="py-2">{r.label}</span>
+                  <span
+                    class="font-mono text-[12px]"
+                    style="color: var(--c-text-faint);"
+                  >
+                    {r.marks}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="surface-card">
+          <div class="flex items-baseline justify-between mb-3">
+            <div
+              class="font-mono text-[10px] tracking-[0.22em] uppercase"
+              style="color: var(--c-accent);"
+            >
+              Presentation
+            </div>
+            <div
+              class="font-serif font-medium"
+              style="font-size: 2rem; color: var(--c-text-strong);"
+            >
+              {presentationTotal}
+              <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
+            </div>
+          </div>
+          <ul class="space-y-2">
+            {
+              presentationRubric.map((r) => (
+                <li
+                  class="flex items-center justify-between font-sans text-[13px]"
+                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                >
+                  <span class="py-2">{r.label}</span>
+                  <span
+                    class="font-mono text-[12px]"
+                    style="color: var(--c-text-faint);"
+                  >
+                    {r.marks}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

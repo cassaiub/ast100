@@ -1,0 +1,198 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import {
+  CHAPTERS,
+  chapterPath,
+  subPath,
+  overviewPath,
+  type Chapter,
+} from "../../../data/course-nav";
+
+export function getStaticPaths() {
+  return CHAPTERS.map((ch) => ({
+    params: { num: String(ch.num) },
+    props: { chapter: ch },
+  }));
+}
+
+interface Props {
+  chapter: Chapter;
+}
+const { chapter } = Astro.props;
+
+/* Build the card list: N.0 Overview first, then the 4 sub-lectures.
+   N.0 reuses the chapter title since it is the overview of the same age. */
+const cards = [
+  {
+    id: `${chapter.num}.0`,
+    tag: "overview",
+    title: chapter.title,
+    tease:
+      chapter.num === 0
+        ? "The whole 14-billion-year story, traced along a river — Brahmaputra metaphor + the 51-event cosmic timeline."
+        : `A cinematic overview of the ${chapter.age.toLowerCase()} — the story before we zoom into the four lessons.`,
+    href: overviewPath(chapter.num),
+    live: chapter.overviewLive,
+  },
+  ...chapter.subs.map((s) => ({
+    id: s.id,
+    tag: "lesson",
+    title: s.title,
+    tease: "",
+    href: subPath(s.id),
+    live: s.live,
+  })),
+];
+
+const liveCount = cards.filter((c) => c.live).length;
+const totalCount = cards.length;
+---
+
+<Layout
+  title={`${chapter.num} — ${chapter.title} · AST 100`}
+  description={`Chapter ${chapter.num} (${chapter.age}). ${liveCount} of ${totalCount} sections live.`}
+  current={chapterPath(chapter.num)}
+  showBackdrop={true}
+>
+  {/* ─────────────────────────────  Hero  ───────────────────────────── */}
+  <section class="relative -mt-[72px] pt-[160px] md:pt-[200px] pb-16 md:pb-20 px-6 md:px-10">
+    <div class="max-w-[1100px] mx-auto">
+      <div
+        data-fade
+        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-6 flex items-center gap-3"
+      >
+        <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
+        Chapter {chapter.num} · weeks {chapter.weeks}
+      </div>
+
+      <h1
+        data-fade
+        style="--delay: 220ms"
+        class="title-gradient font-serif font-medium tracking-tight leading-[1.04]"
+      >
+        <span class="block" style="font-size: clamp(2.4rem, 6vw, 4.6rem);">
+          {chapter.title}
+        </span>
+      </h1>
+
+      <p
+        data-fade
+        style="--delay: 420ms; color: var(--c-text-soft);"
+        class="mt-8 max-w-[64ch] text-[16px] md:text-[18px] leading-[1.65]"
+      >
+        Five entry points into the {chapter.age.toLowerCase()}. Start with the
+        cinematic overview, or jump straight to a lesson.
+      </p>
+
+      <div
+        data-fade
+        style="--delay: 620ms"
+        class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
+      >
+        <span class="flex items-center gap-2">
+          <span
+            class="inline-block w-2 h-2 rounded-full"
+            style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"
+          ></span>
+          {totalCount} sections
+        </span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>
+          <span style="color: var(--c-accent);">{liveCount} live</span>
+          <span style="color: var(--c-text-faint);"> / {totalCount} total</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────  Card grid  ─────────────────────────── */}
+  <section class="relative px-6 md:px-10 pb-24 md:pb-32">
+    <div class="max-w-[1100px] mx-auto">
+      <ol class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {
+          cards.map((c, i) => {
+            const baseClasses =
+              "block relative rounded-xl border overflow-hidden h-full";
+            const liveClasses =
+              "cta-card surface-card is-link";
+            const soonClasses =
+              "surface-card opacity-65 cursor-not-allowed";
+            const cls = `${baseClasses} ${c.live ? liveClasses : soonClasses}`;
+            const body = (
+              <div class="p-6 md:p-7">
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span
+                    class="font-mono text-[13px] tracking-[0.18em]"
+                    style={`color: ${c.live ? "var(--c-accent)" : "var(--c-text-faint)"};`}
+                  >
+                    {c.id}
+                  </span>
+                  <span
+                    class="font-mono text-[9px] tracking-[0.22em] uppercase"
+                    style="color: var(--c-text-faint);"
+                  >
+                    {c.tag}
+                  </span>
+                  <span
+                    class="ml-auto font-mono text-[9px] tracking-[0.22em] uppercase rounded-full px-2.5 py-0.5"
+                    style={`color: ${c.live ? "var(--c-accent)" : "var(--c-text-faint)"}; border: 1px solid ${c.live ? "rgb(var(--c-accent-rgb) / 0.45)" : "var(--c-border-strong)"};`}
+                  >
+                    {c.live ? "● live" : "coming soon"}
+                  </span>
+                </div>
+                <h3
+                  class="font-serif font-medium leading-tight"
+                  style={`font-size: clamp(1.4rem, 2.4vw, 1.9rem); color: ${c.live ? "var(--c-text-strong)" : "var(--c-text-soft)"};`}
+                >
+                  {c.title}
+                </h3>
+                {c.tease && (
+                  <p
+                    class="mt-3 text-[14px] leading-[1.55] max-w-[60ch]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    {c.tease}
+                  </p>
+                )}
+                {c.live && (
+                  <div
+                    class="mt-5 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase"
+                    style="color: var(--c-accent);"
+                  >
+                    read {c.id}
+                    <span
+                      class="inline-block transition-transform duration-500"
+                    >→</span>
+                  </div>
+                )}
+              </div>
+            );
+            return (
+              <li>
+                {c.live ? (
+                  <a href={c.href} data-fade style={`--delay: ${i * 70}ms`} class={cls}>
+                    {body}
+                  </a>
+                ) : (
+                  <div data-fade style={`--delay: ${i * 70}ms`} class={cls} aria-disabled="true">
+                    {body}
+                  </div>
+                )}
+              </li>
+            );
+          })
+        }
+      </ol>
+
+      <p
+        data-fade
+        style="--delay: 700ms; color: var(--c-text-faint);"
+        class="mt-10 text-[13px] font-sans max-w-[60ch]"
+      >
+        {liveCount === totalCount
+          ? "All sections live. Pick where to dive in."
+          : `${liveCount} of ${totalCount} sections currently live — the rest are queued for upcoming iterations.`}
+      </p>
+    </div>
+  </section>
+</Layout>

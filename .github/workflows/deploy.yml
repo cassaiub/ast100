@@ -2,41 +2,47 @@ name: Deploy to Bluehost — cassa.site/courses/ast100
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  # Manual re-run from the Actions tab without needing a new commit.
+  workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # fix Node.js 20 deprecation warning
+# Cancel an in-flight run if a newer push arrives on the same branch.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     name: Build & Sync to Bluehost
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      # 1. Pull your repo code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node 24
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24        # upgraded from 20
+          node-version: 22        # matches package.json engines (>=22.12.0)
+          cache: npm              # cache ~/.npm across runs
 
-      # 3. Install dependencies & build Astro
-      - name: Install & build
-        run: |
-          npm install             # changed from npm ci (no lock file needed)
-          npm run build
+      - name: Install dependencies (npm ci)
+        run: npm ci
 
-      # 4. Deploy /dist to Bluehost via rsync over SSH
-      - name: Deploy via rsync
+      - name: Build Astro static site
+        run: npm run build
+
+      # rsync ./dist/ → ~/public_html/courses/ast100/ on Bluehost.
+      # --delete makes the remote a mirror of dist/, so renamed/removed
+      # files don't linger. The path is owned by this workflow.
+      - name: Deploy via rsync over SSH
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avzr --delete --exclude='.git*' --exclude='node_modules' --exclude='.env*'
           path: ./dist/
-          remote_path: ~/public_html/courses/ast100
+          remote_path: ~/public_html/courses/ast100/
           remote_host: ${{ secrets.BLUEHOST_HOST }}
           remote_user: ${{ secrets.BLUEHOST_USER }}
-          remote_key: ${{ secrets.BLUEHOST_SSH_KEY }}
+          remote_port: ${{ secrets.BLUEHOST_SSH_PORT }}
+          remote_key:  ${{ secrets.BLUEHOST_SSH_KEY }}

@@ -1,0 +1,283 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/0.4/Hero";
+import {
+  EmWaveOscillatorPanel,
+  EmSpectrumScrubberPanel,
+  TelescopeBestiaryPanel,
+  TelescopeAnatomyPanel,
+} from "../../../components/scenes/0.4/figures";
+import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
+---
+
+<ChapterLayout
+  title="0.4 — Light and Telescopes · AST 100"
+  description="Light is two oscillating fields locked in step. Telescopes are tuned ears for catching that light across sixteen orders of magnitude in wavelength."
+  activeId="0.4"
+  current="/chapter/0/0.4"
+>
+  <Hero client:load />
+
+  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
+    <div class="max-w-[68ch] mx-auto prose-cosmic">
+      {/* ── §1 Telescopes Across the Ages ─────────────────────────── */}
+      <header class="mt-24 mb-10" id="time-machines">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part one
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >1.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >Tuned Ears Across Time</span
+          >
+        </h2>
+      </header>
+
+      <p data-fade class="dropcap">
+        Astronomers utilize telescopes as powerful time machines to investigate
+        the seven ages of cosmic evolution, relying on the finite speed of
+        light to view distant objects not as they are today, but as they
+        existed many years ago when their radiation was first emitted. To probe
+        the initial <strong>Particle</strong> Age, scientists employ radio
+        telescopes to detect the Cosmic Microwave Background, the fossilized
+        afterglow of the Big Bang.
+      </p>
+
+      <p data-fade>
+        As the cosmos cooled into the <strong>Galactic</strong> Age, deep-field
+        observations in visible and infrared light have revealed the chaotic
+        assembly of the first galaxies, while multi-wavelength instruments
+        allow astronomers to peer into the <strong>Stellar</strong> Age,
+        penetrating dusty interstellar clouds to witness the birth of stars
+        and the forging of heavy elements. This elemental enrichment sets the
+        stage for the <strong>Planetary</strong> and <strong>Chemical</strong>{" "}
+        Ages, where spectroscopes analyze starlight to identify complex
+        molecules and planetary systems, providing the chemical foundation
+        for the <strong>Biological</strong> Age. Finally, in the current{" "}
+        <strong>Cultural</strong> Age, humanity turns these instruments
+        outward to search for radio signals or laser pulses from other
+        technological civilizations.
+      </p>
+
+      {/* ── §2 What is Light ──────────────────────────────────────── */}
+      <header class="mt-24 mb-10" id="what-is-light">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part two
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >2.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >What is Light?</span
+          >
+        </h2>
+      </header>
+
+      <p data-fade>
+        Light is a form of electromagnetic radiation (or waves) composed of
+        rapidly fluctuating electric (<strong>E</strong>) and magnetic (<strong>B</strong>)
+        fields that vibrate perpendicular to one another and to their
+        direction of travel, moving through the vacuum of space at a constant,
+        finite speed, <span class="katex-faux">c</span>. This radiation arises
+        whenever electrically charged particles, such as <strong>electrons</strong>,
+        undergo <strong>acceleration</strong> or a change in motion; for
+        instance, in a lightning bolt, accelerated charged particles release
+        energy as visible light.
+      </p>
+
+      <p data-fade>
+        We characterize these waves by their <strong>wavelength</strong> — the
+        distance between two consecutive wave crests — and their{" "}
+        <strong>frequency</strong>, which is the number of crests that pass a
+        specific point every second. These two properties share an inverse
+        relationship, meaning that if you double the frequency, the wavelength
+        is cut in half, because their combination must always equal the
+        constant speed of light. Additionally, light behaves as discrete
+        packets of energy known as photons, where the amount of energy
+        carried is directly proportional to the frequency.
+      </p>
+
+      <EmWaveOscillatorPanel client:visible />
+
+      {/* ── §3 EM Spectrum ────────────────────────────────────────── */}
+      <header class="mt-24 mb-10" id="spectrum">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part three
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >3.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >The Whole Spectrum</span
+          >
+        </h2>
+      </header>
+
+      <p data-fade>
+        The electromagnetic spectrum begins with low-frequency radio waves,
+        which possess the longest wavelengths — comparable to the scale of
+        mountains — and the lowest energy. As the frequency increases and
+        wavelengths shorten, we encounter high-frequency radio waves,
+        microwaves, infrared radiation (which we feel as heat), the narrow
+        band of visible light, ultraviolet radiation, X-rays, and finally
+        gamma rays — which carry billions of times the energy of visible
+        light and are associated with nuclear reactions.
+      </p>
+
+      <p data-fade>
+        Earth's atmosphere functions as a selective shield, effectively opaque
+        to most electromagnetic radiation but permeable through specific
+        &ldquo;spectral windows&rdquo; where the air is transparent. The most
+        significant openings are the optical window, allowing visible light to
+        reach the surface, and the radio window, which permits the passage of
+        radio waves with wavelengths ranging from approximately one centimeter
+        to ten meters. The ozone layer blocks lethal ultraviolet, X-rays, and
+        gamma rays, rendering these energetic bands observable only from
+        space.
+      </p>
+
+      <EmSpectrumScrubberPanel client:visible />
+
+      {/* ── §4 Telescope Bestiary ─────────────────────────────────── */}
+      <header class="mt-24 mb-10" id="bestiary">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part four
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >4.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >Telescopes, Tuned</span
+          >
+        </h2>
+      </header>
+
+      <p data-fade>
+        To study the universe, astronomers use specialized tools tuned to
+        different wavelengths of the electromagnetic spectrum. Radio waves
+        are captured by instruments like LOFAR and the Five-hundred-meter
+        Aperture Spherical Telescope (FAST). For microwaves, the South Pole
+        Telescope and the Planck satellite map the afterglow of the Big Bang.
+        To capture infrared light, the James Webb Space Telescope observes
+        stars and galaxies through cosmic dust. Visible light is monitored
+        by the Keck Observatory and Hubble. In higher energies, GALEX maps
+        the ultraviolet sky, Chandra captures X-rays from black holes, and
+        the Fermi telescope plus the Cherenkov Telescope Array observe the
+        extremely high-energy universe.
+      </p>
+
+      <TelescopeBestiaryPanel client:visible />
+
+      {/* ── §5 Anatomy ────────────────────────────────────────────── */}
+      <header class="mt-24 mb-10" id="anatomy">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part five
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >5.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >Inside a Telescope</span
+          >
+        </h2>
+      </header>
+
+      <p data-fade>
+        Every modern telescope system works as a three-part team to transform
+        faint cosmic whispers into clear, viewable data. The process begins
+        with a <strong>collector</strong> — usually a large, curved mirror —
+        which acts like a giant light bucket, catching incoming rays and
+        concentrating them onto the focal plane. At this focus plane sits the{" "}
+        <strong>detector</strong>, typically a high-tech chip similar to the
+        sensors in digital cameras. This chip counts photons and converts
+        them into electrical signals. Finally, these signals are sent to a{" "}
+        <strong>processor</strong>, where computers clean up digital noise
+        and translate the data into the stunning images we see on our
+        screens. This process is known as <strong>photometry</strong>.
+      </p>
+
+      <p data-fade>
+        Beyond just taking beautiful pictures, telescopes can also serve as
+        long-distance laboratories through <strong>spectroscopy</strong> by
+        using a device called a spectrograph. By placing a high-tech prism
+        between the collector and the detector, astronomers spread light
+        into its component colors, creating a spectrum. This reveals the
+        unique &ldquo;fingerprints&rdquo; of matter; by studying these
+        patterns, scientists can identify exactly what a distant star is
+        made of, how hot it is, and how fast it is moving.
+      </p>
+
+      <p data-fade>
+        The true power of a telescope is defined by two qualities:{" "}
+        <strong>resolution</strong> (the ability to see fine details) and{" "}
+        <strong>sensitivity</strong> (the light-gathering power). A larger
+        mirror intercepts more light, allowing us to see objects billions of
+        times fainter than anything the human eye could spot on its own.
+      </p>
+
+      <TelescopeAnatomyPanel client:visible />
+
+      <div data-fade class="my-16 rule"></div>
+
+      <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
+        Light is the only messenger that has ever crossed the distance
+        between you and the stars. A telescope is just a careful way of
+        listening — patient enough to hear a signal that left before our
+        species learned to ask the question.
+      </p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

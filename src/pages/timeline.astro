@@ -1,0 +1,71 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TimelineScene from "../components/scenes/0/TimelineScene";
+---
+
+<Layout
+  title="Cosmic Timeline — 25 Events · AST 100"
+  description="Fourteen billion years in 25 milestones — from the Big Bang to the Industrial Revolution. A scroll-driven river of every cosmic turning point."
+  current="/timeline"
+>
+  {/* ─────────────────────────────  Hero  ───────────────────────────── */}
+  <section class="relative -mt-[72px] pt-[160px] md:pt-[200px] pb-16 md:pb-20 px-6 md:px-10">
+    <div class="max-w-[1100px] mx-auto">
+      <div
+        data-fade
+        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-6 flex items-center gap-3"
+      >
+        <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
+        Cosmic timeline · 14 Gyr
+      </div>
+
+      <h1
+        data-fade
+        style="--delay: 220ms"
+        class="title-gradient font-serif font-medium tracking-tight leading-[1.04]"
+      >
+        <span class="block" style="font-size: clamp(2.4rem, 6vw, 4.6rem);">
+          Twenty-five turning points
+        </span>
+        <span
+          class="block italic font-light mt-3"
+          style="font-size: clamp(1.4rem, 3.2vw, 2.2rem); color: var(--c-text-soft);"
+        >
+          every milestone the universe has taken, in order
+        </span>
+      </h1>
+
+      <p
+        data-fade
+        style="--delay: 420ms; color: var(--c-text-soft);"
+        class="mt-8 max-w-[68ch] text-[16px] md:text-[18px] leading-[1.65]"
+      >
+        Scroll the river. Each card marks an instant when the universe became
+        something new — the Big Bang, the first atoms, the first stars, the
+        first cells, the first cities. The seven ages of cosmic history,
+        traced through twenty-five concrete events.
+      </p>
+
+      <div
+        data-fade
+        style="--delay: 620ms"
+        class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
+      >
+        <span class="flex items-center gap-2">
+          <span
+            class="inline-block w-2 h-2 rounded-full"
+            style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"
+          ></span>
+          25 events
+        </span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>7 ages</span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>13.8 Gyr</span>
+      </div>
+    </div>
+  </section>
+
+  {/* ────────────────────────  Timeline scene  ───────────────────────── */}
+  <TimelineScene client:load />
+</Layout>

@@ -1,0 +1,63 @@
+---
+import BaseHead from "../components/shared/BaseHead.astro";
+import SiteNav from "../components/shared/SiteNav.astro";
+import SiteFooter from "../components/shared/SiteFooter.astro";
+import Rail from "../components/shared/Rail.astro";
+import Starfield from "../components/shared/Starfield";
+import ReadingProgress from "../components/shared/ReadingProgress";
+import MobileNav from "../components/shared/MobileNav";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Path of the current page, e.g. "/chapter/0" — used by SiteNav. */
+  current?: string;
+  starDensity?: number;
+}
+
+const {
+  title,
+  description = "Fourteen billion years, traced along a river — the chapter 0 landing.",
+  current = "",
+  starDensity = 420,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body class="font-serif antialiased text-[var(--c-text)]">
+    <ReadingProgress client:load />
+
+    <div id="backdrop" class="fixed inset-0 -z-10 overflow-hidden">
+      <div id="starfield-root" class="absolute inset-0">
+        <Starfield density={starDensity} client:load />
+      </div>
+      <div id="mood-l1" class="mood-layer mood-l-1" style="opacity: 1"></div>
+      <div id="mood-l2" class="mood-layer mood-l-2" style="opacity: 0"></div>
+      <div id="mood-l3" class="mood-layer mood-l-3" style="opacity: 0"></div>
+      <div id="mood-l4" class="mood-layer mood-l-4" style="opacity: 0"></div>
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="background: linear-gradient(180deg, var(--bg-veil-0) 0%, var(--bg-veil-35) 60%, var(--bg-veil-80) 100%);"
+      ></div>
+    </div>
+
+    <SiteNav current={current} />
+
+    <Rail activeId="0.0" chapter={0} />
+
+    <MobileNav client:load />
+
+    <main id="app" class="relative">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <script src="../scripts/chapter0-runtime.ts"></script>
+    <script src="../scripts/mood-arc.ts"></script>
+  </body>
+</html>

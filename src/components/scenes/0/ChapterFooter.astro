@@ -1,0 +1,148 @@
+---
+import { subPath, overviewPath } from "../../../data/course-nav";
+
+interface Sub {
+  id: string;
+  title: string;
+  tag: string;
+  tease: string;
+  href: string;
+  /** If true, this card represents the page the user is already on. */
+  isCurrent?: boolean;
+}
+
+const subs: Sub[] = [
+  { id: "0.0", title: "Seven Ages of the Universe", tag: "overview",   tease: "The whole 14-billion-year story, traced along a river. You are here.",       href: overviewPath(0), isCurrent: true },
+  { id: "0.1", title: "Spacetime and Energy-Matter", tag: "STEM",       tease: "How space, time, matter, and energy stitch into one fabric.",               href: subPath("0.1") },
+  { id: "0.2", title: "Cosmic Evolution",            tag: "evolve",     tease: "Increasing complexity — the engine that turns hot soup into civilizations.", href: subPath("0.2") },
+  { id: "0.3", title: "Observable Universe",         tag: "horizon",    tease: "What we can see, what we cannot, and why the difference matters.",          href: subPath("0.3") },
+  { id: "0.4", title: "Light & Telescopes",          tag: "instrument", tease: "How starlight becomes data — and data becomes a picture of the past.",      href: subPath("0.4") },
+];
+---
+
+<footer
+  class="relative mt-32 border-t border-white/[0.07] pb-24 lg:pb-12"
+  data-screen-label="04 Footer"
+>
+  <div class="max-w-[1300px] mx-auto px-6 md:px-10 pt-20 pb-12">
+    <a
+      href={subPath("0.1")}
+      class="cta-card group relative block rounded-xl border border-white/[0.08] bg-white/[0.015] px-6 md:px-10 py-10 md:py-12 overflow-hidden"
+    >
+      <div
+        class="absolute inset-0 pointer-events-none opacity-60"
+        style="background: radial-gradient(60% 100% at 100% 50%, rgba(34,211,238,0.07), transparent 70%);"
+      >
+      </div>
+
+      <div
+        class="relative flex flex-col md:flex-row items-start md:items-end justify-between gap-8"
+      >
+        <div class="max-w-[60ch]">
+          <div
+            class="font-mono text-[10px] tracking-[0.32em] uppercase text-plasma/80 mb-4 flex items-center gap-3"
+          >
+            <span class="block w-6 h-px bg-plasma/55"></span>
+             continue · the first sub-chapter
+          </div>
+          <div class="flex items-baseline gap-5 flex-wrap mb-3">
+            <span
+              class="font-mono text-plasma"
+              style="font-size: clamp(1.4rem, 2.4vw, 1.8rem); letter-spacing: 0.06em;"
+            >
+              0.1
+            </span>
+            <h3
+              class="font-serif font-medium text-white tracking-tight leading-[1.04] group-hover:text-plasma transition-colors duration-500"
+              style="font-size: clamp(2rem, 4vw, 3.4rem);"
+            >
+              Spacetime <span class="italic font-light text-white/65">and</span>
+               Energy-Matter
+            </h3>
+          </div>
+          <p
+            class="text-white/65 leading-[1.6] max-w-[58ch] text-[16px]"
+          >
+            Two theories — eleven quiet years apart — that stitched space, time, matter, and
+            energy into one fabric. The stage and the actors are no longer separate.
+          </p>
+        </div>
+
+        <div
+          class="font-mono text-[11px] tracking-[0.22em] uppercase text-plasma/90 self-end shrink-0 border border-plasma/30 rounded-full px-5 py-2.5 group-hover:bg-plasma/10 group-hover:border-plasma/70 group-hover:text-white transition-all duration-500 flex items-center gap-3"
+        >
+          read 0.1
+          <span
+            class="inline-block transition-transform duration-500 group-hover:translate-x-1"
+            >→</span
+          >
+        </div>
+      </div>
+    </a>
+
+    <div class="mt-14">
+      <div
+        class="font-mono text-[10px] tracking-[0.28em] uppercase text-white/35 mb-5"
+      >
+        or jump to —
+      </div>
+      <ul
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-6"
+      >
+        {
+          subs.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                class={`group flex flex-col gap-1.5 text-left transition-colors duration-500 ${s.isCurrent ? "is-current" : ""}`}
+                aria-current={s.isCurrent ? "page" : undefined}
+                style={`color: ${s.isCurrent ? "var(--c-accent)" : "var(--c-text-soft)"};`}
+              >
+                <div class="flex items-baseline gap-3">
+                  <span
+                    class="font-mono text-[12px] tracking-[0.18em]"
+                    style={`color: ${s.isCurrent ? "var(--c-accent)" : "rgb(var(--c-accent-rgb) / 0.85)"};`}
+                  >
+                    {s.id}
+                  </span>
+                  <span
+                    class="font-mono text-[9px] tracking-[0.22em] uppercase"
+                    style="color: var(--c-text-faint);"
+                  >
+                    {s.tag}
+                  </span>
+                  {s.isCurrent && (
+                    <span
+                      class="ml-auto font-mono text-[9px] tracking-[0.22em] uppercase px-2 py-0.5 rounded-full"
+                      style="color: var(--c-accent); border: 1px solid rgb(var(--c-accent-rgb) / 0.45);"
+                    >
+                      here
+                    </span>
+                  )}
+                </div>
+                <span
+                  class="font-serif group-hover:text-[var(--c-accent)] transition-colors duration-500 leading-tight"
+                  style={`font-size: clamp(1rem, 1.4vw, 1.18rem); color: ${s.isCurrent ? "var(--c-accent)" : "var(--c-text-strong)"};`}
+                >
+                  {s.title}
+                </span>
+                <span
+                  class="text-[12px] leading-[1.5] max-w-[28ch]"
+                  style="color: var(--c-text-faint);"
+                >
+                  {s.tease}
+                </span>
+                <span
+                  class="block h-px w-6 mt-1 transition-all duration-500 group-hover:w-12"
+                  style={`background: ${s.isCurrent ? "var(--c-accent)" : "rgb(var(--c-text-rgb) / 0.2)"};`}
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+
+</footer>

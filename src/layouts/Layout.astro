@@ -1,0 +1,75 @@
+---
+import BaseHead from "../components/shared/BaseHead.astro";
+import SiteNav from "../components/shared/SiteNav.astro";
+import SiteFooter from "../components/shared/SiteFooter.astro";
+import Starfield from "../components/shared/Starfield";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path of the current page, used by SiteNav for active highlighting. */
+  current?: string;
+  /** Show the persistent starfield/nebula backdrop. Default true. */
+  showBackdrop?: boolean;
+}
+
+const {
+  title = "AST 100 — Our Cosmic History",
+  description = "Fourteen billion years, rebuilt as a cinematic, scroll-driven web experience.",
+  current = "",
+  showBackdrop = true,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body class="font-serif antialiased">
+    {
+      showBackdrop && (
+        <div class="fixed inset-0 -z-10 overflow-hidden">
+          <div class="absolute inset-0">
+            <Starfield density={380} client:load />
+          </div>
+          <div class="absolute inset-0 nebula-overlay" />
+          <div
+            class="absolute inset-0 pointer-events-none"
+            style="background: linear-gradient(180deg, var(--bg-veil-0) 0%, var(--bg-veil-55) 70%, var(--bg-veil-90) 100%);"
+          />
+        </div>
+      )
+    }
+
+    <SiteNav current={current} />
+
+    <main id="app" class="relative min-h-screen pt-[72px]">
+      <slot />
+    </main>
+
+    <SiteFooter />
+
+    <script>
+      /* Fade-up entrance observer — shared across Layout pages. */
+      const els = document.querySelectorAll<HTMLElement>("[data-fade]");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        els.forEach((el) => el.classList.add("is-in"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                (e.target as HTMLElement).classList.add("is-in");
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
+        );
+        els.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

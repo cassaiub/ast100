@@ -1,0 +1,471 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const destinations = [
+  {
+    name: "The Moon",
+    tag: "Earth's natural satellite",
+    note: "Most near-future realistic, deepest reference library, three days from launch.",
+    difficulty: "Beginner",
+  },
+  {
+    name: "Mars",
+    tag: "Fourth rock from the Sun",
+    note: "Most studied destination, most realistic crewed mission within 50 years.",
+    difficulty: "Intermediate",
+  },
+  {
+    name: "Europa",
+    tag: "Jovian ocean world",
+    note: "Subsurface ocean — strongest chemistry and biology angles.",
+    difficulty: "Advanced",
+  },
+  {
+    name: "Titan",
+    tag: "Saturn's organic moon",
+    note: "Dense atmosphere, exotic methane chemistry, the most alien environment.",
+    difficulty: "Advanced",
+  },
+  {
+    name: "Proxima Centauri b",
+    tag: "Nearest exoplanet",
+    note: "For ambitious groups willing to engage more speculatively.",
+    difficulty: "Speculative",
+  },
+];
+
+const roles = [
+  {
+    n: 1,
+    title: "Mission Commander",
+    subtitle: "Overview & vision",
+    chapter: "all",
+    body: "The group's narrator. If presenting first, introduces the destination, explains why humanity needs to become multi-planetary, outlines the mission's overall timeline from launch to settlement, and frames the four challenges teammates address. If presenting last, synthesizes all four sections into a unified mission document showing how planetary science, chemistry, biology, and culture depend on each other.",
+  },
+  {
+    n: 2,
+    title: "Why Here?",
+    subtitle: "Target world & solar system context",
+    chapter: "4",
+    body: "Makes the scientific case for the chosen destination. Analyzes physical structure, orbital position, axial tilt, geological activity, and relationship to the habitable zone. Compares to Earth using Chapter 4's planetary classification frameworks. Argues: given everything telescopes, orbiters, and landers tell us, here is precisely what awaits the first humans who arrive.",
+  },
+  {
+    n: 3,
+    title: "Can We Survive There?",
+    subtitle: "Chemistry & life support",
+    chapter: "5",
+    body: "Tackles the most fundamental question: does the target world have the raw chemical ingredients to keep humans alive, and if not, how do we manufacture or import what is missing? Analyzes water, oxygen, nitrogen, and carbon availability, connects the periodic table to resource extraction, and designs the life-support systems that would sustain the settlement.",
+  },
+  {
+    n: 4,
+    title: "Staying Alive",
+    subtitle: "Habitat & biology",
+    chapter: "6",
+    body: "Designs the physical and biological environment settlers will live inside. Reverse-engineers Earth's habitability — identifying what billions of years of evolution and complex multicellular life tell us about what humans fundamentally need. Uses mass extinctions as cautionary tales. Applies to habitat design: radiation shielding, closed-loop food, psychological wellbeing, minimum viable ecosystem.",
+  },
+  {
+    n: 5,
+    title: "Building a Society",
+    subtitle: "Culture, governance, the future",
+    chapter: "7",
+    body: "The most human dimension of the mission. Uses the Out of Africa migration as analogy for leaving Earth, the Agricultural and Urban Revolutions as models for how settlements scale into civilizations, and the Drake Equation / SETI as a framework for long-term technological sustainability. Designs governance, Earth communications, cultural identity, and the long-term vision for the colony.",
+  },
+];
+
+const reportRubric = [
+  { label: "Research depth", marks: 5 },
+  { label: "Connection to age content", marks: 5 },
+  { label: "Writing & figure presentation", marks: 5 },
+];
+const presentationRubric = [
+  { label: "Content & narrative arc", marks: 6 },
+  { label: "Delivery & fluency", marks: 5 },
+  { label: "Slide design", marks: 4 },
+];
+const reportTotal = reportRubric.reduce((s, r) => s + r.marks, 0);
+const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
+---
+
+<Layout
+  title="Final Project — Settling the Solar System · AST 100"
+  description="A near-future mission design from launch to civilization."
+  current="/fin"
+>
+  {/* ─────────────────────────────  Hero  ───────────────────────────── */}
+  <section class="relative -mt-[72px] pt-[160px] md:pt-[200px] pb-24 md:pb-32 px-6 md:px-10">
+    <div class="max-w-[1100px] mx-auto">
+      <div
+        data-fade
+        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-7 flex items-center gap-3"
+      >
+        <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
+         Final project · weeks 8–13
+      </div>
+
+      <h1
+        data-fade
+        style="--delay: 220ms"
+        class="title-gradient font-serif font-medium tracking-tight leading-[1.04]"
+      >
+        <span class="block" style="font-size: clamp(2.4rem, 6vw, 4.6rem);">
+          Settling the Solar System
+        </span>
+        <span
+          class="block italic font-light mt-3"
+          style="font-size: clamp(1.4rem, 3.2vw, 2.2rem); color: var(--c-text-soft);"
+        >
+          a near-future mission, launch to civilization
+        </span>
+      </h1>
+
+      <p
+        data-fade
+        style="--delay: 420ms; color: var(--c-text-soft);"
+        class="mt-10 max-w-[68ch] text-[17px] md:text-[19px] leading-[1.65]"
+      >
+        Each group of 5 designs a complete near-future mission to one
+        destination in the solar system — from the scientific justification
+        for choosing that world, through the chemistry of survival, the
+        biology of habitat design, and the culture of building a society.
+        Each student draws directly from one of the four ages covered in the
+        second half of the course. One student serves as mission commander,
+        providing either an introduction or synthesis of the entire mission.
+      </p>
+
+      <div
+        data-fade
+        style="--delay: 620ms"
+        class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
+      >
+        <span class="flex items-center gap-2">
+          <span
+            class="inline-block w-2 h-2 rounded-full"
+            style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"
+          ></span>
+           groups of 5
+        </span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>15–20 min</span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>600–800 wd / student</span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>30 marks · 15 + 15</span>
+      </div>
+    </div>
+  </section>
+
+  {/* ──────────────────────  Choose your destination  ─────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10 flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <div
+            class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+          >
+            § 01 · Destination
+          </div>
+          <h2
+            class="font-serif font-medium leading-tight"
+            style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+          >
+            Choose your world.
+          </h2>
+        </div>
+        <p
+          class="text-[12px] font-mono tracking-[0.22em] uppercase max-w-[42ch] text-right"
+          style="color: var(--c-solar);"
+        >
+          No two groups may pick the same destination · first come, first served
+        </p>
+      </div>
+
+      <ol class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        {
+          destinations.map((d, i) => (
+            <li data-fade style={`--delay: ${i * 60}ms`} class="surface-card">
+              <div
+                class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
+                style="color: var(--c-accent);"
+              >
+                Option {i + 1}
+              </div>
+              <div
+                class="font-serif font-medium leading-tight"
+                style="font-size: 1.4rem; color: var(--c-text-strong);"
+              >
+                {d.name}
+              </div>
+              <div
+                class="font-serif italic mt-1 mb-3"
+                style="color: var(--c-text-soft); font-size: 0.95rem;"
+              >
+                {d.tag}
+              </div>
+              <p
+                class="text-[13px] font-sans leading-[1.55]"
+                style="color: var(--c-text-soft);"
+              >
+                {d.note}
+              </p>
+              <div
+                class="mt-4 inline-block text-[9px] font-mono tracking-[0.22em] uppercase px-2 py-1 rounded-full"
+                style="border: 1px solid var(--c-border-strong); color: var(--c-text-faint);"
+              >
+                {d.difficulty}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ─────────────────────────  Five roles  ─────────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 02 · The Five Roles
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          One mission, five disciplines.
+        </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Roles 2–5 each anchor to one of the four ages in the second half
+          of the course. The Commander threads them together.
+        </p>
+      </div>
+
+      <ol class="grid md:grid-cols-2 gap-4">
+        {
+          roles.map((r, i) => (
+            <li data-fade style={`--delay: ${i * 70}ms`} class="surface-card">
+              <div class="flex items-baseline gap-3 mb-3">
+                <span
+                  class="font-mono text-[11px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  Role {r.n}
+                </span>
+                <span
+                  class="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-text-faint);"
+                >
+                  ↳ Ch {r.chapter}
+                </span>
+              </div>
+              <div
+                class="font-serif font-medium leading-tight"
+                style="font-size: 1.45rem; color: var(--c-text-strong);"
+              >
+                {r.title}
+              </div>
+              <div
+                class="font-serif italic mt-1 mb-3"
+                style="color: var(--c-text-soft); font-size: 1.05rem;"
+              >
+                {r.subtitle}
+              </div>
+              <p
+                class="text-[14px] font-sans leading-[1.6]"
+                style="color: var(--c-text-soft);"
+              >
+                {r.body}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ─────────────────────────  Deliverables  ──────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 03 · Deliverables
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          What each group submits.
+        </h2>
+      </div>
+
+      <div data-fade style="--delay: 180ms" class="grid md:grid-cols-2 gap-4">
+        <div class="surface-card">
+          <div
+            class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
+            style="color: var(--c-accent);"
+          >
+            Report
+          </div>
+          <div
+            class="font-serif font-medium leading-tight mb-2"
+            style="font-size: 1.3rem; color: var(--c-text-strong);"
+          >
+            One PDF, five voices.
+          </div>
+          <p
+            class="text-[14px] font-sans leading-[1.6]"
+            style="color: var(--c-text-soft);"
+          >
+            Each student writes their own section of 600–800 words with
+            relevant images and diagrams. The group assembles all five
+            sections into one document with a shared introduction and
+            conclusion. Submitted as a PDF via Google Classroom before the
+            final session.
+          </p>
+        </div>
+
+        <div class="surface-card">
+          <div
+            class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
+            style="color: var(--c-accent);"
+          >
+            Presentation
+          </div>
+          <div
+            class="font-serif font-medium leading-tight mb-2"
+            style="font-size: 1.3rem; color: var(--c-text-strong);"
+          >
+            15–20 minutes, one mission.
+          </div>
+          <p
+            class="text-[14px] font-sans leading-[1.6]"
+            style="color: var(--c-text-soft);"
+          >
+            Each student presents their section for 3–4 minutes, building
+            the mission story sequentially from Role 1 through Role 5. Same
+            Canva template as midterm.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ───────────────────────────  Grading  ────────────────────────── */}
+  <section
+    id="grading"
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 04 · Grading
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          30 marks, split evenly.
+        </h2>
+        <p
+          class="mt-4 max-w-[60ch] text-[14px]"
+          style="color: var(--c-text-faint);"
+        >
+          Indicative weights below — the detailed rubric will be confirmed
+          before submission.
+        </p>
+      </div>
+
+      <div data-fade style="--delay: 180ms" class="grid md:grid-cols-2 gap-4">
+        <div class="surface-card">
+          <div class="flex items-baseline justify-between mb-3">
+            <div
+              class="font-mono text-[10px] tracking-[0.22em] uppercase"
+              style="color: var(--c-accent);"
+            >
+              Report
+            </div>
+            <div
+              class="font-serif font-medium"
+              style="font-size: 2rem; color: var(--c-text-strong);"
+            >
+              {reportTotal}
+              <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
+            </div>
+          </div>
+          <ul class="space-y-2">
+            {
+              reportRubric.map((r) => (
+                <li
+                  class="flex items-center justify-between font-sans text-[13px]"
+                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                >
+                  <span class="py-2">{r.label}</span>
+                  <span
+                    class="font-mono text-[12px]"
+                    style="color: var(--c-text-faint);"
+                  >
+                    {r.marks}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="surface-card">
+          <div class="flex items-baseline justify-between mb-3">
+            <div
+              class="font-mono text-[10px] tracking-[0.22em] uppercase"
+              style="color: var(--c-accent);"
+            >
+              Presentation
+            </div>
+            <div
+              class="font-serif font-medium"
+              style="font-size: 2rem; color: var(--c-text-strong);"
+            >
+              {presentationTotal}
+              <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
+            </div>
+          </div>
+          <ul class="space-y-2">
+            {
+              presentationRubric.map((r) => (
+                <li
+                  class="flex items-center justify-between font-sans text-[13px]"
+                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                >
+                  <span class="py-2">{r.label}</span>
+                  <span
+                    class="font-mono text-[12px]"
+                    style="color: var(--c-text-faint);"
+                  >
+                    {r.marks}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

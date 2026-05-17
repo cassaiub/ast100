@@ -1,0 +1,165 @@
+---
+import { getRailItems, type RailItem } from "../../data/course-nav";
+
+interface Props {
+  activeId: string;
+  /** Override the auto-derived items (rare). When omitted, items are
+   *  inferred from `chapter` via getRailItems(). */
+  items?: RailItem[];
+  /** Chapter number — used to pick the right rail items. Defaults to 0
+   *  so existing chapter-0 pages keep working without changes. */
+  chapter?: number;
+}
+
+const { activeId, chapter = 0, items: itemsProp } = Astro.props;
+const items = itemsProp ?? getRailItems(chapter);
+---
+
+<nav
+  class="rail fixed left-6 top-1/2 -translate-y-1/2 z-30 select-none"
+  aria-label="Subsections of chapter 0"
+>
+  <ol class="flex flex-col gap-7">
+    {
+      items.map((it) => {
+        const isActive = it.id === activeId;
+        const headerInner = (
+          <>
+            <div class="flex flex-col items-center pt-1">
+              <span class="rail-dot block w-2 h-2 rounded-full bg-white/30" />
+              {isActive && (
+                <span
+                  class="block w-px mt-2 bg-gradient-to-b from-plasma/60 to-transparent"
+                  style="height: 70px;"
+                />
+              )}
+            </div>
+            <div>
+              <div
+                class={`font-mono text-[11px] tracking-[0.18em] ${isActive ? "text-plasma" : "text-white/40"}`}
+              >
+                {it.id}
+              </div>
+              <div
+                class={`label text-[12px] mt-0.5 ${isActive ? "text-white/90" : it.live ? "text-white/55" : "text-white/35"}`}
+              >
+                {it.title}
+                {!it.live && (
+                  <span class="ml-1.5 font-mono text-[8px] tracking-[0.22em] uppercase opacity-70">
+                    · soon
+                  </span>
+                )}
+              </div>
+              {isActive && it.anchors && it.anchors.length > 0 && (
+                <ul class="mt-3 flex flex-col gap-2 pl-0.5" data-rail-anchors>
+                  {it.anchors.map((a) => (
+                    <li>
+                      <a
+                        href={`#${a.id}`}
+                        data-rail-anchor={a.id}
+                        class="rail-anchor block text-[11px] font-mono tracking-[0.06em] text-white/45 hover:text-plasma transition-colors duration-300"
+                      >
+                        ┕ {a.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </>
+        );
+
+        /* When the item is the active page, render as plain text
+           (no link — already here). When live but not active, render
+           as a navigation link. When not live, plain text with the
+           "soon" badge above. */
+        const wrapperClass = `rail-item flex items-start gap-3 ${isActive ? "active" : ""} ${it.live && !isActive ? "rail-item-link" : ""}`;
+        return it.live && !isActive ? (
+          <li>
+            <a
+              href={it.href}
+              class={wrapperClass}
+              aria-label={`Go to ${it.id} ${it.title}`}
+            >
+              {headerInner}
+            </a>
+          </li>
+        ) : (
+          <li class={wrapperClass} aria-current={isActive ? "page" : undefined}>
+            {headerInner}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<script>
+  /* Rail scroll-spy — highlight the anchor whose section is closest
+     to the top of the viewport. Also smooth-scroll on click. */
+  (() => {
+    const anchorEls = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("[data-rail-anchor]")
+    );
+    if (anchorEls.length === 0) return;
+
+    /* Map anchor id → matching <section> / heading element */
+    const targets = anchorEls
+      .map((el) => {
+        const id = el.dataset.railAnchor!;
+        const target = document.getElementById(id);
+        return target ? { id, anchor: el, target } : null;
+      })
+      .filter((x): x is { id: string; anchor: HTMLAnchorElement; target: HTMLElement } => !!x);
+
+    function setActive(id: string) {
+      anchorEls.forEach((el) => {
+        const matched = el.dataset.railAnchor === id;
+        el.classList.toggle("is-here", matched);
+      });
+    }
+
+    /* Smooth scroll on click (CSS scroll-behavior is global, but
+       explicit JS lets us add a small offset for the fixed nav). */
+    anchorEls.forEach((el) => {
+      el.addEventListener("click", (e) => {
+        const id = el.dataset.railAnchor!;
+        const target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        const offset = 72; /* nav height */
+        const y = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+        history.replaceState(null, "", `#${id}`);
+        setActive(id);
+      });
+    });
+
+    /* Scroll-spy: find the section currently nearest the top */
+    let currentActive = "";
+    function onScroll() {
+      const offset = 120; /* a bit below the nav */
+      let best: { id: string; dist: number } | null = null;
+      for (const { id, target } of targets) {
+        const top = target.getBoundingClientRect().top - offset;
+        if (top <= 0) {
+          /* section has passed the trigger — track the most recent */
+          if (!best || -top < best.dist) best = { id, dist: -top };
+        }
+      }
+      const next = best ? best.id : targets[0].id;
+      if (next !== currentActive) {
+        currentActive = next;
+        setActive(next);
+      }
+    }
+
+    let raf = 0;
+    function schedule() {
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; onScroll(); });
+    }
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    onScroll();
+  })();
+</script>

@@ -1,0 +1,292 @@
+---
+import {
+  CHAPTERS,
+  TOP_MENU_ORDER,
+  chapterPath,
+  subPath,
+  overviewPath,
+  withBase,
+} from "../../data/course-nav";
+import ThemeToggle from "./ThemeToggle";
+import MuteToggle from "./MuteToggle";
+
+interface Props {
+  /** Logical path of the current page (without the deploy base), used to
+   *  highlight the active nav item. Pass e.g. "/", "/mid", "/chapter/0",
+   *  "/chapter/0/0.1". Comparisons below all operate in logical-path-land. */
+  current?: string;
+  /** Mute toggle is only rendered when the layout owns the ambient audio.
+   *  Defaults to true; pass false on layouts that init audio themselves. */
+  showMute?: boolean;
+}
+const { current = "", showMute = true } = Astro.props;
+
+/* Comparisons operate on logical paths (no base); render hrefs use the
+   helpers from course-nav which return with-base URLs. */
+function isActiveChapter(num: number) {
+  const p = `/chapter/${num}`;
+  return current === p || current.startsWith(p + "/");
+}
+function isActiveLink(href: string) {
+  if (href === "/") return current === "/";
+  return current === href || current.startsWith(href + "/");
+}
+const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
+---
+
+<nav class="site-nav" id="site-nav" aria-label="Course navigation">
+  <div class="site-nav-inner">
+    <a href={withBase("/")} class="site-nav-brand">
+      <span class="dot"></span>
+      <span class="brand-short">AST 100</span>
+      <span class="brand-long"> · Our Cosmic History</span>
+    </a>
+
+    <ul class="site-nav-links">
+      {
+        TOP_MENU_ORDER.map((item) => {
+          if (item.kind === "link") {
+            const active = isActiveLink(item.href);
+            return (
+              <li>
+                <a
+                  href={withBase(item.href)}
+                  class={`site-nav-link${active ? " is-active" : ""}`}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          }
+          /* The single "Chapters" mega-dropdown */
+          return (
+            <li class="site-nav-chapters-li">
+              <button
+                type="button"
+                class={`site-nav-trigger${chaptersActive ? " is-active" : ""}`}
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                Chapters
+                <span class="caret">▾</span>
+              </button>
+              <div class="site-nav-dropdown site-nav-dropdown-wide">
+                <ul class="chapters-grid">
+                  {CHAPTERS.map((ch) => {
+                    const chActive = isActiveChapter(ch.num);
+                    const chLogical = `/chapter/${ch.num}`;
+                    const overviewLogical = `/chapter/${ch.num}/${ch.num}.0`;
+                    return (
+                      <li class={`chapter-group${chActive ? " is-active" : ""}`}>
+                        <a
+                          href={chapterPath(ch.num)}
+                          class={`chapter-head${current === chLogical ? " is-active" : ""}`}
+                        >
+                          <span class="chapter-num">{ch.num}</span>
+                          <span class="chapter-title">{ch.title}</span>
+                        </a>
+                        <ul class="chapter-subs">
+                          <li>
+                            <a
+                              href={overviewPath(ch.num)}
+                              class={`chapter-sub${current === overviewLogical ? " is-active" : ""}${ch.overviewLive ? "" : " is-soon"}`}
+                              aria-disabled={ch.overviewLive ? undefined : "true"}
+                            >
+                              <span class="sub-num">{ch.num}.0</span>
+                              <span class="sub-title">Overview</span>
+                              {!ch.overviewLive && <span class="sub-soon">soon</span>}
+                            </a>
+                          </li>
+                          {ch.subs.map((s) => {
+                            const subLogical = `/chapter/${s.id.split(".")[0]}/${s.id}`;
+                            return (
+                              <li>
+                                <a
+                                  href={subPath(s.id)}
+                                  class={`chapter-sub${current === subLogical ? " is-active" : ""}${s.live ? "" : " is-soon"}`}
+                                  aria-disabled={s.live ? undefined : "true"}
+                                >
+                                  <span class="sub-num">{s.id}</span>
+                                  <span class="sub-title">{s.title}</span>
+                                  {!s.live && <span class="sub-soon">soon</span>}
+                                </a>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <div class="site-nav-actions">
+      {showMute && <MuteToggle client:load />}
+      <ThemeToggle client:load />
+      <button
+        type="button"
+        class="site-nav-hamburger"
+        id="site-nav-hamburger"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="site-nav-mobile"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="site-nav-mobile" id="site-nav-mobile" role="dialog" aria-modal="true">
+    <a
+      href={withBase("/")}
+      class={`group-head${current === "/" ? " is-active" : ""}`}
+    >
+      Home
+    </a>
+    <div class="mobile-chapters-head">Chapters</div>
+    <ul>
+      {
+        CHAPTERS.map((ch) => {
+          const chLogical = `/chapter/${ch.num}`;
+          const overviewLogical = `/chapter/${ch.num}/${ch.num}.0`;
+          return (
+            <li>
+              <a
+                href={chapterPath(ch.num)}
+                class={`mobile-chapter-head${current === chLogical ? " is-active" : ""}`}
+              >
+                <span class="mobile-chapter-num">{ch.num}</span>
+                <span class="mobile-chapter-title">{ch.title}</span>
+              </a>
+              <ul>
+                <li>
+                  <a
+                    href={overviewPath(ch.num)}
+                    class={`sub-link${current === overviewLogical ? " is-active" : ""}${ch.overviewLive ? "" : " opacity-50"}`}
+                    aria-disabled={ch.overviewLive ? undefined : "true"}
+                  >
+                    {ch.num}.0 &nbsp; Overview
+                    {!ch.overviewLive && <span class="opacity-60"> · soon</span>}
+                  </a>
+                </li>
+                {ch.subs.map((s) => {
+                  const subLogical = `/chapter/${s.id.split(".")[0]}/${s.id}`;
+                  return (
+                    <li>
+                      <a
+                        href={subPath(s.id)}
+                        class={`sub-link${current === subLogical ? " is-active" : ""}${s.live ? "" : " opacity-50"}`}
+                        aria-disabled={s.live ? undefined : "true"}
+                      >
+                        {s.id} &nbsp; {s.title}
+                        {!s.live && <span class="opacity-60"> · soon</span>}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+          );
+        })
+      }
+    </ul>
+    <a
+      href={withBase("/timeline")}
+      class={`group-head${current === "/timeline" ? " is-active" : ""}`}
+    >
+      TL — Cosmic Timeline
+    </a>
+    <a
+      href={withBase("/mid")}
+      class={`group-head${current === "/mid" ? " is-active" : ""}`}
+    >
+      MID — Midterm Project
+    </a>
+    <a
+      href={withBase("/fin")}
+      class={`group-head${current === "/fin" ? " is-active" : ""}`}
+    >
+      FIN — Final Project
+    </a>
+  </div>
+</nav>
+
+<script>
+  /* Site nav runtime — scroll state, dropdown toggle, mobile sheet. */
+  (() => {
+    const nav = document.getElementById("site-nav");
+    if (!nav) return;
+
+    let lastScrolled = false;
+    const onScroll = () => {
+      const scrolled = window.scrollY > 24;
+      if (scrolled !== lastScrolled) {
+        nav.classList.toggle("is-scrolled", scrolled);
+        lastScrolled = scrolled;
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const triggers =
+      nav.querySelectorAll<HTMLButtonElement>(".site-nav-trigger");
+    triggers.forEach((trigger) => {
+      const li = trigger.parentElement;
+      if (!li) return;
+      trigger.addEventListener("click", (e) => {
+        e.preventDefault();
+        const wasOpen = li.classList.contains("is-open");
+        nav
+          .querySelectorAll(".site-nav-links > li.is-open")
+          .forEach((other) => other.classList.remove("is-open"));
+        if (!wasOpen) li.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", String(!wasOpen));
+      });
+    });
+    document.addEventListener("click", (e) => {
+      if (!nav.contains(e.target as Node)) {
+        nav
+          .querySelectorAll(".site-nav-links > li.is-open")
+          .forEach((other) => other.classList.remove("is-open"));
+      }
+    });
+
+    const burger = document.getElementById("site-nav-hamburger");
+    const mobile = document.getElementById("site-nav-mobile");
+    if (burger && mobile) {
+      burger.addEventListener("click", () => {
+        const open = !mobile.classList.contains("is-open");
+        mobile.classList.toggle("is-open", open);
+        burger.setAttribute("aria-expanded", String(open));
+        document.body.style.overflow = open ? "hidden" : "";
+      });
+      mobile.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === "A") {
+          mobile.classList.remove("is-open");
+          burger.setAttribute("aria-expanded", "false");
+          document.body.style.overflow = "";
+        }
+      });
+    }
+  })();
+</script>

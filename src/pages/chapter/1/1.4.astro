@@ -1,0 +1,178 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/1.4/Hero";
+import {
+  RecombinationRedshiftPanel,
+  PenziasWilsonStoryPanel,
+  CmbSatellitesPanel,
+} from "../../../components/scenes/1.4/figures";
+import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
+---
+
+<ChapterLayout
+  title="1.4 — Cosmic Microwave Background · AST 100"
+  description="The oldest light in the universe. Recombination, redshift, the 1964 discovery at Bell Labs, and the satellite maps that turned cosmology into a precision science."
+  activeId="1.4"
+  chapter={1}
+  current="/chapter/1/1.4"
+>
+  <Hero client:load />
+
+  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
+    <div class="max-w-[68ch] mx-auto prose-cosmic">
+      <header class="mt-24 mb-10" id="fog-clears">
+        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
+          <span class="block w-6 h-px bg-plasma/50"></span> part one
+        </div>
+        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
+          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">1.</span>
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">The Fog Lifts</span>
+        </h2>
+      </header>
+
+      <p data-fade class="dropcap">
+        In the earliest moments of the universe, photons were trapped in a
+        hot, dense fog of free electrons that scattered light continuously,
+        rendering the cosmos opaque. However, approximately{" "}
+        <strong>400,000 years</strong> after the Big Bang, the expanding
+        universe cooled to roughly <strong>3000 K</strong>, a threshold low
+        enough for electrons to combine with protons and form neutral
+        hydrogen atoms. This pivotal event, known as <strong>recombination</strong>,
+        lifted the fog and allowed photons to decouple from matter, finally
+        streaming freely through space.
+      </p>
+
+      <header class="mt-24 mb-10" id="redshift">
+        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
+          <span class="block w-6 h-px bg-plasma/50"></span> part two
+        </div>
+        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
+          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">2.</span>
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Stretched to Microwaves</span>
+        </h2>
+      </header>
+
+      <p data-fade>
+        Over the subsequent 14 billion years, the relentless expansion of
+        the universe has stretched the fabric of space itself, elongating
+        the wavelengths of these ancient photons by a factor of roughly{" "}
+        <strong>1,100</strong> through cosmological redshift. Consequently,
+        this primordial radiation has cooled and shifted from energetic
+        light into the low-energy microwave band, permeating the cosmos
+        today as the <strong>Cosmic Microwave Background (CMB)</strong>{" "}
+        radiation with a temperature of approximately <strong>2.73 K</strong>,
+        often rounded to 3 K.
+      </p>
+
+      <RecombinationRedshiftPanel client:visible />
+
+      <header class="mt-24 mb-10" id="penzias-wilson">
+        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
+          <span class="block w-6 h-px bg-plasma/50"></span> part three
+        </div>
+        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
+          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">3.</span>
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Penzias &amp; Wilson, 1964</span>
+        </h2>
+      </header>
+
+      <p data-fade>
+        The definitive confirmation of the Big Bang theory emerged
+        serendipitously in 1964 when <strong>Arno Penzias</strong> and{" "}
+        <strong>Robert Wilson</strong>, utilizing a 20-foot horn-shaped radio
+        antenna at Bell Labs in New Jersey, detected an inexplicable signal.
+        While attempting to calibrate the instrument for satellite
+        communications, they encountered a persistent, low-level background
+        &ldquo;hiss&rdquo; that arrived uniformly from every direction,
+        unwavering regardless of time or season.
+      </p>
+
+      <p data-fade>
+        After rigorously ruling out terrestrial interference — a process
+        that even involved scrubbing pigeon droppings from the antenna —
+        they consulted Robert Dicke's team at Princeton, who identified the
+        &ldquo;static&rdquo; as the elusive CMB. This discovery provided
+        the smoking gun for the Big Bang theory, as the radiation perfectly
+        matched the predicted &ldquo;fossil remnant&rdquo; of the universe's
+        hot, dense origin — now redshifted to about 3 Kelvin — a phenomenon
+        the competing Steady State theory could not explain.
+      </p>
+
+      <PenziasWilsonStoryPanel client:visible />
+
+      <header class="mt-24 mb-10" id="satellites">
+        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
+          <span class="block w-6 h-px bg-plasma/50"></span> part four
+        </div>
+        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
+          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">4.</span>
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">COBE → WMAP → Planck</span>
+        </h2>
+      </header>
+
+      <p data-fade>
+        Following the initial detection of the CMB, astronomers deployed a
+        succession of satellites to map its subtle temperature variations
+        across the celestial sphere. NASA's <strong>COBE</strong> satellite
+        (1989) pioneered this effort by producing the first full-sky map,
+        confirming the CMB's <strong>blackbody spectrum</strong> — the
+        specific pattern of light intensity emitted by an object based
+        solely on its temperature — and detecting the minute temperature
+        ripples (anisotropies) essential for structure formation.
+      </p>
+
+      <p data-fade>
+        This view was radically sharpened by the <strong>WMAP</strong>{" "}
+        mission (2001), which mapped the sky with 30× better resolution and
+        significantly greater sensitivity than its predecessor. Finally, the
+        European Space Agency's <strong>Planck</strong> mission (2009)
+        brought the early universe into even sharper focus, improving
+        resolution by another factor of three and sensitivity by a factor of
+        ten. Together, these progressively detailed maps have transformed
+        cosmology into a precision science, confirming a spatially flat
+        universe dominated by dark energy and dark matter.
+      </p>
+
+      <CmbSatellitesPanel client:visible />
+
+      <p data-fade>
+        The Planck mission delivered the most exquisite all-sky map of the
+        CMB to date. This <em>baby picture</em> of the cosmos reveals minute
+        temperature variations of roughly 400 microkelvin (millionth of a
+        Kelvin). These temperature differences signify regions of slightly
+        differing density; specifically, the blue (colder and denser) and
+        red (hotter and less dense) spots track primordial density
+        fluctuations that acted as the cosmic seeds for future growth.
+        Through the relentless influence of gravity, matter eventually
+        coalesced in the denser regions to form the vast web of galaxies
+        and clusters observed today, making the Planck map a direct image
+        of the embryonic structures of our universe.
+      </p>
+
+      <p data-fade>
+        Planck operated from the <strong>L2 Lagrangian</strong> point, a
+        gravitationally stable position 1.5 million kilometers from Earth
+        where it could remain permanently shadowed from the Sun. Rather
+        than orbiting Earth, Planck followed our planet around the Sun,
+        scanning the entire sky every six months. To generate the final
+        image, astronomers mathematically excised significant foreground
+        interference — most notably the microwave emissions from the Milky
+        Way Galaxy, which appeared as a bright band in the raw data. By
+        comparing observations at multiple wavelengths (3 mm to 13 mm),
+        scientists successfully subtracted these local signals to unveil
+        the faint, primordial background universe at its infancy.
+      </p>
+
+      <div data-fade class="my-16 rule"></div>
+
+      <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
+        The CMB is the wall of light at the edge of what we can see. Every
+        photon arriving today set out 13.8 billion years ago — stretched a
+        thousandfold, cooled to almost absolute zero, and still carrying
+        the imprint of every galaxy yet to come.
+      </p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

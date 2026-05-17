@@ -1,0 +1,206 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/0.1/Hero";
+import SpacetimeFabric from "../../../components/scenes/0.1/SpacetimeFabric";
+import {
+  SpecialRelativityPanel,
+  GeneralRelativityPanel,
+  GravitationalTimeDilationPanel,
+} from "../../../components/scenes/0.1/figures";
+import EqPullQuote from "../../../components/scenes/0.1/EqPullQuote.astro";
+import WheelerQuote from "../../../components/scenes/0.1/WheelerQuote.astro";
+import PrevNext from "../../../components/scenes/0.1/PrevNext.astro";
+import { chapterPath, subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="0.1 — Spacetime and Energy-Matter · AST 100"
+  description="Two theories — eleven quiet years apart — that stitched space, time, matter, and energy into one fabric."
+  activeId="0.1"
+  current="/chapter/0/0.1"
+>
+  <Hero client:load />
+
+  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
+    <div class="max-w-[68ch] mx-auto prose-cosmic">
+      <header class="mt-24 mb-10" id="special">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part one
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >1.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >Relativity: Special Theory</span
+          >
+        </h2>
+      </header>
+
+      <SpecialRelativityPanel client:visible />
+
+      <p data-fade class="dropcap">
+        Before Einstein, scientists believed that space and time were completely
+        separate things. Space was viewed as a fixed stage where events
+        happened, and time was like a universal clock that ticked at the same
+        rate for everyone, everywhere. Einstein changed this view forever with
+        his Special Theory of Relativity (1905, Bern). He realized that because
+        the speed of light is always the same, space and time must be
+        connected. He showed that if you move very fast through space, time
+        actually slows down for you compared to someone standing still. This
+        meant that space and time are not independent; instead, they are woven
+        together into a single, flexible fabric known as &ldquo;spacetime.&rdquo;
+      </p>
+
+      <p data-fade>
+        This new way of thinking also connected matter and energy. Previously,
+        people thought mass (how much &ldquo;stuff&rdquo; is in an object) and
+        energy (the ability to do work) were totally different and could not
+        change into each other. Einstein discovered that mass is really just a
+        super-concentrated form of energy. His famous equation,
+        <span class="katex-faux"
+          >E<span class="op">=</span>m<span>c</span><sup>2</sup></span
+        >, explains this relationship. It shows that a very small amount of mass
+        is equal to a huge amount of energy. This proved that matter and energy
+        are essentially the same thing in different forms, similar to how ice
+        and steam are both just different forms of water.
+      </p>
+
+      <EqPullQuote />
+
+      <header class="mt-24 mb-10" id="general">
+        <div
+          data-fade
+          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
+        >
+          <span class="block w-6 h-px bg-plasma/50"></span> part two
+        </div>
+        <h2
+          data-fade
+          style="--delay: 80ms"
+          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
+        >
+          <span
+            class="font-mono text-plasma/55 mr-4 align-baseline"
+            style="font-size: 0.42em; letter-spacing: 0.16em;"
+            >2.</span
+          >
+          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
+            >Relativity: General Theory</span
+          >
+        </h2>
+      </header>
+
+      <GeneralRelativityPanel client:visible />
+
+      <p data-fade>
+        Einstein took his earlier ideas a giant step further with the General
+        Theory of Relativity (1915, Berlin), which explained gravity in a
+        completely new way. Before this, gravity was thought of as an invisible
+        force pulling things together. Einstein instead proposed that spacetime
+        is like a stretchy fabric, similar to a trampoline. If you place a
+        heavy object like a bowling ball in the center, the fabric curves
+        downward. Lighter marbles rolled nearby will follow this curve and
+        spiral inward. Einstein showed that massive objects like the Sun curve
+        the fabric of spacetime around them, and this curvature is what we feel
+        as gravity. It wasn&rsquo;t a &ldquo;pull&rdquo; anymore; it was objects
+        just following the natural slopes in space.
+      </p>
+
+      <p data-fade>
+        General Relativity also predicted something quieter and stranger:
+        time itself runs at different rates depending on where you are in a
+        gravitational field. The deeper you sit inside a gravity well, the
+        slower your clock ticks compared to someone in flat space far away.
+        Atomic clocks at sea level and on mountain tops differ by measurable
+        nanoseconds per day, and GPS satellites would drift off by kilometres
+        within a day if engineers ignored it.
+      </p>
+
+      <GravitationalTimeDilationPanel client:visible />
+    </div>
+
+    <div class="max-w-[1000px] mx-auto">
+      <section data-fade class="my-20 -mx-2 md:-mx-8 lg:-mx-16">
+        <div class="mb-6 flex items-end justify-between gap-6">
+          <div>
+            <div
+              class="font-mono text-[10px] tracking-[0.28em] uppercase text-plasma/70 mb-2"
+            >
+              interactive · rubber-sheet model
+            </div>
+            <h3
+              class="font-serif text-white/95 leading-[1.1]"
+              style="font-size: clamp(1.4rem, 2.4vw, 1.9rem);"
+            >
+              A two-dimensional cartoon of how mass bends the fabric of space.
+            </h3>
+          </div>
+          <div class="hidden md:block max-w-[34ch] text-[13px] text-white/55">
+            Drag the mass anywhere on the canvas. The grid sags toward it; three
+            test particles follow the warped geodesics — there is no &ldquo;pull,&rdquo;
+            only geometry.
+          </div>
+        </div>
+
+        <SpacetimeFabric client:visible />
+
+        <p class="mt-4 text-[12px] text-white/45 font-sans">
+          Demonstration only. A real geodesic in general relativity is computed
+          in four-dimensional Lorentzian spacetime, not a 2D Newtonian
+          inverse-square — but the visual intuition is the right one.
+        </p>
+      </section>
+    </div>
+
+    <div class="max-w-[68ch] mx-auto prose-cosmic">
+      <p data-fade>
+        This theory created a direct two-way street between the &ldquo;stage&rdquo;
+        (spacetime) and the &ldquo;actors&rdquo; (matter and energy). A famous
+        physicist summed it up by saying,
+        <em>
+          &ldquo;Matter tells space how to curve; space tells matter how to
+          move.&rdquo;
+        </em>
+         Because energy and mass are interchangeable, any form of energy acts
+        just like mass to bend space. This means that everything in the universe
+        is connected: a planet isn&rsquo;t just floating in empty nothingness;
+        its mass is actively shaping the geometry of the space around it. Even
+        light, which has no mass, follows these curves, bending as it passes
+        massive stars, proving that space itself is warped by the energy within
+        it.
+      </p>
+
+      <WheelerQuote />
+
+      <p data-fade>
+        The most profound implication of this theory was for the history of the
+        universe itself. If matter curves spacetime, then the shape and destiny
+        of the entire universe depend on how much &ldquo;stuff&rdquo; is in it.
+        Einstein&rsquo;s equations suggested the universe could not just be
+        sitting still; it had to be either expanding or contracting. This
+        realization allowed scientists to &ldquo;rewind&rdquo; the motion of the
+        expanding universe we see today. It pointed back to a single moment
+        billions of years ago when all space, time, matter, and energy were
+        compressed into a single, infinitely dense point, leading to the
+        <strong>Big Bang theory</strong>—the idea that the universe, and time
+        itself, had a beginning.
+      </p>
+    </div>
+  </article>
+
+  <PrevNext
+    prev={{ id: "0.0", title: "Seven Ages of the Universe", href: chapterPath(0) }}
+    next={{ id: "0.2", title: "Cosmic Evolution", href: subPath("0.2") }}
+    sourceUrl="cassa.site/abekta/courses/ast100/0.1"
+  />
+</ChapterLayout>
