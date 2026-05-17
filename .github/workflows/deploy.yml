@@ -3,11 +3,11 @@ name: Deploy to Bluehost — cassa.site/courses/ast100
 on:
   push:
     branches:
-      - main          # change to your production branch if different
+      - main
 
 jobs:
   deploy:
-    name: Sync to Bluehost
+    name: Build & Sync to Bluehost
     runs-on: ubuntu-latest
 
     steps:
@@ -15,39 +15,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. (Optional) Install deps & build — uncomment the block that fits your stack
-      # --- Node / React / Next / Vite ---
-      # - name: Install & build
-      #   run: |
-      #     npm ci
-      #     npm run build
+      # 2. Setup Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-      # --- PHP / static — no build needed, skip this step ---
+      # 3. Install dependencies & build Astro
+      - name: Install & build
+        run: |
+          npm ci
+          npm run build
 
-      # 3. Deploy built files to Bluehost via rsync over SSH
+      # 4. Deploy /dist to Bluehost via rsync over SSH
       - name: Deploy via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          # Adjust the source path:
-          #   "."            → push the whole repo root
-          #   "./dist/"      → push only the Vite/React build output
-          #   "./build/"     → push only Create React App output
-          #   "./public/"    → push only a static public folder
           switches: -avzr --delete --exclude='.git*' --exclude='node_modules' --exclude='.env*'
-          path: ./                          # ← change to ./dist/ if you have a build step
+          path: ./dist/
           remote_path: ~/public_html/courses/ast100
           remote_host: ${{ secrets.BLUEHOST_HOST }}
           remote_user: ${{ secrets.BLUEHOST_USER }}
           remote_key: ${{ secrets.BLUEHOST_SSH_KEY }}
-
-      # 4. (Optional) Run a remote post-deploy command — e.g. clear cache, run migrations
-      # - name: Post-deploy tasks
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: ${{ secrets.BLUEHOST_HOST }}
-      #     username: ${{ secrets.BLUEHOST_USER }}
-      #     key: ${{ secrets.BLUEHOST_SSH_KEY }}
-      #     script: |
-      #       cd ~/public_html/courses/ast100
-      #       php artisan migrate --force   # Laravel example
-      #       php artisan cache:clear
