@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # fix Node.js 20 deprecation warning
+
 jobs:
   deploy:
     name: Build & Sync to Bluehost
@@ -15,17 +18,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node
+      # 2. Setup Node 24
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 24        # upgraded from 20
 
       # 3. Install dependencies & build Astro
       - name: Install & build
         run: |
-          npm ci
+          npm install             # changed from npm ci (no lock file needed)
           npm run build
 
       # 4. Deploy /dist to Bluehost via rsync over SSH
