@@ -5,6 +5,7 @@ import {
   TugOfWarPanel,
   EntropyIslandPanel,
   EnergyRateDensityPanel,
+  InflationVisualizerPanel,
 } from "../../../components/scenes/0.2/figures";
 import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/0.2/PrevNext.astro";
@@ -63,6 +64,10 @@ import PrevNext from "../../../components/scenes/0.2/PrevNext.astro";
         finally allowing the first atomic nuclei to capture electrons and form
         neutral atoms.
       </p>
+
+      <FigureFrame label="Inflation visualizer">
+        <InflationVisualizerPanel client:visible />
+      </FigureFrame>
 
       {/* ── §2 Cosmic Tug-of-War ────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="tug-of-war">

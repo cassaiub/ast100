@@ -55,31 +55,8 @@ const SCALE_OBJECTS: ScaleObject[] = [
   { id: "galcentre", name: "Galactic Centre", yearsAgo: 26000,                           blurb: "26,000 years. The supermassive black hole at the heart of our Milky Way — its light left in the Stone Age." },
   { id: "andromeda", name: "Andromeda",       yearsAgo: 2.5e6,                           blurb: "2.5 million years. The Andromeda Galaxy as it looked before our species existed." },
   { id: "virgo",     name: "Virgo Cluster",   yearsAgo: 5.4e7,                           blurb: "54 million years. Dinosaurs were still around when this cluster's light set out." },
-  { id: "coma",      name: "Coma Cluster",    yearsAgo: 3.3e8,                           blurb: "330 million years. A thousand galaxies bound by gravity — light that set out while the first reptiles crawled onto land." },
-  { id: "sloan",     name: "Sloan Great Wall", yearsAgo: 1.0e9,                          blurb: "1 billion years. A filament of galaxies 1.4 billion light-years long — one of the largest structures we have mapped in the Universe." },
-  { id: "quasar",    name: "Quasar 3C 273",   yearsAgo: 2.4e9,                           blurb: "2.4 billion years. The first quasar ever identified — a supermassive black hole outshining its entire host galaxy." },
   { id: "cmb",       name: "CMB",             yearsAgo: 1.378e10,                        blurb: "13.78 billion years. The Cosmic Microwave Background — the wall of light from when the Universe cooled enough to become transparent. We cannot see past this." },
 ];
-
-/* ── Label row layout ────────────────────────────────────────────────
-   Four staggered rows above/below the axis.  Sorted-by-x greedy fit
-   guarantees no horizontal overlap between any two label boxes. */
-type LabelRow = 0 | 1 | 2 | 3;
-const ROW_LAYOUT: Record<
-  LabelRow,
-  { labelY: number; dotY: number; lineEnd: number; axisOffset: number }
-> = {
-  0: { labelY: -56, dotY: -32, lineEnd: -12, axisOffset: -6 },
-  1: { labelY: +56, dotY: +32, lineEnd: +12, axisOffset: +6 },
-  2: { labelY: -100, dotY: -66, lineEnd: -36, axisOffset: -6 },
-  3: { labelY: +100, dotY: +66, lineEnd: +36, axisOffset: +6 },
-};
-const ROW_ORDER: LabelRow[] = [0, 1, 2, 3];
-
-function approxLabelWidth(name: string): number {
-  /* sans-serif 11px with letter-spacing≈1, ~6.3 px/char + padding */
-  return name.length * 6.3 + 6;
-}
 
 function fmtYearsAgo(y: number): string {
   if (y < 1 / 365.25 / 24) return `${(y * 365.25 * 24 * 3600).toFixed(1)} s`;
@@ -91,69 +68,22 @@ function fmtYearsAgo(y: number): string {
   return `${(y / 1e9).toFixed(2)} G yr`;
 }
 
-/* ── Cosmic-Scale geometry (module-level so assignRows can precompute) */
-const COSMIC_W = 720;
-const COSMIC_H = 280;
-const COSMIC_PAD = 56;
-const COSMIC_AXIS_Y = COSMIC_H / 2;
-const COSMIC_LOG_MIN = -8;
-const COSMIC_LOG_MAX = 10.5;
-/* Power warp on the log axis: the value is still log₁₀(years), but the
-   normalised position is raised to a power > 1 before being placed on the
-   axis.  This squeezes the sub-second / sub-day end (where every decade
-   still maps to a 10× jump, just to a smaller pixel width) and gives the
-   cosmic end more breathing room. */
-const COSMIC_AXIS_POWER = 1.45;
-function cosmicX(years: number): number {
-  const v = Math.log10(years);
-  const norm = (v - COSMIC_LOG_MIN) / (COSMIC_LOG_MAX - COSMIC_LOG_MIN);
-  const warped = Math.pow(Math.max(0, Math.min(1, norm)), COSMIC_AXIS_POWER);
-  return COSMIC_PAD + warped * (COSMIC_W - 2 * COSMIC_PAD);
-}
-
-/* Sorted-by-x greedy row assignment: each label picks the lowest-index
-   row in {0,1,2,3} that has no horizontal overlap with anything already
-   placed there.  Guarantees no two label boxes touch. */
-const COSMIC_ROW: Record<string, LabelRow> = (() => {
-  const PAD = 6;
-  const items = SCALE_OBJECTS.map((o) => ({
-    id: o.id,
-    x: cosmicX(o.yearsAgo),
-    w: approxLabelWidth(o.name),
-  })).sort((a, b) => a.x - b.x);
-  const placed: Record<LabelRow, { x: number; w: number }[]> = {
-    0: [],
-    1: [],
-    2: [],
-    3: [],
-  };
-  const map: Record<string, LabelRow> = {};
-  for (const it of items) {
-    let chosen: LabelRow = 0;
-    for (const r of ROW_ORDER) {
-      const hit = placed[r].some(
-        (p) => Math.abs(p.x - it.x) < (p.w + it.w) / 2 + PAD,
-      );
-      if (!hit) {
-        chosen = r;
-        break;
-      }
-    }
-    placed[chosen].push({ x: it.x, w: it.w });
-    map[it.id] = chosen;
-  }
-  return map;
-})();
-
 export function CosmicScalePanel() {
   const [selected, setSelected] = useState<string>("andromeda");
-  const W = COSMIC_W;
-  const H = COSMIC_H;
-  const PAD = COSMIC_PAD;
-  const AXIS_Y = COSMIC_AXIS_Y;
-  const logMin = COSMIC_LOG_MIN;
-  const logMax = COSMIC_LOG_MAX;
-  const xOf = cosmicX;
+  const W = 720;
+  const H = 280;
+  const PAD = 56;
+  const AXIS_Y = H / 2;
+
+  /* log10(years) range. Min ~ log10(1.3s in years) ≈ -7.4, max ~ 10.14.
+     Padded slightly so the endpoints aren't crammed against the EARTH /
+     HORIZON anchor labels. */
+  const logMin = -8;
+  const logMax = 10.5;
+  function xOf(years: number) {
+    const v = Math.log10(years);
+    return PAD + ((v - logMin) / (logMax - logMin)) * (W - 2 * PAD);
+  }
 
   const sel = SCALE_OBJECTS.find((o) => o.id === selected)!;
 
@@ -161,7 +91,7 @@ export function CosmicScalePanel() {
     <FigurePanel
       idx="0.3.1"
       kicker="Cosmic Scale · Distance is Time"
-      caption="Click any object to see how long ago its light started its journey to your eyes. The horizontal axis is logarithmic — every tick still marks a 10× jump in light-travel time, but the small-distance end is compressed so the deep cosmos has room to spread out. Nothing you ever see is happening 'now'."
+      caption="Click any object to see how long ago its light started its journey to your eyes. The horizontal axis is logarithmic — each step is ten times farther than the last. Nothing you ever see is happening 'now'."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
@@ -174,10 +104,9 @@ export function CosmicScalePanel() {
             stroke="rgb(var(--c-text-rgb) / 0.18)"
             strokeWidth="1"
           />
-          {/* Decade ticks (faint) — placed on the warped axis so each
-             10× step has a visible (but non-uniform) width. */}
+          {/* Decade ticks (faint) */}
           {Array.from({ length: Math.floor(logMax - logMin) + 1 }, (_, i) => logMin + i).map((v) => {
-            const x = xOf(Math.pow(10, v));
+            const x = PAD + ((v - logMin) / (logMax - logMin)) * (W - 2 * PAD);
             return (
               <line
                 key={v}
@@ -251,16 +180,15 @@ export function CosmicScalePanel() {
             </text>
           </g>
 
-          {/* Objects — each label sits on one of four rows assigned by
-             a greedy collision-free packer (see COSMIC_ROW). */}
-          {SCALE_OBJECTS.map((o) => {
+          {/* Objects — labels alternate above (even idx) / below (odd idx)
+             with leader lines so they never overlap. */}
+          {SCALE_OBJECTS.map((o, i) => {
             const x = xOf(o.yearsAgo);
             const isSel = o.id === selected;
-            const row = COSMIC_ROW[o.id];
-            const geom = ROW_LAYOUT[row];
-            const labelY = AXIS_Y + geom.labelY;
-            const dotY = AXIS_Y + geom.dotY;
-            const lineEnd = AXIS_Y + geom.lineEnd;
+            const above = i % 2 === 0;
+            const labelY = above ? AXIS_Y - 56 : AXIS_Y + 56;
+            const dotY = above ? AXIS_Y - 32 : AXIS_Y + 32;
+            const lineEnd = above ? AXIS_Y - 12 : AXIS_Y + 12;
             return (
               <g
                 key={o.id}
@@ -271,7 +199,7 @@ export function CosmicScalePanel() {
                 <line
                   x1={x}
                   x2={x}
-                  y1={AXIS_Y + geom.axisOffset}
+                  y1={above ? AXIS_Y - 6 : AXIS_Y + 6}
                   y2={lineEnd}
                   stroke={
                     isSel
@@ -362,6 +290,195 @@ export function CosmicScalePanel() {
         <div className="text-[13px] text-white/80 leading-[1.55] font-sans">
           {sel.blurb}
         </div>
+      </div>
+    </FigurePanel>
+  );
+}
+
+/* ── Horizon Shells: concentric look-back rings around Earth ─────────
+   Visualises the Universe as nested time-shells, with the 13.8 Gyr
+   decoupling wall (CMB) as the edge. Hover or tap each ring to see
+   what we observe at that distance. */
+type Shell = {
+  id: string;
+  yearsAgo: number;
+  /** label appearing on the ring */
+  label: string;
+  desc: string;
+};
+const SHELLS: Shell[] = [
+  { id: "stars", yearsAgo: 100, label: "Nearby stars", desc: "Sirius, α Centauri — light from human-recorded history." },
+  { id: "mw", yearsAgo: 1e5, label: "Milky Way", desc: "100,000 light-years across — the disk we live in." },
+  { id: "andromeda", yearsAgo: 2.5e6, label: "Local Group", desc: "Andromeda + dozens of dwarf galaxies." },
+  { id: "supercluster", yearsAgo: 1e8, label: "Supercluster", desc: "Laniakea — our home supercluster, hundreds of millions of light-years across." },
+  { id: "structure", yearsAgo: 1e9, label: "Large-scale", desc: "Filaments and voids — the cosmic web." },
+  { id: "deepfield", yearsAgo: 1.34e10, label: "First galaxies", desc: "JWST deep fields — galaxies a few hundred million years after the Big Bang." },
+  { id: "cmb", yearsAgo: 1.378e10, label: "CMB · opacity wall", desc: "The wall of last scattering. The Universe was an opaque fog before 380,000 years. We cannot see past this." },
+];
+
+export function HorizonShellsPanel() {
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [scrub, setScrub] = useState(1);
+  const W = 560;
+  const H = 480;
+  const cx = W / 2;
+  const cy = H / 2;
+  const maxR = 200;
+  const logMin = 2; /* 10^2 yr — close enough to "stars" first ring */
+  const logMax = Math.log10(SHELLS[SHELLS.length - 1].yearsAgo) + 0.05;
+
+  function rOf(years: number) {
+    const v = Math.log10(years);
+    return ((v - logMin) / (logMax - logMin)) * maxR;
+  }
+  const scrubR = scrub * maxR;
+  const scrubYears =
+    Math.pow(10, logMin + (logMax - logMin) * scrub);
+
+  const focus = hovered
+    ? SHELLS.find((s) => s.id === hovered)!
+    : SHELLS[SHELLS.length - 1];
+
+  return (
+    <FigurePanel
+      idx="0.3.2"
+      kicker="Horizon Shells · The Edge is a Wall of Time"
+      caption="Concentric rings around Earth show what we see at each look-back distance. The outermost is the CMB — the Universe was an opaque fog before that. We see no further, not because there is no further, but because no signal has had time to arrive."
+    >
+      <div className="relative w-full overflow-hidden rounded-md">
+        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
+          {/* CMB outer fill */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={rOf(SHELLS[SHELLS.length - 1].yearsAgo)}
+            fill="rgb(var(--c-accent-rgb) / 0.04)"
+            stroke="rgb(var(--c-accent-rgb) / 0.35)"
+            strokeWidth="1.4"
+            strokeDasharray="2 3"
+          />
+
+          {/* Shells */}
+          {SHELLS.slice(0, -1).map((s) => {
+            const r = rOf(s.yearsAgo);
+            const isHover = hovered === s.id;
+            return (
+              <g
+                key={s.id}
+                onMouseEnter={() => setHovered(s.id)}
+                onMouseLeave={() => setHovered(null)}
+                style={{ cursor: "pointer" }}
+              >
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={r}
+                  fill="transparent"
+                  stroke={
+                    isHover
+                      ? "rgb(var(--c-accent-rgb) / 0.9)"
+                      : "rgb(var(--c-text-rgb) / 0.2)"
+                  }
+                  strokeWidth={isHover ? 1.4 : 0.6}
+                />
+                <text
+                  x={cx + 4}
+                  y={cy - r - 4}
+                  fontSize={isHover ? 11 : 9}
+                  letterSpacing={isHover ? "1" : "2"}
+                  fontFamily="var(--font-mono)"
+                  fill={
+                    isHover
+                      ? "rgb(var(--c-accent-rgb))"
+                      : "rgb(var(--c-text-rgb) / 0.45)"
+                  }
+                >
+                  {s.label.toUpperCase()}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* "Visible so far" disc — controlled by scrubber */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={scrubR}
+            fill="rgb(var(--c-accent-rgb) / 0.07)"
+            stroke="rgb(var(--c-accent-rgb) / 0.55)"
+            strokeWidth="0.8"
+          />
+
+          {/* Earth marker */}
+          <g>
+            <circle cx={cx} cy={cy} r="4" fill="rgb(var(--c-accent-rgb))" />
+            <circle
+              cx={cx}
+              cy={cy}
+              r="10"
+              fill="none"
+              stroke="rgb(var(--c-accent-rgb) / 0.45)"
+              strokeWidth="0.8"
+            />
+            <text
+              x={cx}
+              y={cy + 22}
+              textAnchor="middle"
+              fontSize="9"
+              letterSpacing="3"
+              fontFamily="var(--font-mono)"
+              fill="rgb(var(--c-text-rgb) / 0.6)"
+            >
+              YOU
+            </text>
+          </g>
+
+          {/* CMB label at top */}
+          <text
+            x={cx}
+            y={cy - maxR - 16}
+            textAnchor="middle"
+            fontSize="10"
+            letterSpacing="3"
+            fontFamily="var(--font-mono)"
+            fill="rgb(var(--c-accent-rgb) / 0.85)"
+          >
+            CMB · OPACITY WALL · 13.78 Gyr
+          </text>
+        </svg>
+      </div>
+
+      <div className="mt-4">
+        <div className="flex items-center justify-between mb-2">
+          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
+            look back …
+          </label>
+          <span className="font-mono text-[10px] text-plasma">
+            {fmtYearsAgo(scrubYears)} ago
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={scrub}
+          onChange={(e) => setScrub(parseFloat(e.target.value))}
+          className="cosmic-slider"
+        />
+      </div>
+
+      <div
+        className="mt-4 p-3 rounded-md text-[13px] text-white/80 leading-[1.55] font-sans"
+        style={{
+          background: "rgb(var(--c-accent-rgb) / 0.04)",
+          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
+        }}
+      >
+        <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">
+          {focus.label}
+        </span>
+        {focus.desc}
       </div>
     </FigurePanel>
   );

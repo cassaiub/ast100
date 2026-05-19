@@ -134,45 +134,38 @@ import { chapterPath, subPath } from "../../../data/course-nav";
       </FigureFrame>
     </div>
 
-    <figure data-fade class="my-12">
-      <div class="figure-stub rounded-md p-4 md:p-6">
-        <div class="mb-4 flex items-center justify-between">
-          <div
-            class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70"
-          >
-            <span
-              class="mr-2 inline-block h-2 w-2 rounded-full bg-plasma/70 align-middle shadow-[0_0_8px_#22d3ee]"
-            ></span>
-            figure 0.1.d · spacetime as a rubber sheet
+    <FigureFrame label="Spacetime fabric interactive">
+      <section data-fade>
+        <div class="mb-6 flex items-end justify-between gap-6">
+          <div>
+            <div
+              class="font-mono text-[10px] tracking-[0.28em] uppercase text-plasma/70 mb-2"
+            >
+              interactive · rubber-sheet model
+            </div>
+            <h3
+              class="font-serif text-white/95 leading-[1.1]"
+              style="font-size: clamp(1.4rem, 2.4vw, 1.9rem);"
+            >
+              A two-dimensional cartoon of how mass bends the fabric of space.
+            </h3>
           </div>
-          <div
-            class="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60"
-          >
-            interactive
+          <div class="hidden md:block max-w-[34ch] text-[13px] text-white/55">
+            Drag the mass anywhere on the canvas. The grid sags toward it; three
+            test particles follow the warped geodesics — there is no &ldquo;pull,&rdquo;
+            only geometry.
           </div>
         </div>
 
-        <FigureFrame label="Spacetime fabric interactive">
-          <SpacetimeFabric client:visible />
-        </FigureFrame>
+        <SpacetimeFabric client:visible />
 
         <p class="mt-4 text-[12px] text-white/45 font-sans">
-          Drag the mass anywhere on the canvas; the grid sags toward it and
-          three test particles follow the warped geodesics — there is no
-          &ldquo;pull,&rdquo; only geometry. Demonstration only: a real
-          geodesic in general relativity is computed in four-dimensional
-          Lorentzian spacetime, not a 2D Newtonian inverse-square — but the
-          visual intuition is the right one.
+          Demonstration only. A real geodesic in general relativity is computed
+          in four-dimensional Lorentzian spacetime, not a 2D Newtonian
+          inverse-square — but the visual intuition is the right one.
         </p>
-      </div>
-      <figcaption
-        class="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]"
-      >
-        <span class="text-plasma font-mono tracking-[0.14em]">Fig. 0.1.d</span>
-        <span class="mx-2 text-white/35">/</span>
-        A two-dimensional cartoon of how mass bends the fabric of space.
-      </figcaption>
-    </figure>
+      </section>
+    </FigureFrame>
 
     <div class="max-w-[68ch] mx-auto prose-cosmic">
       <p data-fade>
