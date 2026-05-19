@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Text } from "@react-three/drei";
+import * as THREE from "three";
+import katex from "katex";
 
 /* ── Shared figure frame ────────────────────────────────────────────── */
 function FigurePanel({
@@ -35,343 +39,429 @@ function FigurePanel({
   );
 }
 
-/* ── EM Wave Oscillator ──────────────────────────────────────────────
-   Animated SVG: a single sinusoidal carrier moves left-to-right;
-   E field on top (perpendicular to travel), B field on bottom (also
-   perpendicular but to the other axis — shown as a phase-shifted
-   second wave for 2D legibility). Slider sets wavelength; frequency
-   and photon energy are computed and displayed live. */
-const C = 2.99792458e8; // m/s
-const H_PLANCK = 6.62607015e-34; // J·s
+/* ── EM Wave Oscillator (3D) ─────────────────────────────────────────
+   Pannable three.js scene: an oscillating point charge at z = 0 drives
+   an electromagnetic wave that propagates along +z.  The E field is
+   plotted along the y-axis, the B field along the x-axis.  The user
+   can orbit, pan, and zoom with the mouse.
+
+   World units:
+     wavelength λ = 1
+     amplitude  = 0.4
+     total wave length along z = 3.5 (≈3.5 wavelengths visible) */
+const W3D_AMP = 0.4;
+const W3D_LAMBDA = 1.0;
+const W3D_LENGTH = 3.5;
+const W3D_K = (2 * Math.PI) / W3D_LAMBDA;
+const W3D_OMEGA = Math.PI * 0.8; // rad/s — full period ≈ 2.5 s
+const COLOR_E = "#22d3ee";
+const COLOR_B = "#f59e0b";
+const COLOR_Z = "#cbd5e1";
+
+function FieldArrow({
+  z,
+  axis,
+  color,
+}: {
+  z: number;
+  axis: "x" | "y";
+  color: string;
+}) {
+  const groupRef = useRef<THREE.Group>(null!);
+  const shaftRef = useRef<THREE.Mesh>(null!);
+  const coneRef = useRef<THREE.Mesh>(null!);
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    const mag = W3D_AMP * Math.sin(W3D_K * z - W3D_OMEGA * t);
+    const len = Math.abs(mag);
+    const sign = mag >= 0 ? 1 : -1;
+    const shaftLen = Math.max(0.001, len - 0.06);
+    if (axis === "y") {
+      groupRef.current.rotation.set(sign > 0 ? 0 : Math.PI, 0, 0);
+    } else {
+      groupRef.current.rotation.set(0, 0, sign > 0 ? -Math.PI / 2 : Math.PI / 2);
+    }
+    shaftRef.current.scale.y = shaftLen;
+    shaftRef.current.position.y = shaftLen / 2;
+    coneRef.current.position.y = shaftLen + 0.03;
+    groupRef.current.visible = Math.abs(mag) > 0.05;
+  });
+
+  return (
+    <group ref={groupRef} position={[0, 0, z]}>
+      <mesh ref={shaftRef}>
+        <cylinderGeometry args={[0.012, 0.012, 1, 8]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.5}
+          roughness={0.4}
+        />
+      </mesh>
+      <mesh ref={coneRef}>
+        <coneGeometry args={[0.03, 0.06, 12]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={0.6}
+          roughness={0.4}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function WavePath({ axis, color }: { axis: "x" | "y"; color: string }) {
+  const SAMPLES = 96;
+  const positions = useMemo(() => new Float32Array(SAMPLES * 3), []);
+  const geomRef = useRef<THREE.BufferGeometry>(null!);
+
+  /* Seed z-coordinates once. */
+  useMemo(() => {
+    for (let i = 0; i < SAMPLES; i++) {
+      const z = (i / (SAMPLES - 1)) * W3D_LENGTH;
+      positions[i * 3 + 2] = z;
+    }
+  }, [positions]);
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    for (let i = 0; i < SAMPLES; i++) {
+      const z = positions[i * 3 + 2];
+      const mag = W3D_AMP * Math.sin(W3D_K * z - W3D_OMEGA * t);
+      positions[i * 3 + 0] = axis === "x" ? mag : 0;
+      positions[i * 3 + 1] = axis === "y" ? mag : 0;
+    }
+    if (geomRef.current && geomRef.current.attributes.position) {
+      geomRef.current.attributes.position.needsUpdate = true;
+    }
+  });
+
+  return (
+    <line>
+      <bufferGeometry ref={geomRef}>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+      </bufferGeometry>
+      <lineBasicMaterial color={color} transparent opacity={0.85} />
+    </line>
+  );
+}
+
+function SourceCharge() {
+  const sphereRef = useRef<THREE.Mesh>(null!);
+  const aGroupRef = useRef<THREE.Group>(null!);
+  const aShaftRef = useRef<THREE.Mesh>(null!);
+  const aConeRef = useRef<THREE.Mesh>(null!);
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    /* Charge displacement equals E(z=0,t) — wave at the source. */
+    const disp = W3D_AMP * Math.sin(-W3D_OMEGA * t);
+    /* Acceleration antiparallel to displacement, magnitude ∝ |disp|. */
+    const accelMag = 0.85 * Math.abs(disp);
+    const accelSign = disp >= 0 ? -1 : 1;
+    sphereRef.current.position.y = disp;
+    aGroupRef.current.position.y = disp;
+    aGroupRef.current.rotation.set(accelSign > 0 ? 0 : Math.PI, 0, 0);
+    const shaftLen = Math.max(0.001, accelMag - 0.06);
+    aShaftRef.current.scale.y = shaftLen;
+    aShaftRef.current.position.y = shaftLen / 2;
+    aConeRef.current.position.y = shaftLen + 0.03;
+    aGroupRef.current.visible = accelMag > 0.06;
+  });
+
+  return (
+    <>
+      <mesh ref={sphereRef}>
+        <sphereGeometry args={[0.085, 24, 24]} />
+        <meshStandardMaterial
+          color={COLOR_E}
+          emissive={COLOR_E}
+          emissiveIntensity={0.95}
+          roughness={0.25}
+        />
+      </mesh>
+      <group ref={aGroupRef}>
+        <mesh ref={aShaftRef}>
+          <cylinderGeometry args={[0.015, 0.015, 1, 10]} />
+          <meshStandardMaterial
+            color={COLOR_E}
+            emissive={COLOR_E}
+            emissiveIntensity={0.55}
+            roughness={0.3}
+          />
+        </mesh>
+        <mesh ref={aConeRef}>
+          <coneGeometry args={[0.04, 0.06, 14]} />
+          <meshStandardMaterial
+            color={COLOR_E}
+            emissive={COLOR_E}
+            emissiveIntensity={0.7}
+            roughness={0.3}
+          />
+        </mesh>
+      </group>
+      <Text
+        position={[0, W3D_AMP + 0.22, 0]}
+        fontSize={0.18}
+        color={COLOR_E}
+        anchorX="center"
+        anchorY="middle"
+      >
+        +q
+      </Text>
+    </>
+  );
+}
+
+function AxisArrow({
+  direction,
+  color,
+  length,
+  label,
+}: {
+  direction: "x" | "y" | "z";
+  color: string;
+  length: number;
+  label: string;
+}) {
+  const rot: [number, number, number] =
+    direction === "x"
+      ? [0, 0, -Math.PI / 2]
+      : direction === "z"
+        ? [Math.PI / 2, 0, 0]
+        : [0, 0, 0];
+  const labelPos: [number, number, number] =
+    direction === "x"
+      ? [length + 0.14, 0, 0]
+      : direction === "y"
+        ? [0, length + 0.14, 0]
+        : [0, 0, length + 0.14];
+  return (
+    <>
+      <group rotation={rot}>
+        <mesh position={[0, length / 2, 0]}>
+          <cylinderGeometry args={[0.007, 0.007, length, 6]} />
+          <meshBasicMaterial color={color} transparent opacity={0.8} />
+        </mesh>
+        <mesh position={[0, length, 0]}>
+          <coneGeometry args={[0.025, 0.07, 12]} />
+          <meshBasicMaterial color={color} />
+        </mesh>
+      </group>
+      <Text
+        position={labelPos}
+        fontSize={0.16}
+        color={color}
+        anchorX="center"
+        anchorY="middle"
+        fontStyle="italic"
+      >
+        {label}
+      </Text>
+    </>
+  );
+}
+
+/* λ bracket: a static dimension marker spanning one wavelength along z,
+   floating above the E wave envelope.  Doubles as a "you've crossed one
+   full wiggle when you reach the other tick" reference. */
+function WavelengthBracket() {
+  const y0 = W3D_AMP + 0.55;
+  const len = W3D_LAMBDA;
+  return (
+    <group>
+      {/* Horizontal bar from z=0 to z=λ */}
+      <mesh
+        position={[0, y0, len / 2]}
+        rotation={[Math.PI / 2, 0, 0]}
+      >
+        <cylinderGeometry args={[0.006, 0.006, len, 6]} />
+        <meshBasicMaterial color="#e2e8f0" transparent opacity={0.85} />
+      </mesh>
+      {/* Tick at z=0 */}
+      <mesh position={[0, y0 - 0.05, 0]}>
+        <cylinderGeometry args={[0.006, 0.006, 0.1, 6]} />
+        <meshBasicMaterial color="#e2e8f0" transparent opacity={0.85} />
+      </mesh>
+      {/* Tick at z=λ */}
+      <mesh position={[0, y0 - 0.05, len]}>
+        <cylinderGeometry args={[0.006, 0.006, 0.1, 6]} />
+        <meshBasicMaterial color="#e2e8f0" transparent opacity={0.85} />
+      </mesh>
+      {/* λ label (italic serif via drei Text) */}
+      <Text
+        position={[0, y0 + 0.14, len / 2]}
+        fontSize={0.2}
+        color="#f8fafc"
+        anchorX="center"
+        anchorY="middle"
+        fontStyle="italic"
+      >
+        λ
+      </Text>
+      <Text
+        position={[0, y0 - 0.16, len / 2]}
+        fontSize={0.09}
+        color="#cbd5e1"
+        anchorX="center"
+        anchorY="middle"
+        letterSpacing={0.15}
+      >
+        ONE WAVELENGTH
+      </Text>
+    </group>
+  );
+}
+
+/* Period dot: a small pulsing marker at z = 0 that brightens once per
+   oscillation cycle, giving the user a visual "tick" of the wave's
+   frequency.  Sits just to the left of the source so it reads as
+   "this is the clock". */
+function PeriodPulse() {
+  const ref = useRef<THREE.Mesh>(null!);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null!);
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    /* Pulse on each peak of the source charge (twice per period — when
+       displacement is at its extreme).  Use sin² so the brightness
+       always lands in [0, 1] and peaks at both turning points. */
+    const s = Math.sin(W3D_OMEGA * t);
+    const brightness = 0.25 + 0.75 * s * s;
+    if (matRef.current) matRef.current.opacity = brightness;
+    if (ref.current) ref.current.scale.setScalar(0.6 + 0.4 * s * s);
+  });
+  return (
+    <group position={[-0.5, W3D_AMP + 0.55, 0]}>
+      <mesh ref={ref}>
+        <sphereGeometry args={[0.05, 16, 16]} />
+        <meshBasicMaterial
+          ref={matRef}
+          color="#f8fafc"
+          transparent
+          opacity={1}
+        />
+      </mesh>
+      <Text
+        position={[0, 0.18, 0]}
+        fontSize={0.16}
+        color="#f8fafc"
+        anchorX="center"
+        anchorY="middle"
+        fontStyle="italic"
+      >
+        f
+      </Text>
+      <Text
+        position={[0, -0.16, 0]}
+        fontSize={0.09}
+        color="#cbd5e1"
+        anchorX="center"
+        anchorY="middle"
+        letterSpacing={0.15}
+      >
+        FREQUENCY
+      </Text>
+    </group>
+  );
+}
+
+function EmWaveScene() {
+  return (
+    <>
+      <ambientLight intensity={0.65} />
+      <directionalLight position={[3, 4, 2]} intensity={0.45} />
+      <hemisphereLight args={["#1a1a2e", "#0a0a1a", 0.3]} />
+
+      {/* Coordinate gnomon at the origin */}
+      <AxisArrow direction="z" color={COLOR_Z} length={W3D_LENGTH + 0.25} label="z" />
+      <AxisArrow direction="y" color={COLOR_E} length={W3D_AMP + 0.45} label="y" />
+      <AxisArrow direction="x" color={COLOR_B} length={W3D_AMP + 0.45} label="x" />
+
+      {/* Source charge + acceleration vector at z = 0 */}
+      <SourceCharge />
+
+      {/* Continuous wave paths */}
+      <WavePath axis="y" color={COLOR_E} />
+      <WavePath axis="x" color={COLOR_B} />
+
+      {/* Wavelength bracket (spatial period) + frequency pulse (temporal) */}
+      <WavelengthBracket />
+      <PeriodPulse />
+
+      {/* Sampled E and B field arrows along the wave */}
+      {Array.from({ length: 14 }, (_, i) => {
+        const z = ((i + 1) / 15) * W3D_LENGTH;
+        return (
+          <FieldArrow
+            key={`e-${i}`}
+            z={z}
+            axis="y"
+            color={COLOR_E}
+          />
+        );
+      })}
+      {Array.from({ length: 14 }, (_, i) => {
+        const z = ((i + 1) / 15) * W3D_LENGTH;
+        return (
+          <FieldArrow
+            key={`b-${i}`}
+            z={z}
+            axis="x"
+            color={COLOR_B}
+          />
+        );
+      })}
+
+      <OrbitControls
+        makeDefault
+        enableDamping
+        dampingFactor={0.08}
+        enablePan
+        enableZoom
+        target={[W3D_LENGTH / 2, 0, 0]}
+        minDistance={2}
+        maxDistance={14}
+      />
+    </>
+  );
+}
 
 export function EmWaveOscillatorPanel() {
-  /* wavelength slider works in log10(meters), spanning 1 mm to 1 km. */
-  const [logLam, setLogLam] = useState(-3);
-  const lam = Math.pow(10, logLam); // meters
-  const freq = C / lam;
-  const energy = H_PLANCK * freq;
-
-  /* Animation phase, only when not reduced motion */
-  const phaseRef = useRef(0);
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-    let raf = 0;
-    function step() {
-      phaseRef.current += 0.02;
-      setTick((t) => (t + 1) % 1000);
-      raf = requestAnimationFrame(step);
-    }
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const W = 720;
-  const H = 320;
-  /* Drawing wavelength on screen — mapped logarithmically so the
-     wave visibly shrinks as we crank the slider. */
-  const screenLam = 280 / Math.max(1.0, Math.pow(10, logLam + 4) * 0.5);
-  const cycles = (W - 80) / Math.max(20, screenLam);
-  const amp = 46;
-
-  /* 3D isometric perspective — axes:
-       X = propagation (horizontal right)
-       Y = E field (vertical, screen up)
-       Z = B field (into page, drawn as upper-left diagonal)
-     E oscillates only in Y. B oscillates only in Z.  This is the
-     standard physics-textbook depiction of an EM wave, matching the
-     light1.gif animation the supervisor referenced. */
-  const startX = 60;
-  const endX = W - 60;
-  const baselineY = H / 2 + 20;
-  /* Z-axis projection: 30° above the negative X direction (upper-left) */
-  const zCosX = -Math.cos((30 * Math.PI) / 180); // ≈ -0.866
-  const zSinY = -Math.sin((30 * Math.PI) / 180); // ≈ -0.5 (negative because SVG y is down)
-  const zScale = 0.55;
-
-  function pointAt(t: number, plane: "E" | "B") {
-    const xWorld = startX + t * (endX - startX);
-    const phase = t * cycles * Math.PI * 2 + phaseRef.current;
-    const val = amp * Math.sin(phase);
-    if (plane === "E") {
-      return { x: xWorld, y: baselineY - val };
-    }
-    return {
-      x: xWorld + val * zCosX * zScale,
-      y: baselineY + val * zSinY * zScale,
-    };
-  }
-
-  function wavePath(plane: "E" | "B") {
-    const pts: string[] = [];
-    const N = 200;
-    for (let i = 0; i <= N; i++) {
-      const p = pointAt(i / N, plane);
-      pts.push(`${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`);
-    }
-    return pts.join(" ");
-  }
-
-  /* Vertical field-bars (small arrows) showing the field vector at
-     sampled positions — like the spokes in the original light1.gif. */
-  const fieldBars: Array<{ t: number; xAxis: number; eP: { x: number; y: number }; bP: { x: number; y: number } }> = [];
-  const N_BARS = 28;
-  for (let i = 1; i < N_BARS; i++) {
-    const t = i / N_BARS;
-    const xAxis = startX + t * (endX - startX);
-    fieldBars.push({
-      t,
-      xAxis,
-      eP: pointAt(t, "E"),
-      bP: pointAt(t, "B"),
-    });
-  }
-
-  function fmtSci(x: number, unit: string) {
-    if (x === 0) return `0 ${unit}`;
-    const exp = Math.floor(Math.log10(Math.abs(x)));
-    const mant = x / Math.pow(10, exp);
-    return `${mant.toFixed(2)} × 10${exp >= 0 ? "" : ""}^${exp} ${unit}`;
-  }
-  function fmtWave(m: number) {
-    if (m < 1e-9) return `${(m * 1e12).toFixed(1)} pm`;
-    if (m < 1e-6) return `${(m * 1e9).toFixed(1)} nm`;
-    if (m < 1e-3) return `${(m * 1e6).toFixed(1)} µm`;
-    if (m < 1) return `${(m * 1e3).toFixed(1)} mm`;
-    return `${m.toFixed(2)} m`;
-  }
-  function bandOf(m: number) {
-    if (m > 1e-1) return "RADIO";
-    if (m > 1e-3) return "MICROWAVE";
-    if (m > 7e-7) return "INFRARED";
-    if (m > 4e-7) return "VISIBLE";
-    if (m > 1e-8) return "ULTRAVIOLET";
-    if (m > 1e-11) return "X-RAY";
-    return "GAMMA";
-  }
-
   return (
     <FigurePanel
       idx="0.4.1"
       kicker="Electromagnetic Wave · E and B in Step"
-      caption="Light is two oscillating fields locked in perpendicular phase, racing at c. Change the wavelength — the frequency and photon energy snap into place via fλ = c and E = hf. Short wavelength means high energy."
+      caption="Light is what an accelerating charge radiates. +q bobs up and down along y; the radiated electric field E parallels its motion, the magnetic field B is perpendicular (along x), and the whole pattern races down z at c. The wavelength λ — bracketed above the wave — is the distance from one peak to the next, i.e. the length of one full wiggle frozen in space. The frequency f is how many of those wiggles the source pumps out per second; watch the white pulse at the left blink in time with +q to feel it. Drag to orbit, scroll to zoom, right-click drag (or two-finger drag) to pan."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Propagation axis (X) — direction of travel */}
-          <line
-            x1={startX}
-            x2={endX}
-            y1={baselineY}
-            y2={baselineY}
-            stroke="rgb(var(--c-text-rgb) / 0.55)"
-            strokeWidth="1"
-          />
-          {/* Arrowhead at right end of propagation axis */}
-          <polygon
-            points={`${endX},${baselineY} ${endX - 10},${baselineY - 4} ${endX - 10},${baselineY + 4}`}
-            fill="rgb(var(--c-text-rgb) / 0.55)"
-          />
-          <text
-            x={endX + 4}
-            y={baselineY + 4}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
-            letterSpacing="2"
-            fill="rgb(var(--c-text-rgb) / 0.65)"
-          >
-            c →
-          </text>
-          <text
-            x={endX - 40}
-            y={baselineY + 18}
-            textAnchor="end"
-            fontSize="9"
-            fontFamily="var(--font-mono)"
-            letterSpacing="2"
-            fill="rgb(var(--c-text-rgb) / 0.4)"
-          >
-            DIRECTION OF TRAVEL
-          </text>
-
-          {/* Vertical field bars — at each sampled point, draw a line
-             from the propagation axis to the wave value. E bars go
-             vertically, B bars go diagonally (Z perspective). */}
-          {fieldBars.map((bar, i) => (
-            <g key={i}>
-              {/* E vertical bar */}
-              <line
-                x1={bar.xAxis}
-                y1={baselineY}
-                x2={bar.eP.x}
-                y2={bar.eP.y}
-                stroke="rgb(var(--c-accent-rgb) / 0.45)"
-                strokeWidth="0.8"
-              />
-              {/* B diagonal bar (along Z axis) */}
-              <line
-                x1={bar.xAxis}
-                y1={baselineY}
-                x2={bar.bP.x}
-                y2={bar.bP.y}
-                stroke="rgb(var(--c-solar-rgb) / 0.45)"
-                strokeWidth="0.8"
-              />
-            </g>
-          ))}
-
-          {/* B wave — drawn first so E appears in front */}
-          <path
-            d={wavePath("B")}
-            fill="none"
-            stroke="rgb(var(--c-solar-rgb))"
-            strokeWidth="2"
-          />
-          {/* E wave — drawn second, on top */}
-          <path
-            d={wavePath("E")}
-            fill="none"
-            stroke="rgb(var(--c-accent-rgb))"
-            strokeWidth="2"
-          />
-
-          {/* Axis labels */}
-          <text
-            x={startX - 16}
-            y={baselineY - amp - 4}
-            fontSize="14"
-            fontFamily="var(--font-serif)"
-            fontStyle="italic"
-            fontWeight={600}
-            fill="rgb(var(--c-accent-rgb))"
-          >
-            E
-          </text>
-          <line
-            x1={startX - 12}
-            y1={baselineY}
-            x2={startX - 12}
-            y2={baselineY - amp - 10}
-            stroke="rgb(var(--c-accent-rgb) / 0.6)"
-            strokeWidth="0.8"
-          />
-          <polygon
-            points={`${startX - 12},${baselineY - amp - 10} ${startX - 16},${baselineY - amp - 4} ${startX - 8},${baselineY - amp - 4}`}
-            fill="rgb(var(--c-accent-rgb) / 0.6)"
-          />
-
-          <text
-            x={startX - 14 + amp * zCosX * zScale - 6}
-            y={baselineY + amp * zSinY * zScale - 6}
-            fontSize="14"
-            fontFamily="var(--font-serif)"
-            fontStyle="italic"
-            fontWeight={600}
-            fill="rgb(var(--c-solar-rgb))"
-          >
-            B
-          </text>
-          <line
-            x1={startX - 12}
-            y1={baselineY}
-            x2={startX - 12 + amp * zCosX * zScale}
-            y2={baselineY + amp * zSinY * zScale}
-            stroke="rgb(var(--c-solar-rgb) / 0.6)"
-            strokeWidth="0.8"
-          />
-
-          {/* Legend chips bottom-left */}
-          <g transform={`translate(${startX}, ${H - 20})`}>
-            <circle cx={4} cy={-4} r="4" fill="rgb(var(--c-accent-rgb))" />
-            <text x={14} y={0} fontSize="10" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb))">
-              E · ELECTRIC FIELD (VERTICAL)
-            </text>
-            <circle cx={250} cy={-4} r="4" fill="rgb(var(--c-solar-rgb))" />
-            <text x={260} y={0} fontSize="10" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-solar-rgb))">
-              B · MAGNETIC FIELD (PERPENDICULAR)
-            </text>
-          </g>
-        </svg>
+      <div className="w-full" style={{ height: 380 }}>
+        <Canvas
+          dpr={[1, 1.75]}
+          camera={{ position: [3.4, 1.6, 3.4], fov: 50, near: 0.05, far: 100 }}
+          style={{ background: "transparent" }}
+        >
+          <EmWaveScene />
+        </Canvas>
       </div>
-
-      <div className="grid grid-cols-3 gap-3 mt-4">
-        <div
-          className="p-3 rounded-md"
-          style={{
-            background: "rgb(var(--c-accent-rgb) / 0.05)",
-            border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-          }}
-        >
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
-            wavelength λ
-          </div>
-          <div
-            className="font-serif font-medium mt-1"
-            style={{ fontSize: "1.3rem", color: "var(--c-accent)" }}
-          >
-            {fmtWave(lam)}
-          </div>
-        </div>
-        <div
-          className="p-3 rounded-md"
-          style={{
-            background: "rgb(var(--c-accent-rgb) / 0.05)",
-            border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-          }}
-        >
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
-            frequency f
-          </div>
-          <div
-            className="font-serif font-medium mt-1"
-            style={{ fontSize: "1.3rem", color: "var(--c-accent)" }}
-          >
-            {fmtSci(freq, "Hz")}
-          </div>
-        </div>
-        <div
-          className="p-3 rounded-md"
-          style={{
-            background: "rgb(var(--c-accent-rgb) / 0.05)",
-            border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-          }}
-        >
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
-            photon E
-          </div>
-          <div
-            className="font-serif font-medium mt-1"
-            style={{ fontSize: "1.3rem", color: "var(--c-accent)" }}
-          >
-            {fmtSci(energy, "J")}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-1">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-            tune wavelength · {bandOf(lam)}
-          </label>
-          <span className="font-mono text-[10px] text-plasma">
-            log₁₀λ = {logLam.toFixed(2)}
-          </span>
-        </div>
-        <input
-          type="range"
-          min={-12}
-          max={4}
-          step={0.05}
-          value={logLam}
-          onChange={(e) => setLogLam(parseFloat(e.target.value))}
-          className="cosmic-slider"
-        />
-        <div className="flex justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
-          <span>γ-ray</span>
-          <span>visible</span>
-          <span>radio</span>
-        </div>
+      <div className="mt-3 flex items-center gap-4 text-[10px] font-mono tracking-[0.22em] uppercase text-white/60">
+        <span className="inline-flex items-center gap-2">
+          <span
+            className="inline-block w-3 h-3 rounded-full"
+            style={{ background: COLOR_E, boxShadow: `0 0 8px ${COLOR_E}` }}
+          />
+          E · electric field (along y)
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span
+            className="inline-block w-3 h-3 rounded-full"
+            style={{ background: COLOR_B, boxShadow: `0 0 8px ${COLOR_B}` }}
+          />
+          B · magnetic field (along x)
+        </span>
       </div>
     </FigurePanel>
   );
@@ -384,6 +474,9 @@ export function EmWaveOscillatorPanel() {
 type Band = {
   id: string;
   name: string;
+  /** Compact name used in the on-figure strip; full `name` is used in
+      the readout below.  Short enough to fit narrow strips like Visible. */
+  shortName: string;
   logMin: number;
   logMax: number;
   /** background colour for that strip */
@@ -397,13 +490,13 @@ type Band = {
    visible on-screen rather than a hair-thin sliver. Real physics:
    visible light is 400–750 nm. */
 const BANDS: Band[] = [
-  { id: "gamma", name: "Gamma",       logMin: -14,   logMax: -11,   color: "#e0a02f", use: "Nuclear decay. Highest-energy radiation we know.", astro: "Gamma-ray bursts, neutron-star mergers (Fermi, CTAO)." },
-  { id: "xray",  name: "X-ray",       logMin: -11,   logMax: -8,    color: "#d97757", use: "Medical imaging — passes through soft tissue.",   astro: "Black-hole accretion disks, supernova remnants (Chandra)." },
-  { id: "uv",    name: "Ultraviolet", logMin: -8,    logMax: -6.5,  color: "#8a4dd9", use: "Sunburn. Sterilisation. Black-light posters.",   astro: "Hot young stars and quasars (GALEX, Hubble UV)." },
-  { id: "vis",   name: "Visible",     logMin: -6.5,  logMax: -5.9,  color: "#22d3ee", use: "What our eyes see — drives photosynthesis.",     astro: "Galaxies, stars, planets — the workhorse band (Hubble, Keck, Rubin)." },
-  { id: "ir",    name: "Infrared",    logMin: -5.9,  logMax: -3,    color: "#c0596d", use: "Heat. Remote controls, night-vision, thermal cameras.", astro: "Peer through dust to see star birth (JWST, Spitzer)." },
-  { id: "micro", name: "Microwave",   logMin: -3,    logMax: -1,    color: "#7b5ab8", use: "Radar, Wi-Fi, cellular, your microwave oven.",   astro: "Cosmic Microwave Background mapping (Planck, SPT)." },
-  { id: "radio", name: "Radio",       logMin: -1,    logMax: 4,     color: "#5b6da6", use: "AM/FM radio, TV broadcast — bounces off the atmosphere.", astro: "CMB afterglow, interstellar hydrogen, pulsars (LOFAR, FAST, SKA)." },
+  { id: "gamma", name: "Gamma",       shortName: "GAMMA", logMin: -14,   logMax: -11,   color: "#e0a02f", use: "Nuclear decay. Highest-energy radiation we know.", astro: "Gamma-ray bursts, neutron-star mergers (Fermi, CTAO)." },
+  { id: "xray",  name: "X-ray",       shortName: "X-RAY", logMin: -11,   logMax: -8,    color: "#d97757", use: "Medical imaging — passes through soft tissue.",   astro: "Black-hole accretion disks, supernova remnants (Chandra)." },
+  { id: "uv",    name: "Ultraviolet", shortName: "UV",    logMin: -8,    logMax: -6.5,  color: "#8a4dd9", use: "Sunburn. Sterilisation. Black-light posters.",   astro: "Hot young stars and quasars (GALEX, Hubble UV)." },
+  { id: "vis",   name: "Visible",     shortName: "VIS",   logMin: -6.5,  logMax: -5.9,  color: "#22d3ee", use: "What our eyes see — drives photosynthesis.",     astro: "Galaxies, stars, planets — the workhorse band (Hubble, Keck, Rubin)." },
+  { id: "ir",    name: "Infrared",    shortName: "IR",    logMin: -5.9,  logMax: -3,    color: "#c0596d", use: "Heat. Remote controls, night-vision, thermal cameras.", astro: "Peer through dust to see star birth (JWST, Spitzer)." },
+  { id: "micro", name: "Microwave",   shortName: "MICROWAVE", logMin: -3,    logMax: -1,    color: "#7b5ab8", use: "Radar, Wi-Fi, cellular, your microwave oven.",   astro: "Cosmic Microwave Background mapping (Planck, SPT)." },
+  { id: "radio", name: "Radio",       shortName: "RADIO", logMin: -1,    logMax: 4,     color: "#5b6da6", use: "AM/FM radio, TV broadcast — bounces off the atmosphere.", astro: "CMB afterglow, interstellar hydrogen, pulsars (LOFAR, FAST, SKA)." },
 ];
 
 /* Atmospheric transmission %, sampled at log wavelength steps. 0 =
@@ -438,12 +531,29 @@ const ATMOSPHERE: { log: number; t: number; note?: string }[] = [
 export function EmSpectrumScrubberPanel() {
   const [logLam, setLogLam] = useState(-6.3); // visible
   const W = 720;
-  const H = 180;
+  const H = 220;
   const SP_MIN = -13;
   const SP_MAX = 4;
+  /* Flipped axis: radio (large λ) lives on the LEFT, gamma (small λ)
+     on the RIGHT — matches every textbook EM-spectrum diagram. */
   function xOf(l: number) {
-    return ((l - SP_MIN) / (SP_MAX - SP_MIN)) * W;
+    return ((SP_MAX - l) / (SP_MAX - SP_MIN)) * W;
   }
+  const C_LIGHT = 2.998e8; // m/s
+  /* Decompose a log10(λ) value into mantissa + exponent for sci-notation. */
+  function sciFromLogLam(ll: number): { m: string; e: number } {
+    const e = Math.floor(ll);
+    const m = Math.pow(10, ll - e);
+    return { m: m.toFixed(2), e };
+  }
+  function sciFromLogF(ll: number): { m: string; e: number } {
+    const logF = Math.log10(C_LIGHT) - ll;
+    const e = Math.floor(logF);
+    const m = Math.pow(10, logF - e);
+    return { m: m.toFixed(2), e };
+  }
+  const lamSci = sciFromLogLam(logLam);
+  const freqSci = sciFromLogF(logLam);
   /* Find the band that contains this wavelength. Bands are now
      contiguous, so any logLam in [SP_MIN, SP_MAX] resolves to a real
      band rather than the gamma fallback that caused the misreport. */
@@ -471,79 +581,216 @@ export function EmSpectrumScrubberPanel() {
   }
   const activeTrans = transAt(logLam);
 
+  const lamTex = `\\lambda = ${lamSci.m} \\times 10^{${lamSci.e}}\\,\\text{m}`;
+  const freqTex = `f = ${freqSci.m} \\times 10^{${freqSci.e}}\\,\\text{Hz}`;
+  const lamHtml = useMemo(
+    () => katex.renderToString(lamTex, { throwOnError: false }),
+    [lamTex],
+  );
+  const freqHtml = useMemo(
+    () => katex.renderToString(freqTex, { throwOnError: false }),
+    [freqTex],
+  );
+
   return (
     <FigurePanel
       idx="0.4.2"
       kicker="The Electromagnetic Spectrum · One Strip, Seven Voices"
-      caption="A single phenomenon spanning sixteen orders of magnitude in wavelength. Slide across — each band has both an everyday use and an astronomical superpower."
+      caption={
+        <>
+          A single phenomenon spanning seventeen orders of magnitude in
+          wavelength.  Slide (or use ← / → keys) across — each band has both
+          an everyday use and an astronomical superpower.{" "}
+          <span
+            className="font-mono text-plasma"
+            dangerouslySetInnerHTML={{ __html: lamHtml }}
+          />
+          {" · "}
+          <span
+            className="font-mono text-plasma"
+            dangerouslySetInnerHTML={{ __html: freqHtml }}
+          />
+        </>
+      }
     >
-      <div className="relative w-full overflow-hidden rounded-md">
+      {/* Drop the inner overflow-hidden + rounded-md wrapper that was
+          clipping text near corners; the outer figure-stub already
+          provides rounded chrome and padding. The slider thumb position
+          maps directly to xOf(logLam) only when the SVG occupies the
+          full container width with no extra padding, which we preserve. */}
+      <div className="relative w-full">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Band strips */}
+          <defs>
+            <linearGradient id="visibleSpectrumGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#ff2030" />
+              <stop offset="18%" stopColor="#ff7a20" />
+              <stop offset="32%" stopColor="#ffd320" />
+              <stop offset="50%" stopColor="#3fc940" />
+              <stop offset="68%" stopColor="#2070ff" />
+              <stop offset="85%" stopColor="#5828d2" />
+              <stop offset="100%" stopColor="#a020f0" />
+            </linearGradient>
+          </defs>
+
+          {/* ── Visible-light zoom inset ────────────────────────────
+             A magnified rainbow strip floating above the visible
+             band on the main bar.  The trapezoid joins the inset to
+             the (narrow) visible band, communicating the zoom.  */}
+          {(() => {
+            const insetW = 240;
+            const insetH = 24;
+            const visMidX = (xOf(-6.5) + xOf(-5.9)) / 2;
+            const insetLeft = visMidX - insetW / 2;
+            const insetRight = visMidX + insetW / 2;
+            const insetTop = 6;
+            const insetBot = insetTop + insetH;
+            const bandTop = 60;
+            const bandLeft = Math.min(xOf(-6.5), xOf(-5.9));
+            const bandRight = Math.max(xOf(-6.5), xOf(-5.9));
+            return (
+              <g>
+                <polygon
+                  points={`${insetLeft},${insetBot} ${insetRight},${insetBot} ${bandRight},${bandTop} ${bandLeft},${bandTop}`}
+                  fill="rgb(var(--c-text-rgb) / 0.04)"
+                  stroke="rgb(var(--c-text-rgb) / 0.28)"
+                  strokeWidth="0.6"
+                  strokeDasharray="2 3"
+                />
+                <rect
+                  x={insetLeft}
+                  y={insetTop}
+                  width={insetW}
+                  height={insetH}
+                  fill="url(#visibleSpectrumGrad)"
+                  stroke="rgb(var(--c-text-rgb) / 0.55)"
+                  strokeWidth="0.8"
+                />
+                <text
+                  x={insetLeft + 6}
+                  y={insetTop + insetH / 2 + 3}
+                  fontSize="9"
+                  letterSpacing="1"
+                  fontFamily="var(--font-mono)"
+                  fill="#ffffff"
+                  style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.6)", strokeWidth: 2 }}
+                >
+                  700 nm
+                </text>
+                <text
+                  x={insetRight - 6}
+                  y={insetTop + insetH / 2 + 3}
+                  textAnchor="end"
+                  fontSize="9"
+                  letterSpacing="1"
+                  fontFamily="var(--font-mono)"
+                  fill="#ffffff"
+                  style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.6)", strokeWidth: 2 }}
+                >
+                  400 nm
+                </text>
+              </g>
+            );
+          })()}
+
+          {/* ── Wavelength tick labels (ABOVE the main bar) ──────── */}
+          {[
+            { l: 3, t: "km" },
+            { l: 0, t: "m" },
+            { l: -2, t: "cm" },
+            { l: -3, t: "mm" },
+            { l: -6, t: "μm" },
+            { l: -9, t: "nm" },
+            { l: -12, t: "pm" },
+          ].map(({ l, t }) => (
+            <text
+              key={`lam-${l}`}
+              x={xOf(l)}
+              y={54}
+              textAnchor="middle"
+              fontSize="11"
+              fontFamily="var(--font-mono)"
+              fill="rgb(var(--c-text-rgb) / 0.8)"
+            >
+              {t}
+            </text>
+          ))}
+
+          {/* ── Band strips (with short names inside) ──────────────── */}
           {BANDS.map((b) => {
-            const x1 = xOf(b.logMin);
-            const x2 = xOf(b.logMax);
+            const x1 = Math.min(xOf(b.logMin), xOf(b.logMax));
+            const x2 = Math.max(xOf(b.logMin), xOf(b.logMax));
+            const stripW = x2 - x1;
+            const estLabelW = b.shortName.length * 6.2 + 4;
+            const showLabel = estLabelW < stripW - 2;
             return (
               <g key={b.id}>
                 <rect
                   x={x1}
-                  y={20}
-                  width={x2 - x1}
-                  height={30}
+                  y={60}
+                  width={stripW}
+                  height={28}
                   fill={b.color}
-                  opacity={active.id === b.id ? 0.9 : 0.45}
+                  opacity={active.id === b.id ? 0.92 : 0.45}
                   style={{ transition: "opacity 240ms var(--ease)" }}
                 />
-                <text
-                  x={(x1 + x2) / 2}
-                  y={14}
-                  textAnchor="middle"
-                  fontSize="9"
-                  letterSpacing="2"
-                  fontFamily="var(--font-mono)"
-                  fill={
-                    active.id === b.id
-                      ? "rgb(var(--c-accent-rgb))"
-                      : "rgb(var(--c-text-rgb) / 0.55)"
-                  }
-                >
-                  {b.name.toUpperCase()}
-                </text>
+                {showLabel && (
+                  <text
+                    x={(x1 + x2) / 2}
+                    y={77}
+                    textAnchor="middle"
+                    fontSize="9"
+                    letterSpacing="1.5"
+                    fontFamily="var(--font-mono)"
+                    fill="#ffffff"
+                    style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.55)", strokeWidth: 2 }}
+                  >
+                    {b.shortName}
+                  </text>
+                )}
               </g>
             );
           })}
-          {/* Decade ticks */}
+
+          {/* Decade tick marks below the main bar */}
           {Array.from({ length: SP_MAX - SP_MIN + 1 }, (_, i) => SP_MIN + i).map((l) => (
             <line
-              key={l}
+              key={`tick-${l}`}
               x1={xOf(l)}
               x2={xOf(l)}
-              y1={50}
-              y2={54}
+              y1={88}
+              y2={92}
               stroke="rgb(var(--c-text-rgb) / 0.35)"
               strokeWidth="0.6"
             />
           ))}
-          {/* Tick labels at sparse intervals */}
-          {[-12, -8, -4, 0, 4].map((l) => (
+
+          {/* ── Frequency tick labels (BELOW the main bar) ─────────
+             Natural units at λ = c / f.  Spans MHz at the radio end
+             through ZHz deep in the gamma region. */}
+          {[
+            { l: Math.log10(C_LIGHT) - 6, t: "MHz" },
+            { l: Math.log10(C_LIGHT) - 9, t: "GHz" },
+            { l: Math.log10(C_LIGHT) - 12, t: "THz" },
+            { l: Math.log10(C_LIGHT) - 15, t: "PHz" },
+            { l: Math.log10(C_LIGHT) - 18, t: "EHz" },
+            { l: Math.log10(C_LIGHT) - 21, t: "ZHz" },
+          ].map(({ l, t }) => (
             <text
-              key={l}
+              key={`freq-${t}`}
               x={xOf(l)}
-              y={64}
+              y={104}
               textAnchor="middle"
-              fontSize="8"
+              fontSize="11"
               fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-text-rgb) / 0.45)"
+              fill="rgb(var(--c-text-rgb) / 0.8)"
             >
-              10^{l}
+              {t}
             </text>
           ))}
-          {/* Atmospheric opacity panel — what reaches Earth's surface vs
-             what is blocked. Green where transparent, red where opaque.
-             Curve is the transmission % at each wavelength. */}
+          {/* Atmospheric opacity panel */}
           {(() => {
-            const yTop = 90;
-            const yBot = 150;
+            const yTop = 124;
+            const yBot = 190;
             const stripH = yBot - yTop;
             /* Build the filled transmission curve */
             const samples: { x: number; y: number; t: number }[] = [];
@@ -553,25 +800,30 @@ export function EmSpectrumScrubberPanel() {
               samples.push({ x: xOf(l), y: yBot - t * stripH, t });
             }
             const linePts = samples.map((s, i) => `${i === 0 ? "M" : "L"} ${s.x.toFixed(1)} ${s.y.toFixed(1)}`).join(" ");
-            const fillPts = `${linePts} L ${W} ${yBot} L 0 ${yBot} Z`;
+            const firstX = samples[0].x;
+            const lastX = samples[samples.length - 1].x;
+            const fillPts = `${linePts} L ${lastX.toFixed(1)} ${yBot} L ${firstX.toFixed(1)} ${yBot} Z`;
             return (
               <g>
                 {/* Background — opaque red zones */}
                 <rect x={0} y={yTop} width={W} height={stripH} fill="rgba(220, 60, 60, 0.18)" />
-                {/* Transmission-coloured cells per sample to show gradient */}
+                {/* Transmission-coloured cells per sample to show gradient.
+                   Use min/max so the rect width stays positive after the
+                   flipped axis swap. */}
                 {samples.slice(0, -1).map((s, i) => {
                   const sNext = samples[i + 1];
                   const avg = (s.t + sNext.t) / 2;
-                  /* green when transparent, red when opaque */
                   const r = Math.round(220 - 160 * avg);
                   const g = Math.round(60 + 140 * avg);
                   const b = 60;
+                  const xL = Math.min(s.x, sNext.x);
+                  const xR = Math.max(s.x, sNext.x);
                   return (
                     <rect
                       key={i}
-                      x={s.x}
+                      x={xL}
                       y={yTop}
-                      width={sNext.x - s.x + 0.5}
+                      width={xR - xL + 0.5}
                       height={stripH}
                       fill={`rgb(${r}, ${g}, ${b})`}
                       opacity={0.25 + avg * 0.35}
@@ -584,10 +836,10 @@ export function EmSpectrumScrubberPanel() {
                 {/* Frame */}
                 <rect x={0} y={yTop} width={W} height={stripH} fill="none" stroke="rgb(var(--c-text-rgb) / 0.2)" strokeWidth="0.8" />
                 {/* Header label */}
-                <text x={6} y={84} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.7)">
+                <text x={10} y={yTop - 6} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.7)">
                   ATMOSPHERIC TRANSMISSION
                 </text>
-                <text x={W - 6} y={84} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(120, 220, 130)">
+                <text x={W - 10} y={yTop - 6} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(120, 220, 130)">
                   GREEN = REACHES GROUND
                 </text>
                 {/* Window labels */}
@@ -598,10 +850,10 @@ export function EmSpectrumScrubberPanel() {
                   ↓ radio
                 </text>
                 {/* y-axis hints (0% / 100%) */}
-                <text x={4} y={yBot - 2} fontSize="7" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.4)">
+                <text x={10} y={yBot - 4} fontSize="8" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.45)">
                   0%
                 </text>
-                <text x={4} y={yTop + 8} fontSize="7" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.4)">
+                <text x={10} y={yTop + 10} fontSize="8" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.45)">
                   100%
                 </text>
               </g>
@@ -626,62 +878,97 @@ export function EmSpectrumScrubberPanel() {
       </div>
 
       <div className="mt-3">
+        {/* Slider direction is reversed so the thumb sits at the same
+            x-position as the on-figure cursor: thumb at the LEFT means
+            radio (large λ), thumb at the RIGHT means gamma (small λ).
+            We store logLam unchanged; the input value is the mirrored
+            position SP_MIN + SP_MAX − logLam. */}
         <input
           type="range"
           min={SP_MIN}
           max={SP_MAX}
           step={0.05}
-          value={logLam}
-          onChange={(e) => setLogLam(parseFloat(e.target.value))}
+          value={SP_MIN + SP_MAX - logLam}
+          onChange={(e) =>
+            setLogLam(SP_MIN + SP_MAX - parseFloat(e.target.value))
+          }
           className="cosmic-slider"
+          aria-label="Wavelength — use left/right arrow keys to scan from radio toward gamma"
+          aria-valuemin={SP_MIN}
+          aria-valuemax={SP_MAX}
+          aria-valuenow={SP_MIN + SP_MAX - logLam}
+          aria-valuetext={`${lamSci.m} × 10^${lamSci.e} metres, ${freqSci.m} × 10^${freqSci.e} hertz, ${active.name} band`}
         />
+        <div className="mt-1 flex justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40">
+          <span>radio</span>
+          <span>visible</span>
+          <span>gamma</span>
+        </div>
       </div>
 
       <div
-        className="mt-4 grid md:grid-cols-[140px_1fr] gap-4 p-3 rounded-md"
+        className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 rounded-md"
         style={{
           background: "rgb(var(--c-accent-rgb) / 0.04)",
           border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
         }}
       >
-        <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
-            band
-          </div>
+        {/* Band identity */}
+        <div
+          className="font-serif font-medium leading-none shrink-0"
+          style={{ fontSize: "1.75rem", color: "var(--c-accent)" }}
+        >
+          {active.name}
+        </div>
+
+        {/* Live λ + f in sci-notation (KaTeX) — driven by the slider. */}
+        <div className="flex flex-col leading-tight shrink-0 border-l border-white/10 pl-4 text-[15px] tabular-nums">
+          <span
+            className="text-white/90"
+            dangerouslySetInnerHTML={{ __html: lamHtml }}
+          />
+          <span
+            className="text-white/90"
+            dangerouslySetInnerHTML={{ __html: freqHtml }}
+          />
+        </div>
+
+        {/* Atmosphere meter */}
+        <div className="flex flex-col leading-tight shrink-0 border-l border-white/10 pl-4">
           <div
-            className="font-serif font-medium"
-            style={{ fontSize: "1.4rem", color: "var(--c-accent)" }}
+            className="font-mono text-[14px] tracking-[0.12em] tabular-nums"
+            style={{
+              color:
+                activeTrans > 0.6
+                  ? "rgb(120, 220, 130)"
+                  : activeTrans > 0.2
+                    ? "rgb(230, 180, 80)"
+                    : "rgb(230, 100, 100)",
+            }}
           >
-            {active.name}
+            {(activeTrans * 100).toFixed(0)}% atm
           </div>
-          <div className="font-mono text-[10px] mt-1 text-white/55">
-            λ ≈ 10<sup>{logLam.toFixed(1)}</sup> m
-          </div>
-          <div
-            className="font-mono text-[10px] tracking-[0.18em] mt-3"
-            style={{ color: activeTrans > 0.6 ? "rgb(120, 220, 130)" : activeTrans > 0.2 ? "rgb(230, 180, 80)" : "rgb(230, 100, 100)" }}
-          >
-            atmosphere · {(activeTrans * 100).toFixed(0)}%
-          </div>
-          <div className="font-mono text-[9px] text-white/45 leading-[1.4] mt-1">
+          <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/45">
             {activeTrans > 0.7
-              ? "reaches Earth's surface"
+              ? "reaches ground"
               : activeTrans > 0.3
-                ? "partially absorbed"
-                : "blocked · observe from space"}
+                ? "partial"
+                : "space only"}
           </div>
         </div>
-        <div className="text-[13px] text-white/80 leading-[1.55] font-sans grid gap-2">
+
+        {/* Uses (fills remaining width) */}
+        <div className="flex-1 min-w-[260px] grid gap-1.5 text-[15px] text-white/85 leading-snug font-sans">
           <div>
-            <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-plasma mr-1">
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">
               everyday
-            </span>{" "}
+            </span>
             {active.use}
           </div>
           <div>
-            <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-solar mr-1">
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-solar mr-2">
               astronomy
-            </span>{" "}
+            </span>
             {active.astro}
           </div>
         </div>
@@ -839,353 +1126,589 @@ export function TelescopeBestiaryPanel() {
   );
 }
 
-/* ── Telescope Anatomy ───────────────────────────────────────────────
-   Click each part of a reflecting telescope to learn its role.
-   Replaces telescope.webp. */
-type Part = {
-  id: string;
-  name: string;
-  desc: string;
-};
-const PARTS: Part[] = [
-  { id: "collector", name: "Collector (primary mirror)", desc: "A large curved mirror — the 'light bucket'. A wider mirror means more photons captured, so dimmer objects become visible. Mirror size sets the telescope's sensitivity." },
-  { id: "focal", name: "Focal plane", desc: "The plane where the mirror focuses light. The longer the focal length, the larger the image — but the dimmer per square millimetre." },
-  { id: "detector", name: "Detector (CCD chip)", desc: "A light-sensitive chip — the same idea as a phone camera, but cooled and tuned. It counts individual photons and converts each into an electron." },
-  { id: "processor", name: "Processor", desc: "Computers clean digital noise and turn raw counts into images. This last step is called photometry — measuring brightness to make pictures." },
+/* ── Telescope Anatomy (Cassegrain, with photometer + spectrometer) ───
+   Interactive trace: a slider walks the user through the optical chain
+   sky → M₁ → M₂ → Cassegrain focus → {photometer | spectrometer} → CPU →
+   final image / spectrum.  Toggle below picks which detector is in the
+   trace.  Replaces the previous reflector/refractor split. */
+type AnatomyStage = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+const ANATOMY_STAGES: { label: string; blurb: string }[] = [
+  { label: "Sky",                  blurb: "Photons from a distant source stream toward the telescope as parallel rays.  Real source: a star, galaxy, or supernova — pick your photon." },
+  { label: "Primary mirror (M₁)",  blurb: "A large concave mirror catches the parallel light and reflects it back toward a focus.  Aperture size sets the telescope's sensitivity." },
+  { label: "Secondary mirror (M₂)", blurb: "A small convex mirror intercepts the converging beam BEFORE it reaches the primary focus F₁, and bounces it back through a hole in the centre of M₁." },
+  { label: "Cassegrain focus",     blurb: "The doubled-up light converges to a sharp focal point behind M₁ — the Cassegrain focus.  The focal plane is the natural home of detectors." },
+  { label: "Detector instrument",  blurb: "A flip mirror at the focus selects which detector reads the light.  An imaging photometer records colour-filtered brightness; a spectrometer disperses the light by wavelength." },
+  { label: "Computer",             blurb: "Each detector converts photons into electrons, the electronics digitise the counts, and a computer pipelines the raw frames into science-ready data." },
+  { label: "Final output",         blurb: "Out comes either a calibrated image (photometer) or a 1-D spectrum (spectrometer).  Same telescope, two different ways of looking at the sky." },
 ];
 
-type TelescopeKind = "reflector" | "refractor";
-
 export function TelescopeAnatomyPanel() {
-  const [active, setActive] = useState<string>("collector");
-  const [kind, setKind] = useState<TelescopeKind>("reflector");
+  const [stage, setStage] = useState<AnatomyStage>(0);
+  const [mode, setMode] = useState<"photo" | "spec">("photo");
+
   const W = 720;
-  const H = 320;
-  /* Shared layout — a horizontal telescope with the detector on the
-     LEFT and the sky opening on the RIGHT. The optical assembly
-     between them differs per design. */
-  const tubeStartX = 180;          // left end of tube (closed end for reflector)
-  const tubeEndX = W - 50;         // right end of tube (sky opening)
-  const tubeTopY = 80;
-  const tubeBotY = H - 80;
-  const axisY = H / 2;
-  const skyEntryX = W - 24;
-  const focalPlaneX = 134;         // where rays converge — just inside detector
-  const detectorX = 76;            // chip rectangle x
-  const detectorY = axisY - 18;
-  const detectorW = 40;
-  const detectorH = 36;
-  const processorX = 18;           // computer icon x
-  const processorY = axisY - 14;
+  const H = 360;
+  const axisY = 180;
+  const tubeTopY = 70;
+  const tubeBotY = 290;
+  const tubeStartX = 180;
+  const tubeEndX = 670;
 
-  /* Reflector geometry — Cassegrain layout */
-  const primaryX = tubeStartX;     // primary mirror at left end of tube
-  const holeUpperY = axisY - 14;   // hole in centre of primary
-  const holeLowerY = axisY + 14;
-  const primaryDepth = 36;         // how far the primary's apex bulges right of its edges
-  const secondaryX = tubeStartX + 320;
-  const secondaryHalf = 22;        // half-height of secondary
-  const collectorActive = active === "collector";
-  const focalActive = active === "focal";
-  const detectorActive = active === "detector";
-  const processorActive = active === "processor";
+  /* ── Primary M₁: a single SPHERICAL concave mirror ──────────────
+     Sagitta s = 30 px, half-aperture r = 110 px ⇒ radius of curvature
+        R = (r² + s²) / (2s) = (12100 + 900) / 60 ≈ 216.67 px.
+     Centre of curvature sits on the optical axis to the RIGHT of the
+     mirror (i.e. inside the tube), at C = (apex_x + R).
+     Surface equation: (x − C_x)² + (y − axisY)² = R²  ⇒
+        x = C_x − √(R² − (y − axisY)²)   on the leftward (concave) side. */
+  const m1X = tubeStartX;            // rim plane (where mirror meets tube)
+  const m1ApexX = m1X - 30;          // deepest point of cup, on axis
+  const m1HoleTopY = 170;
+  const m1HoleBotY = 190;
+  const m1HalfAp = (tubeBotY - tubeTopY) / 2; // 110 px
+  const m1Sagitta = m1X - m1ApexX;            // 30 px
+  const m1SphR =
+    (m1HalfAp * m1HalfAp + m1Sagitta * m1Sagitta) / (2 * m1Sagitta);
+  const m1CenterX = m1ApexX + m1SphR; // ≈ 366.67
+  function m1SurfaceX(y: number): number {
+    const off = y - axisY;
+    return m1CenterX - Math.sqrt(m1SphR * m1SphR - off * off);
+  }
+  const m1HoleEdgeX = m1SurfaceX(m1HoleTopY); // ≈ 150.15
 
-  /* Refractor geometry — simple objective lens */
-  const lensX = tubeStartX + 320;  // same x as secondary for visual parity
+  const m2X = 500;
+  const m2HalfH = 22;
+  const m2TopY = axisY - m2HalfH;
+  const m2BotY = axisY + m2HalfH;
+
+  /* Foci */
+  const f1X = 560;
+  const cassX = 140;
+
+  /* Two-ray construction — rays land on the actual parabolic
+     surface (not the rim), so the reflected geometry closes
+     properly through the central hole. */
+  const rayUpY = 140;
+  const rayDnY = 220;
+  const rayHitUpX = m1SurfaceX(rayUpY);
+  const rayHitDnX = m1SurfaceX(rayDnY);
+  const m2InterceptUpY =
+    rayUpY +
+    ((m2X - rayHitUpX) / (f1X - rayHitUpX)) * (axisY - rayUpY);
+  const m2InterceptDnY =
+    rayDnY +
+    ((m2X - rayHitDnX) / (f1X - rayHitDnX)) * (axisY - rayDnY);
+
+  /* Instruments */
+  const photoX = 70, photoY = 80, photoW = 100, photoH = 60;
+  const photoEntryX = photoX + photoW * 0.75;
+  const photoEntryY = photoY + photoH;
+  const specX = 70, specY = 220, specW = 100, specH = 60;
+  const specEntryX = specX + specW * 0.75;
+  const specEntryY = specY;
+
+  /* Processor */
+  const procX = 10, procY = 160, procW = 55, procH = 40;
+  /* Output */
+  const outX = 10, outY = 305, outW = 220, outH = 50;
+
+  const photoOn = mode === "photo";
+  const specOn = mode === "spec";
+
+  /* Opacity helpers tied to the trace stage. */
+  const rayOp = (threshold: AnatomyStage) => (stage >= threshold ? 0.95 : 0.18);
+  const compOp = (threshold: AnatomyStage) => (stage >= threshold ? 1 : 0.32);
+  const glow = (threshold: AnatomyStage) =>
+    stage === threshold
+      ? "drop-shadow(0 0 8px rgb(var(--c-accent-rgb) / 0.85))"
+      : "none";
 
   return (
     <FigurePanel
       idx="0.4.4"
-      kicker={`Telescope Anatomy · ${kind === "reflector" ? "Reflector (Cassegrain Mirror)" : "Refractor (Lens)"}`}
-      caption="Every modern telescope is a four-stage relay: a collector gathers photons, the focal plane brings them to a point, a chip turns photons into electrons, and a computer turns electrons into images. Toggle the design — most professional telescopes (Hubble, JWST, the Vera Rubin Observatory) are Cassegrain-style reflectors."
+      kicker="Telescope Anatomy · Cassegrain Reflector"
+      caption={
+        <>
+          A modern reflecting telescope is a four-stage relay.  Scrub the
+          slider to trace one photon from the sky through the mirrors to
+          its final pixel.  Toggle the detector to see the same light
+          analysed as a brightness image or as a wavelength spectrum.
+        </>
+      }
     >
-      <div className="flex gap-2 mb-4 flex-wrap items-center">
-        <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mr-1">
-          design ·
-        </span>
-        <button
-          type="button"
-          onClick={() => setKind("reflector")}
-          className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${kind === "reflector" ? "is-active" : ""}`}
-        >
-          Reflector · mirror
-        </button>
-        <button
-          type="button"
-          onClick={() => setKind("refractor")}
-          className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${kind === "refractor" ? "is-active" : ""}`}
-        >
-          Refractor · lens
-        </button>
+      {/* Stage slider + instrument toggle */}
+      <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex-1 min-w-[260px]">
+          <div className="flex items-center justify-between mb-1">
+            <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
+              trace · step {stage} / 6
+            </label>
+            <span className="font-mono text-[10px] text-plasma uppercase tracking-[0.18em]">
+              {ANATOMY_STAGES[stage].label}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={6}
+            step={1}
+            value={stage}
+            onChange={(e) =>
+              setStage(parseInt(e.target.value, 10) as AnatomyStage)
+            }
+            className="cosmic-slider"
+            aria-label="Trace stage — sky to final image"
+          />
+        </div>
+        <div className="flex gap-2 items-center shrink-0">
+          <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mr-1">
+            detector ·
+          </span>
+          <button
+            type="button"
+            onClick={() => setMode("photo")}
+            className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${photoOn ? "is-active" : ""}`}
+          >
+            Photometer
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("spec")}
+            className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${specOn ? "is-active" : ""}`}
+          >
+            Spectrometer
+          </button>
+        </div>
       </div>
 
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="relative w-full">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Tube walls — open at the right, closed at the left where the
-             primary mirror sits (reflector) or just framing (refractor). */}
-          <line x1={tubeStartX + 8} y1={tubeTopY} x2={tubeEndX} y2={tubeTopY} stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="1.2" />
-          <line x1={tubeStartX + 8} y1={tubeBotY} x2={tubeEndX} y2={tubeBotY} stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="1.2" />
-          {/* Sky-side opening — just visual */}
-          <line x1={tubeEndX} y1={tubeTopY - 6} x2={tubeEndX} y2={tubeTopY + 6} stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="1.2" />
-          <line x1={tubeEndX} y1={tubeBotY - 6} x2={tubeEndX} y2={tubeBotY + 6} stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="1.2" />
+          <defs>
+            <marker
+              id="anatomyArrow"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="8"
+              markerHeight="8"
+              orient="auto"
+              markerUnits="userSpaceOnUse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="rgb(var(--c-accent-rgb))" />
+            </marker>
+          </defs>
 
-          {kind === "reflector" ? (
-            <>
-              {/* ── REFLECTOR: Cassegrain layout ─────────────────────── */}
-              {/* Light rays — parallel from the sky travel left past the
-                 secondary, hit the primary, converge back to the secondary,
-                 then reflect back through the central hole to the focal
-                 plane (and on to the detector). */}
-              {[axisY - 50, axisY + 50].map((y) => (
-                <g key={`reflector-rays-${y}`}>
-                  {/* Leg 1: sky → primary edge */}
-                  <line
-                    x1={skyEntryX}
-                    y1={y}
-                    x2={primaryX + primaryDepth - 6}
-                    y2={y}
-                    stroke="rgb(var(--c-solar-rgb) / 0.65)"
-                    strokeWidth="1.3"
-                  />
-                  {/* Leg 2: primary → secondary (converging) */}
-                  <line
-                    x1={primaryX + primaryDepth - 6}
-                    y1={y}
-                    x2={secondaryX}
-                    y2={axisY}
-                    stroke="rgb(var(--c-solar-rgb) / 0.45)"
-                    strokeWidth="1"
-                  />
-                </g>
-              ))}
-              {/* Leg 3: secondary → focal plane through the hole */}
-              <line
-                x1={secondaryX}
-                y1={axisY}
-                x2={focalPlaneX}
-                y2={axisY}
-                stroke="rgb(var(--c-solar-rgb) / 0.65)"
-                strokeWidth="1.3"
-              />
+          {/* Tube walls */}
+          <line x1={tubeStartX} y1={tubeTopY} x2={tubeEndX} y2={tubeTopY}
+            stroke="rgb(var(--c-text-rgb) / 0.45)" strokeWidth="1.2" />
+          <line x1={tubeStartX} y1={tubeBotY} x2={tubeEndX} y2={tubeBotY}
+            stroke="rgb(var(--c-text-rgb) / 0.45)" strokeWidth="1.2" />
+          <line x1={tubeEndX} y1={tubeTopY - 6} x2={tubeEndX} y2={tubeTopY + 6}
+            stroke="rgb(var(--c-text-rgb) / 0.45)" strokeWidth="1.2" />
+          <line x1={tubeEndX} y1={tubeBotY - 6} x2={tubeEndX} y2={tubeBotY + 6}
+            stroke="rgb(var(--c-text-rgb) / 0.45)" strokeWidth="1.2" />
 
-              {/* PRIMARY MIRROR — concave, drawn as two segments with a
-                  hole in the middle (the central hole that lets the
-                  Cassegrain focal beam exit toward the detector). */}
-              <g onClick={() => setActive("collector")} style={{ cursor: "pointer" }}>
-                {/* Upper segment of primary — silvered surface highlight */}
-                <path
-                  d={`M ${primaryX} ${tubeTopY} Q ${primaryX + primaryDepth} ${(tubeTopY + holeUpperY) / 2} ${primaryX} ${holeUpperY}`}
-                  fill="none"
-                  stroke={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.92)"}
-                  strokeWidth={collectorActive ? 3 : 2.4}
-                  style={{
-                    filter: collectorActive ? "drop-shadow(0 0 14px rgb(var(--c-accent-rgb) / 0.55))" : "none",
-                  }}
-                />
-                {/* Lower segment of primary */}
-                <path
-                  d={`M ${primaryX} ${holeLowerY} Q ${primaryX + primaryDepth} ${(holeLowerY + tubeBotY) / 2} ${primaryX} ${tubeBotY}`}
-                  fill="none"
-                  stroke={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.92)"}
-                  strokeWidth={collectorActive ? 3 : 2.4}
-                  style={{
-                    filter: collectorActive ? "drop-shadow(0 0 14px rgb(var(--c-accent-rgb) / 0.55))" : "none",
-                  }}
-                />
-                {/* Glass body backing — thin shaded back of each segment */}
-                <path
-                  d={`M ${primaryX} ${tubeTopY} L ${primaryX - 14} ${tubeTopY} L ${primaryX - 14} ${holeUpperY} L ${primaryX} ${holeUpperY} Z`}
-                  fill={collectorActive ? "rgb(var(--c-accent-rgb) / 0.12)" : "rgb(var(--c-text-rgb) / 0.08)"}
-                  stroke={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.45)"}
-                  strokeWidth="0.8"
-                />
-                <path
-                  d={`M ${primaryX} ${holeLowerY} L ${primaryX - 14} ${holeLowerY} L ${primaryX - 14} ${tubeBotY} L ${primaryX} ${tubeBotY} Z`}
-                  fill={collectorActive ? "rgb(var(--c-accent-rgb) / 0.12)" : "rgb(var(--c-text-rgb) / 0.08)"}
-                  stroke={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.45)"}
-                  strokeWidth="0.8"
-                />
-                {/* Labels */}
-                <text x={primaryX - 18} y={tubeTopY - 8} fontSize="10" letterSpacing="2" fontFamily="var(--font-mono)" fill={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.7)"}>
-                  PRIMARY MIRROR
-                </text>
-                <text x={primaryX - 12} y={axisY + 4} fontSize="8" letterSpacing="1.6" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
-                  ← hole
-                </text>
-              </g>
+          {/* Optical axis (faint dashed across the figure) */}
+          <line x1={procX + procW + 8} y1={axisY} x2={tubeEndX + 20} y2={axisY}
+            stroke="rgb(var(--c-text-rgb) / 0.22)" strokeWidth="0.7" strokeDasharray="4 3" />
 
-              {/* SECONDARY MIRROR — small convex (curves toward primary)
-                  suspended by spider arms across the tube. */}
-              <g>
-                {/* Spider arms */}
-                <line x1={secondaryX} y1={axisY - secondaryHalf} x2={secondaryX} y2={tubeTopY} stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth="0.7" />
-                <line x1={secondaryX} y1={axisY + secondaryHalf} x2={secondaryX} y2={tubeBotY} stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth="0.7" />
-                {/* Convex secondary */}
-                <path
-                  d={`M ${secondaryX - 4} ${axisY - secondaryHalf} Q ${secondaryX + 14} ${axisY} ${secondaryX - 4} ${axisY + secondaryHalf} Z`}
-                  fill="rgb(var(--c-text-rgb) / 0.15)"
-                  stroke="rgb(var(--c-text-rgb) / 0.85)"
-                  strokeWidth="1.5"
-                />
-                <text x={secondaryX - 8} y={axisY + secondaryHalf + 18} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.65)">
-                  SECONDARY
-                </text>
-              </g>
+          {/* SKY marker */}
+          <g style={{ opacity: compOp(0), filter: glow(0) }}>
+            <text x={tubeEndX + 28} y={axisY + 4} fontSize="11" letterSpacing="2"
+              fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.8)">
+              SKY ←
+            </text>
+            <text x={tubeEndX + 28} y={axisY + 18} fontSize="9"
+              fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+              photons in
+            </text>
+          </g>
 
-              {/* TUBE label */}
-              <text x={tubeStartX + 130} y={tubeTopY - 10} fontSize="9" letterSpacing="3" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.4)">
-                TUBE
-              </text>
-            </>
+          {/* RAY 1: sky → M1 surface (parallel rays land on the
+             parabolic curve at their off-axis radius, not on the rim) */}
+          <line x1={tubeEndX} y1={rayUpY} x2={rayHitUpX} y2={rayUpY}
+            stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.5" opacity={rayOp(1)} />
+          <line x1={tubeEndX} y1={rayDnY} x2={rayHitDnX} y2={rayDnY}
+            stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.5" opacity={rayOp(1)} />
+
+          {/* M₁ PRIMARY — a single spherical concave mirror with a
+             hole at its apex.  Drawn as ONE <path> with two circular
+             arcs (SVG "A" command) sharing the same radius R≈216.67
+             and centre of curvature on the optical axis at x≈366.67.
+             The two halves are visibly part of one continuous sphere,
+             interrupted only by the central hole. */}
+          <g style={{ opacity: compOp(1), filter: glow(1) }}>
+            <path
+              d={
+                `M ${m1X} ${tubeTopY} ` +
+                `A ${m1SphR.toFixed(2)} ${m1SphR.toFixed(2)} 0 0 0 ` +
+                  `${m1HoleEdgeX.toFixed(2)} ${m1HoleTopY} ` +
+                `M ${m1HoleEdgeX.toFixed(2)} ${m1HoleBotY} ` +
+                `A ${m1SphR.toFixed(2)} ${m1SphR.toFixed(2)} 0 0 0 ` +
+                  `${m1X} ${tubeBotY}`
+              }
+              fill="none"
+              stroke="rgb(var(--c-accent-rgb))"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            {/* Hole-wall ticks at the hole edges hint at the
+               cylindrical bore drilled through the mirror. */}
+            <line
+              x1={m1HoleEdgeX}
+              y1={m1HoleTopY}
+              x2={m1ApexX - 6}
+              y2={m1HoleTopY}
+              stroke="rgb(var(--c-accent-rgb) / 0.55)"
+              strokeWidth="1"
+            />
+            <line
+              x1={m1HoleEdgeX}
+              y1={m1HoleBotY}
+              x2={m1ApexX - 6}
+              y2={m1HoleBotY}
+              stroke="rgb(var(--c-accent-rgb) / 0.55)"
+              strokeWidth="1"
+            />
+            <text x={m1X + 6} y={tubeTopY - 8} fontSize="10" letterSpacing="1.5"
+              fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb))">
+              M₁ · primary (spherical)
+            </text>
+          </g>
+
+          {/* RAY 2: M₁ surface → M₂ (converging toward F₁) */}
+          <line x1={rayHitUpX} y1={rayUpY} x2={m2X} y2={m2InterceptUpY}
+            stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.5" opacity={rayOp(2)} />
+          <line x1={rayHitDnX} y1={rayDnY} x2={m2X} y2={m2InterceptDnY}
+            stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.5" opacity={rayOp(2)} />
+
+          {/* F1 phantom — where the beam WOULD converge if M2 weren't there */}
+          <g opacity={rayOp(2) * 0.6}>
+            <line x1={m2X} y1={m2InterceptUpY} x2={f1X} y2={axisY}
+              stroke="rgb(var(--c-solar-rgb) / 0.45)" strokeWidth="0.8" strokeDasharray="2 3" />
+            <line x1={m2X} y1={m2InterceptDnY} x2={f1X} y2={axisY}
+              stroke="rgb(var(--c-solar-rgb) / 0.45)" strokeWidth="0.8" strokeDasharray="2 3" />
+            <line x1={f1X - 5} y1={axisY - 5} x2={f1X + 5} y2={axisY + 5}
+              stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="0.8" />
+            <line x1={f1X - 5} y1={axisY + 5} x2={f1X + 5} y2={axisY - 5}
+              stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="0.8" />
+            <text x={f1X} y={axisY - 12} textAnchor="middle" fontSize="9"
+              fontFamily="var(--font-mono)" letterSpacing="1.5"
+              fill="rgb(var(--c-text-rgb) / 0.55)">
+              F₁ (intercepted)
+            </text>
+          </g>
+
+          {/* M2 SECONDARY — convex (opening leftward) */}
+          <g style={{ opacity: compOp(2), filter: glow(2) }}>
+            <path
+              d={`M ${m2X} ${m2TopY} Q ${m2X + 12} ${axisY} ${m2X} ${m2BotY}`}
+              fill="none" stroke="rgb(var(--c-accent-rgb))" strokeWidth="3"
+              strokeLinecap="round"
+            />
+            {/* Spider supports */}
+            <line x1={m2X} y1={m2TopY} x2={m2X + 80} y2={tubeTopY}
+              stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth="0.6" />
+            <line x1={m2X} y1={m2BotY} x2={m2X + 80} y2={tubeBotY}
+              stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth="0.6" />
+            <text x={m2X} y={m2TopY - 8} textAnchor="middle" fontSize="10"
+              letterSpacing="1.5" fontFamily="var(--font-mono)"
+              fill="rgb(var(--c-accent-rgb))">
+              M₂ · secondary
+            </text>
+          </g>
+
+          {/* RAY 3: M2 → Cassegrain focus (through the primary hole) */}
+          <line x1={m2X} y1={m2InterceptUpY} x2={cassX} y2={axisY}
+            stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.5" opacity={rayOp(3)} />
+          <line x1={m2X} y1={m2InterceptDnY} x2={cassX} y2={axisY}
+            stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.5" opacity={rayOp(3)} />
+
+          {/* Cassegrain focus marker */}
+          <g style={{ opacity: compOp(3), filter: glow(3) }}>
+            <circle cx={cassX} cy={axisY} r="3.2" fill="rgb(var(--c-accent-rgb))" />
+            <text x={cassX} y={axisY + 26} textAnchor="middle" fontSize="9"
+              fontFamily="var(--font-mono)" letterSpacing="1.5"
+              fill="rgb(var(--c-accent-rgb))">
+              Cassegrain focus
+            </text>
+          </g>
+
+          {/* Flip mirror at the focus — orientation depends on which detector
+             is active (45° up to photometer or 45° down to spectrometer). */}
+          <g style={{ opacity: compOp(4) * 0.95, filter: glow(4) }}>
+            <line
+              x1={cassX - 7}
+              y1={photoOn ? axisY + 7 : axisY - 7}
+              x2={cassX + 7}
+              y2={photoOn ? axisY - 7 : axisY + 7}
+              stroke="rgb(var(--c-text-rgb) / 0.85)"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            />
+          </g>
+
+          {/* RAY 4: focus → instrument */}
+          {photoOn ? (
+            <line x1={cassX} y1={axisY} x2={photoEntryX} y2={photoEntryY}
+              stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.6" opacity={rayOp(4)} />
           ) : (
-            <>
-              {/* ── REFRACTOR: simple objective lens ─────────────────── */}
-              {/* Light rays — parallel from sky travel left, pass through
-                 the lens, refract to converge at the focal plane. */}
-              {[axisY - 50, axisY + 50].map((y) => (
-                <g key={`refractor-rays-${y}`}>
-                  <line
-                    x1={skyEntryX}
-                    y1={y}
-                    x2={lensX}
-                    y2={y}
-                    stroke="rgb(var(--c-solar-rgb) / 0.65)"
-                    strokeWidth="1.3"
-                  />
-                  <line
-                    x1={lensX}
-                    y1={y}
-                    x2={focalPlaneX}
-                    y2={axisY}
-                    stroke="rgb(var(--c-solar-rgb) / 0.6)"
-                    strokeWidth="1.2"
-                  />
-                </g>
-              ))}
-
-              {/* BICONVEX LENS */}
-              <g onClick={() => setActive("collector")} style={{ cursor: "pointer" }}>
-                <path
-                  d={`M ${lensX - 14} ${axisY - 56} Q ${lensX + 22} ${axisY} ${lensX - 14} ${axisY + 56} Q ${lensX - 50} ${axisY} ${lensX - 14} ${axisY - 56} Z`}
-                  fill={collectorActive ? "rgb(var(--c-accent-rgb) / 0.12)" : "rgb(var(--c-text-rgb) / 0.04)"}
-                  stroke={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.85)"}
-                  strokeWidth={collectorActive ? 2.2 : 1.6}
-                  style={{
-                    filter: collectorActive ? "drop-shadow(0 0 14px rgb(var(--c-accent-rgb) / 0.45))" : "none",
-                  }}
-                />
-                <text x={lensX + 30} y={axisY + 4} fontSize="10" letterSpacing="2" fontFamily="var(--font-mono)" fill={collectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.7)"}>
-                  OBJECTIVE LENS
-                </text>
-              </g>
-
-              {/* TUBE label */}
-              <text x={tubeStartX + 80} y={tubeTopY - 10} fontSize="9" letterSpacing="3" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.4)">
-                TUBE
-              </text>
-            </>
+            <line x1={cassX} y1={axisY} x2={specEntryX} y2={specEntryY}
+              stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.6" opacity={rayOp(4)} />
           )}
 
-          {/* ── FOCAL PLANE (clickable) ──────────────────────────────── */}
-          <g onClick={() => setActive("focal")} style={{ cursor: "pointer" }}>
-            <circle
-              cx={focalPlaneX}
-              cy={axisY}
-              r={focalActive ? 6 : 4.5}
-              fill={focalActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.85)"}
-              style={{ filter: focalActive ? "drop-shadow(0 0 10px rgb(var(--c-accent-rgb) / 0.7))" : "none" }}
-            />
-            <text x={focalPlaneX} y={axisY - 14} textAnchor="middle" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={focalActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}>
-              FOCAL PLANE
+          {/* ── PHOTOMETER ──────────────────────────────────────── */}
+          <g
+            style={{
+              opacity: photoOn ? compOp(4) : 0.28,
+              filter: photoOn ? glow(4) : "none",
+            }}
+          >
+            <rect x={photoX} y={photoY} width={photoW} height={photoH}
+              rx="3"
+              fill="rgb(var(--c-text-rgb) / 0.04)"
+              stroke={photoOn ? "rgb(var(--c-accent-rgb) / 0.7)" : "rgb(var(--c-text-rgb) / 0.3)"}
+              strokeWidth="1" />
+            {/* Filter wheel — pie slices */}
+            <g transform={`translate(${photoX + 75}, ${photoY + 30})`}>
+              <circle r="14"
+                fill="rgb(var(--c-text-rgb) / 0.05)"
+                stroke="rgb(var(--c-text-rgb) / 0.4)"
+                strokeWidth="0.6" />
+              {[
+                { from: 0, to: 60, color: "#9c6cff" },
+                { from: 60, to: 120, color: "#5f88ff" },
+                { from: 120, to: 180, color: "#5fc36f" },
+                { from: 180, to: 240, color: "#ff8a4d" },
+                { from: 240, to: 300, color: "#d04040" },
+                { from: 300, to: 360, color: "#888888" },
+              ].map((sl, i) => {
+                const a0 = ((sl.from - 90) * Math.PI) / 180;
+                const a1 = ((sl.to - 90) * Math.PI) / 180;
+                const x0 = Math.cos(a0) * 14;
+                const y0 = Math.sin(a0) * 14;
+                const x1 = Math.cos(a1) * 14;
+                const y1 = Math.sin(a1) * 14;
+                return (
+                  <path
+                    key={i}
+                    d={`M 0 0 L ${x0.toFixed(1)} ${y0.toFixed(1)} A 14 14 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`}
+                    fill={sl.color}
+                    opacity="0.55"
+                  />
+                );
+              })}
+            </g>
+            {/* CCD chip */}
+            <g transform={`translate(${photoX + 12}, ${photoY + 22})`}>
+              <rect x="0" y="0" width="22" height="16"
+                fill="rgb(var(--c-text-rgb) / 0.12)"
+                stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="0.6" />
+              {Array.from({ length: 3 }, (_, i) => (
+                <line key={`v${i}`} x1={(i + 1) * 5.5} y1="0" x2={(i + 1) * 5.5} y2="16"
+                  stroke="rgb(var(--c-text-rgb) / 0.3)" strokeWidth="0.3" />
+              ))}
+              {Array.from({ length: 2 }, (_, i) => (
+                <line key={`h${i}`} x1="0" y1={(i + 1) * 5.5} x2="22" y2={(i + 1) * 5.5}
+                  stroke="rgb(var(--c-text-rgb) / 0.3)" strokeWidth="0.3" />
+              ))}
+            </g>
+            <text x={photoX + photoW / 2} y={photoY - 6} textAnchor="middle"
+              fontSize="10" letterSpacing="1.5" fontFamily="var(--font-mono)"
+              fill={photoOn ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}>
+              IMAGING PHOTOMETER
+            </text>
+            <text x={photoX + 23} y={photoY + 50} textAnchor="middle"
+              fontSize="7" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+              CCD
+            </text>
+            <text x={photoX + 75} y={photoY + 52} textAnchor="middle"
+              fontSize="7" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+              filters
             </text>
           </g>
 
-          {/* ── DETECTOR (CCD chip) ──────────────────────────────────── */}
-          <g onClick={() => setActive("detector")} style={{ cursor: "pointer" }}>
-            <rect
-              x={detectorX}
-              y={detectorY}
-              width={detectorW}
-              height={detectorH}
-              fill={detectorActive ? "rgb(var(--c-accent-rgb) / 0.18)" : "rgb(var(--c-text-rgb) / 0.08)"}
-              stroke={detectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}
-              strokeWidth={detectorActive ? 1.6 : 1.1}
-            />
-            {/* CCD grid texture */}
-            {Array.from({ length: 4 }).map((_, i) => (
-              <line key={`dg-${i}`} x1={detectorX + (i + 1) * (detectorW / 5)} y1={detectorY + 4} x2={detectorX + (i + 1) * (detectorW / 5)} y2={detectorY + detectorH - 4} stroke="rgb(var(--c-text-rgb) / 0.2)" strokeWidth="0.5" />
+          {/* ── SPECTROMETER ───────────────────────────────────── */}
+          <g
+            style={{
+              opacity: specOn ? compOp(4) : 0.28,
+              filter: specOn ? glow(4) : "none",
+            }}
+          >
+            <rect x={specX} y={specY} width={specW} height={specH}
+              rx="3"
+              fill="rgb(var(--c-text-rgb) / 0.04)"
+              stroke={specOn ? "rgb(var(--c-accent-rgb) / 0.7)" : "rgb(var(--c-text-rgb) / 0.3)"}
+              strokeWidth="1" />
+            {/* Entrance slit */}
+            <g transform={`translate(${specX + 90}, ${specY + 18})`}>
+              <line x1="0" y1="0" x2="0" y2="6" stroke="rgb(var(--c-text-rgb) / 0.85)" strokeWidth="1" />
+              <line x1="0" y1="14" x2="0" y2="20" stroke="rgb(var(--c-text-rgb) / 0.85)" strokeWidth="1" />
+            </g>
+            {/* Grating with rulings */}
+            <g transform={`translate(${specX + 60}, ${specY + 16}) rotate(-30)`}>
+              <line x1="0" y1="0" x2="0" y2="24" stroke="rgb(var(--c-text-rgb) / 0.75)" strokeWidth="1.4" />
+              {[2, 7, 12, 17, 22].map((d) => (
+                <line key={d} x1="-3" y1={d} x2="3" y2={d}
+                  stroke="rgb(var(--c-text-rgb) / 0.75)" strokeWidth="0.5" />
+              ))}
+            </g>
+            {/* Dispersed colour rays — grating to linear CCD */}
+            {[
+              { color: "#9c6cff", x: 12 },
+              { color: "#5f88ff", x: 19 },
+              { color: "#5fc36f", x: 26 },
+              { color: "#ddcc40", x: 33 },
+              { color: "#ff8a4d", x: 40 },
+              { color: "#d04040", x: 47 },
+            ].map((s, i) => (
+              <line key={i}
+                x1={specX + 60} y1={specY + 30}
+                x2={specX + s.x} y2={specY + 48}
+                stroke={s.color} strokeWidth="0.9" opacity="0.85" />
             ))}
-            <text x={detectorX + detectorW / 2} y={detectorY + detectorH + 14} textAnchor="middle" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={detectorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}>
-              DETECTOR
+            {/* Linear CCD */}
+            <g transform={`translate(${specX + 8}, ${specY + 47})`}>
+              <rect x="0" y="0" width="48" height="6"
+                fill="rgb(var(--c-text-rgb) / 0.12)"
+                stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="0.5" />
+              {Array.from({ length: 7 }, (_, i) => (
+                <line key={i} x1={(i + 1) * 6} y1="0" x2={(i + 1) * 6} y2="6"
+                  stroke="rgb(var(--c-text-rgb) / 0.3)" strokeWidth="0.3" />
+              ))}
+            </g>
+            <text x={specX + specW / 2} y={specY + specH + 14} textAnchor="middle"
+              fontSize="10" letterSpacing="1.5" fontFamily="var(--font-mono)"
+              fill={specOn ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}>
+              SPECTROMETER
+            </text>
+            <text x={specX + 92} y={specY + 12} textAnchor="end" fontSize="7"
+              fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+              slit
+            </text>
+            <text x={specX + 58} y={specY + 12} textAnchor="end" fontSize="7"
+              fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+              grating
             </text>
           </g>
 
-          {/* ── PROCESSOR (computer icon) ────────────────────────────── */}
-          <g onClick={() => setActive("processor")} style={{ cursor: "pointer" }}>
-            <line
-              x1={detectorX}
-              y1={axisY}
-              x2={processorX + 32}
-              y2={axisY}
-              stroke={processorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.5)"}
-              strokeWidth={processorActive ? 1.6 : 1}
-            />
-            <rect
-              x={processorX}
-              y={processorY}
-              width={32}
-              height={28}
-              rx={3}
-              fill={processorActive ? "rgb(var(--c-accent-rgb) / 0.18)" : "rgb(var(--c-text-rgb) / 0.08)"}
-              stroke={processorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}
-              strokeWidth={processorActive ? 1.6 : 1.1}
-            />
-            <rect
-              x={processorX + 4}
-              y={processorY + 4}
-              width={24}
-              height={16}
-              fill={processorActive ? "rgb(var(--c-accent-rgb) / 0.35)" : "rgb(var(--c-text-rgb) / 0.18)"}
-            />
-            <text x={processorX + 16} y={processorY + 44} textAnchor="middle" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={processorActive ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}>
-              PROCESSOR
+          {/* SIGNAL lines (electronic, dashed copper) instrument → processor */}
+          <line
+            x1={photoX + 6} y1={photoY + photoH / 2}
+            x2={procX + procW} y2={procY + 8}
+            stroke="#d4a23a" strokeWidth="1.2" strokeDasharray="3 3"
+            opacity={photoOn ? rayOp(5) : 0.14}
+          />
+          <line
+            x1={specX + 6} y1={specY + specH / 2}
+            x2={procX + procW} y2={procY + procH - 8}
+            stroke="#d4a23a" strokeWidth="1.2" strokeDasharray="3 3"
+            opacity={specOn ? rayOp(5) : 0.14}
+          />
+
+          {/* PROCESSOR / COMPUTER */}
+          <g style={{ opacity: compOp(5), filter: glow(5) }}>
+            <rect x={procX} y={procY} width={procW} height={procH} rx="4"
+              fill="rgb(var(--c-text-rgb) / 0.08)"
+              stroke="rgb(var(--c-accent-rgb) / 0.7)" strokeWidth="1.2" />
+            {Array.from({ length: 3 }, (_, i) => (
+              <line key={i}
+                x1={procX + 12 + i * 10} y1={procY + 10}
+                x2={procX + 12 + i * 10} y2={procY + procH - 10}
+                stroke="rgb(var(--c-accent-rgb) / 0.55)" strokeWidth="0.6" />
+            ))}
+            <text x={procX + procW / 2} y={procY - 6} textAnchor="middle"
+              fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)"
+              fill="rgb(var(--c-accent-rgb))">
+              COMPUTER
             </text>
           </g>
 
-          {/* "Light from sky" label */}
-          <text x={skyEntryX + 4} y={tubeTopY - 18} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-solar-rgb) / 0.9)">
-            ← LIGHT FROM SKY
-          </text>
-          <text x={skyEntryX + 4} y={tubeTopY - 6} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-solar-rgb) / 0.55)">
-            (tube opens)
-          </text>
+          {/* Output arrow processor → output panel */}
+          <line
+            x1={procX + procW / 2} y1={procY + procH + 2}
+            x2={procX + procW / 2} y2={outY - 4}
+            stroke="rgb(var(--c-accent-rgb))" strokeWidth="1.4"
+            opacity={rayOp(6)} markerEnd="url(#anatomyArrow)"
+          />
+
+          {/* OUTPUT PANEL — image (photometer) OR spectrum (spectrometer) */}
+          <g style={{ opacity: compOp(6), filter: glow(6) }}>
+            <rect x={outX} y={outY} width={outW} height={outH} rx="3"
+              fill="rgba(0,0,0,0.4)"
+              stroke="rgb(var(--c-accent-rgb) / 0.55)" strokeWidth="1" />
+            <text x={outX + outW / 2} y={outY - 5} textAnchor="middle"
+              fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)"
+              fill="rgb(var(--c-accent-rgb) / 0.85)">
+              {photoOn ? "IMAGE" : "SPECTRUM"}
+            </text>
+            {photoOn ? (
+              <g transform={`translate(${outX + 10}, ${outY + 6})`}>
+                {[
+                  { x: 18, y: 22, r: 2.6 },
+                  { x: 48, y: 12, r: 1.6 },
+                  { x: 80, y: 18, r: 3.1 },
+                  { x: 118, y: 28, r: 1.8 },
+                  { x: 150, y: 16, r: 2.1 },
+                  { x: 38, y: 34, r: 1.5 },
+                  { x: 100, y: 35, r: 2.3 },
+                  { x: 175, y: 30, r: 1.4 },
+                  { x: 192, y: 14, r: 1.2 },
+                ].map((s, i) => (
+                  <circle key={i} cx={s.x} cy={s.y} r={s.r}
+                    fill="white" opacity="0.9" />
+                ))}
+                <text x={198} y={42} textAnchor="end" fontSize="7"
+                  fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+                  brightness map
+                </text>
+              </g>
+            ) : (
+              <g transform={`translate(${outX + 10}, ${outY + 6})`}>
+                {/* baseline axis */}
+                <line x1="0" y1="32" x2="200" y2="32"
+                  stroke="rgb(var(--c-text-rgb) / 0.4)" strokeWidth="0.6" />
+                {/* continuum */}
+                <line x1="0" y1="22" x2="200" y2="22"
+                  stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.2" opacity="0.5" />
+                {/* emission spikes */}
+                {[
+                  { x: 25, h: 14 },
+                  { x: 65, h: 19 },
+                  { x: 110, h: 11 },
+                  { x: 160, h: 9 },
+                ].map((p, i) => (
+                  <line key={i}
+                    x1={p.x} y1={22} x2={p.x} y2={22 - p.h}
+                    stroke="rgb(var(--c-accent-rgb))" strokeWidth="1.5" />
+                ))}
+                <text x="0" y="40" fontSize="6"
+                  fontFamily="var(--font-mono)"
+                  fill="rgb(var(--c-text-rgb) / 0.5)">
+                  λ →
+                </text>
+                <text x={198} y={42} textAnchor="end" fontSize="7"
+                  fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+                  intensity vs λ
+                </text>
+              </g>
+            )}
+          </g>
         </svg>
       </div>
 
-      <div className="flex gap-2 mt-4 flex-wrap">
-        {PARTS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => setActive(p.id)}
-            className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${active === p.id ? "is-active" : ""}`}
-          >
-            {p.name.split(" ")[0]}
-          </button>
-        ))}
-      </div>
-
+      {/* Stage description */}
       <div
-        className="mt-4 p-3 rounded-md text-[13px] text-white/80 leading-[1.6] font-sans"
+        className="mt-4 px-4 py-2.5 rounded-md text-[14px] leading-snug text-white/85"
         style={{
-          background: "rgb(var(--c-accent-rgb) / 0.04)",
+          background: "rgb(var(--c-accent-rgb) / 0.05)",
           border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
         }}
       >
         <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">
-          {PARTS.find((p) => p.id === active)!.name}
+          {ANATOMY_STAGES[stage].label}
         </span>
-        {PARTS.find((p) => p.id === active)!.desc}
+        {ANATOMY_STAGES[stage].blurb}
       </div>
     </FigurePanel>
   );
