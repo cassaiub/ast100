@@ -62,7 +62,7 @@ export default function Hero() {
           From a singular instant of impossible heat, through unification and
           inflation and the first quarks freezing into protons, to the fog
           lifting and light streaming free for the very first time. The
-          universe rewrites itself fifteen times before it is one second old.
+          Universe rewrites itself fifteen times before it is one second old.
         </p>
 
         <div
@@ -76,7 +76,7 @@ export default function Hero() {
 
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>t = 0 &nbsp;◇&nbsp; 380,000 yr</div>
-        <div className="text-plasma/60">10³² K → 3000 K</div>
+        <div className="text-plasma/60">{"$10^{32}$ K → 3000 K"}</div>
       </div>
     </section>
   );

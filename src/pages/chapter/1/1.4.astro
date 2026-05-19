@@ -6,12 +6,14 @@ import {
   PenziasWilsonStoryPanel,
   CmbSatellitesPanel,
 } from "../../../components/scenes/1.4/figures";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
+import { withBase } from "../../../data/course-nav";
 ---
 
 <ChapterLayout
   title="1.4 — Cosmic Microwave Background · AST 100"
-  description="The oldest light in the universe. Recombination, redshift, the 1964 discovery at Bell Labs, and the satellite maps that turned cosmology into a precision science."
+  description="The oldest light in the Universe. Recombination, redshift, the 1964 discovery at Bell Labs, and the satellite maps that turned cosmology into a precision science."
   activeId="1.4"
   chapter={1}
   current="/chapter/1/1.4"
@@ -31,11 +33,11 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
       </header>
 
       <p data-fade class="dropcap">
-        In the earliest moments of the universe, photons were trapped in a
+        In the earliest moments of the Universe, photons were trapped in a
         hot, dense fog of free electrons that scattered light continuously,
         rendering the cosmos opaque. However, approximately{" "}
         <strong>400,000 years</strong> after the Big Bang, the expanding
-        universe cooled to roughly <strong>3000 K</strong>, a threshold low
+        Universe cooled to roughly <strong>3000 K</strong>, a threshold low
         enough for electrons to combine with protons and form neutral
         hydrogen atoms. This pivotal event, known as <strong>recombination</strong>,
         lifted the fog and allowed photons to decouple from matter, finally
@@ -54,7 +56,7 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
 
       <p data-fade>
         Over the subsequent 14 billion years, the relentless expansion of
-        the universe has stretched the fabric of space itself, elongating
+        the Universe has stretched the fabric of space itself, elongating
         the wavelengths of these ancient photons by a factor of roughly{" "}
         <strong>1,100</strong> through cosmological redshift. Consequently,
         this primordial radiation has cooled and shifted from energetic
@@ -64,7 +66,9 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
         often rounded to 3 K.
       </p>
 
-      <RecombinationRedshiftPanel client:visible />
+      <FigureFrame label="Recombination &amp; redshift">
+        <RecombinationRedshiftPanel client:visible />
+      </FigureFrame>
 
       <header class="mt-24 mb-10" id="penzias-wilson">
         <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
@@ -93,12 +97,14 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
         they consulted Robert Dicke's team at Princeton, who identified the
         &ldquo;static&rdquo; as the elusive CMB. This discovery provided
         the smoking gun for the Big Bang theory, as the radiation perfectly
-        matched the predicted &ldquo;fossil remnant&rdquo; of the universe's
+        matched the predicted &ldquo;fossil remnant&rdquo; of the Universe's
         hot, dense origin — now redshifted to about 3 Kelvin — a phenomenon
         the competing Steady State theory could not explain.
       </p>
 
-      <PenziasWilsonStoryPanel client:visible />
+      <FigureFrame label="Penzias &amp; Wilson 1964">
+        <PenziasWilsonStoryPanel client:visible />
+      </FigureFrame>
 
       <header class="mt-24 mb-10" id="satellites">
         <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
@@ -126,14 +132,16 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
         mission (2001), which mapped the sky with 30× better resolution and
         significantly greater sensitivity than its predecessor. Finally, the
         European Space Agency's <strong>Planck</strong> mission (2009)
-        brought the early universe into even sharper focus, improving
+        brought the early Universe into even sharper focus, improving
         resolution by another factor of three and sensitivity by a factor of
         ten. Together, these progressively detailed maps have transformed
         cosmology into a precision science, confirming a spatially flat
-        universe dominated by dark energy and dark matter.
+        Universe dominated by dark energy and dark matter.
       </p>
 
-      <CmbSatellitesPanel client:visible />
+      <FigureFrame label="COBE WMAP Planck satellites">
+        <CmbSatellitesPanel client:visible />
+      </FigureFrame>
 
       <p data-fade>
         The Planck mission delivered the most exquisite all-sky map of the
@@ -146,8 +154,33 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
         Through the relentless influence of gravity, matter eventually
         coalesced in the denser regions to form the vast web of galaxies
         and clusters observed today, making the Planck map a direct image
-        of the embryonic structures of our universe.
+        of the embryonic structures of our Universe.
       </p>
+
+      <FigureFrame label="Planck all-sky CMB map">
+        <figure data-fade class="my-0">
+          <img
+            src={withBase("/images/media/cmb.webp")}
+            alt="ESA Planck satellite's all-sky map of the Cosmic Microwave Background — temperature fluctuations of about 400 microkelvin on a 2.7 K background. Blue regions are slightly cooler and denser; red regions slightly hotter and less dense."
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto rounded-md"
+            style="display: block; border: 1px solid var(--c-border);"
+          />
+        <figcaption class="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
+          <span class="text-plasma font-mono tracking-[0.14em]">Fig. 1.4</span>
+          <span class="mx-2 text-white/35">/</span>
+          The Planck all-sky CMB map. Every point is a photon released 380,000
+          years after the Big Bang and stretched a thousand-fold during its
+          13.8-billion-year journey. The tiny temperature ripples — blue cooler,
+          red hotter — are the gravitational seeds of every galaxy, cluster,
+          and cosmic-web filament that followed.
+          <span class="block mt-2 font-mono text-[10px] tracking-[0.18em] uppercase text-white/40">
+            Credit · ESA / Planck Collaboration
+          </span>
+        </figcaption>
+      </figure>
+      </FigureFrame>
 
       <p data-fade>
         Planck operated from the <strong>L2 Lagrangian</strong> point, a
@@ -160,7 +193,7 @@ import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
         Way Galaxy, which appeared as a bright band in the raw data. By
         comparing observations at multiple wavelengths (3 mm to 13 mm),
         scientists successfully subtracted these local signals to unveil
-        the faint, primordial background universe at its infancy.
+        the faint, primordial background Universe at its infancy.
       </p>
 
       <div data-fade class="my-16 rule"></div>

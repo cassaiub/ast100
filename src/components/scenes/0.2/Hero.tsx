@@ -61,7 +61,7 @@ export default function Hero() {
           style={{ ["--delay" as string]: "420ms" }}
           className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]"
         >
-          A universe that begins as a singular instant of heat and pressure, then
+          A Universe that begins as a singular instant of heat and pressure, then
           spends fourteen billion years cooling, expanding, and quietly building
           islands of order out of an ocean of disorder.
         </p>

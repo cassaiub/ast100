@@ -26,8 +26,8 @@ function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: 
 /* ── Recombination & Redshift ───────────────────────────────────────
    Slider scrubs cosmic scale factor a from 1 (at recombination) to
    1100 (today). Visualises:
-   - Top: a patch of universe transitioning from opaque plasma fog
-     (free electrons + photons trapped) to clear universe with neutral
+   - Top: a patch of Universe transitioning from opaque plasma fog
+     (free electrons + photons trapped) to clear Universe with neutral
      atoms and freely streaming photons.
    - Bottom: a sinusoidal wave that stretches with scale, showing
      wavelength growing from ~visible (380 nm-ish in scale terms)
@@ -92,7 +92,7 @@ export function RecombinationRedshiftPanel() {
     <FigurePanel
       idx="1.4.1"
       kicker="Recombination · The Fog Lifts, Photons Stretch"
-      caption="At 380,000 years, the universe cooled enough for electrons to bind to nuclei. Light decoupled from matter and streamed free. As space has expanded by a factor of 1100 since, those primordial photons have stretched from visible/IR light into microwaves — the CMB we see today at 2.73 K."
+      caption="At 380,000 years, the Universe cooled enough for electrons to bind to nuclei. Light decoupled from matter and streamed free. As space has expanded by a factor of 1100 since, those primordial photons have stretched from visible/IR light into microwaves — the CMB we see today at 2.73 K."
     >
       {/* Plasma → clear panel */}
       <div className="relative w-full overflow-hidden rounded-md mb-3" style={{ background: "rgb(var(--c-bg-rgb) / 0.5)" }}>
@@ -283,14 +283,14 @@ const BEATS: Beat[] = [
     id: "confirm",
     year: "1965",
     title: "Big Bang confirmed",
-    body: "The 'static' matches the predicted blackbody spectrum of the universe's hot, dense origin — redshifted to about 3 Kelvin today. The competing Steady State theory of cosmology has no way to explain it. The Big Bang becomes the accepted model.",
+    body: "The 'static' matches the predicted blackbody spectrum of the Universe's hot, dense origin — redshifted to about 3 Kelvin today. The competing Steady State theory of cosmology has no way to explain it. The Big Bang becomes the accepted model.",
     icon: "spectrum",
   },
   {
     id: "nobel",
     year: "1978",
     title: "Nobel Prize in Physics",
-    body: "Penzias and Wilson share the 1978 Nobel Prize in Physics for the discovery. The signal they couldn't explain turns out to be the oldest light in the universe — the fossil afterglow of the Big Bang.",
+    body: "Penzias and Wilson share the 1978 Nobel Prize in Physics for the discovery. The signal they couldn't explain turns out to be the oldest light in the Universe — the fossil afterglow of the Big Bang.",
     icon: "nobel",
   },
 ];
@@ -449,7 +449,7 @@ type Mission = {
 };
 const MISSIONS: Mission[] = [
   { id: "cobe",  name: "COBE",  year: 1989, grid: 8,  res: "≈7° resolution", blurb: "NASA's pioneer. First full-sky CMB map; confirmed the blackbody spectrum and detected the first tiny anisotropies that would seed structure." },
-  { id: "wmap",  name: "WMAP",  year: 2001, grid: 24, res: "≈14′ resolution (30× COBE)", blurb: "Nailed the universe's age, composition, and curvature. The 'precision cosmology' era starts here." },
+  { id: "wmap",  name: "WMAP",  year: 2001, grid: 24, res: "≈14′ resolution (30× COBE)", blurb: "Nailed the Universe's age, composition, and curvature. The 'precision cosmology' era starts here." },
   { id: "planck",name: "Planck",year: 2009, grid: 64, res: "≈5′ resolution (3× WMAP)", blurb: "ESA's most exquisite all-sky CMB map. From the L2 Lagrange point, Planck scanned the sky every 6 months at 9 frequencies (3 mm to 13 mm) to subtract Milky Way foregrounds." },
 ];
 

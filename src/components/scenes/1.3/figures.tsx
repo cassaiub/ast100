@@ -23,7 +23,7 @@ function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: 
 }
 
 /* ── Nucleosynthesis Timeline ───────────────────────────────────────
-   Scrub through the first 20 minutes of the universe and watch which
+   Scrub through the first 20 minutes of the Universe and watch which
    nuclei exist at each stage. */
 type Stage = { t: string; T: string; logSec: number; phase: string; products: string[]; note: string };
 const STAGES: Stage[] = [
@@ -103,14 +103,14 @@ export function NucleosynthesisTimelinePanel() {
 }
 
 /* ── Primordial Abundance · Pie chart with a slider ─────────────────
-   Two outcomes side by side: the universe we got (75/25/trace) vs the
-   universe we'd have if expansion had been slower (almost all iron).
+   Two outcomes side by side: the Universe we got (75/25/trace) vs the
+   Universe we'd have if expansion had been slower (almost all iron).
    A slider mocks the "expansion rate" and the pie shifts. The locked
-   recipe is the universe we live in. */
+   recipe is the Universe we live in. */
 export function PrimordialAbundancePanel() {
   const [rate, setRate] = useState(1); // 0 = slow, 1 = actual, 2 = fast
 
-  /* Compute composition. Default (rate=1) is the real universe. */
+  /* Compute composition. Default (rate=1) is the real Universe. */
   let H = 75, He = 25, heavy = 0;
   if (rate < 1) {
     /* Slower expansion would fuse more H into heavier elements */
@@ -142,14 +142,14 @@ export function PrimordialAbundancePanel() {
     const xi0 = cx + ir * Math.cos(a0), yi0 = cy + ir * Math.sin(a0);
     return `M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1} L ${xi1} ${yi1} A ${ir} ${ir} 0 ${large} 0 ${xi0} ${yi0} Z`;
   }
-  const rateLabel = rate < 0.6 ? "all-iron cosmos" : rate < 0.95 ? "metal-rich, no stars" : rate < 1.05 ? "our universe" : rate < 1.5 ? "almost pure H" : "no helium at all";
+  const rateLabel = rate < 0.6 ? "all-iron cosmos" : rate < 0.95 ? "metal-rich, no stars" : rate < 1.05 ? "our Universe" : rate < 1.5 ? "almost pure H" : "no helium at all";
   const isReal = Math.abs(rate - 1) < 0.05;
 
   return (
     <FigurePanel
       idx="1.3.2"
       kicker="The 75/25 Recipe · A Cosmic Lucky Number"
-      caption="The universe expanded at just the right rate. Slower, and almost all hydrogen would have fused into iron — stagnant, lifeless. Faster, and no helium would have formed at all. Slide to see why our specific expansion is one of the most consequential numbers in physics."
+      caption="The Universe expanded at just the right rate. Slower, and almost all hydrogen would have fused into iron — stagnant, lifeless. Faster, and no helium would have formed at all. Slide to see why our specific expansion is one of the most consequential numbers in physics."
     >
       <div className="grid md:grid-cols-[1fr_1.4fr] gap-6 items-center">
         <div className="relative">
@@ -206,7 +206,7 @@ export function PrimordialAbundancePanel() {
         />
         <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
           <span>slow · all iron</span>
-          <span>our universe</span>
+          <span>our Universe</span>
           <span>fast · no He</span>
         </div>
       </div>

@@ -5,12 +5,13 @@ import {
   StandardModelPanel,
   AntiparticleAnnihilationPanel,
 } from "../../../components/scenes/1.2/figures";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
 ---
 
 <ChapterLayout
   title="1.2 — Formation of Elementary Particles · AST 100"
-  description="The Standard Model — seventeen particles that build everything. Plus pair production, freeze-out, and the one-in-a-billion accident that left a universe of matter behind."
+  description="The Standard Model — seventeen particles that build everything. Plus pair production, freeze-out, and the one-in-a-billion accident that left a Universe of matter behind."
   activeId="1.2"
   chapter={1}
   current="/chapter/1/1.2"
@@ -32,19 +33,21 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
 
       <p data-fade class="dropcap">
         The Standard Model of Particle Physics is a cosmic inventory that
-        organizes the universe into <strong>bricks</strong> (elementary particles
+        organizes the Universe into <strong>bricks</strong> (elementary particles
         of matter) and the <strong>mortar</strong> (elementary particles of
         energy) that binds them. At the very center lies the{" "}
         <strong>Higgs boson</strong>, the particle associated with a field that
         permeates the vacuum of space. By interacting with this field, other
         particles gain mass, effectively transitioning from manifestations of
         pure energy into the building blocks of a tangible world. Without
-        this mechanism, the fundamental bricks would zip through the universe
+        this mechanism, the fundamental bricks would zip through the Universe
         at the speed of light, unable to clump together to form atoms, stars,
         or the complex structures of life.
       </p>
 
-      <StandardModelPanel client:visible />
+      <FigureFrame label="Standard Model">
+        <StandardModelPanel client:visible />
+      </FigureFrame>
 
       {/* ── §2 Bosons ────────────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="mortar">
@@ -60,7 +63,7 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
       <p data-fade>
         The orange ring of the Standard Model identifies the{" "}
         <strong>bosons</strong>, which can be thought of as the
-        &ldquo;mortar&rdquo; or force carriers of the universe. Rather than
+        &ldquo;mortar&rdquo; or force carriers of the Universe. Rather than
         solid matter, these particles are essentially discrete packets of
         energy — quanta — that mediate interactions. The photon (γ) carries
         electromagnetic energy, the gluon (g) manages the strong-force glue
@@ -112,7 +115,9 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
         high-energy or high-frequency) photons.
       </p>
 
-      <AntiparticleAnnihilationPanel client:visible />
+      <FigureFrame label="Antiparticle annihilation">
+        <AntiparticleAnnihilationPanel client:visible />
+      </FigureFrame>
 
       {/* ── §5 Origin ────────────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="origin">
@@ -126,10 +131,10 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
       </header>
 
       <p data-fade>
-        The genesis of the material universe was a process governed by the
+        The genesis of the material Universe was a process governed by the
         dynamic equivalence of matter and energy, formulated by Einstein's
-        celebrated principle, <span class="katex-faux">E = mc²</span>. In the
-        intensely energetic environment of the infant universe, subatomic
+        celebrated principle, $E = mc^&#123;2&#125;$. In the
+        intensely energetic environment of the infant Universe, subatomic
         particles did not exist as stable entities; instead, they
         &ldquo;materialized&rdquo; from radiant energy through{" "}
         <strong>pair production</strong> — a mechanism in which high-energy
@@ -140,23 +145,23 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
       </p>
 
       <p data-fade>
-        However, as the universe expanded and cooled, the energy density
+        However, as the Universe expanded and cooled, the energy density
         dropped below the specific <strong>threshold temperatures</strong>{" "}
         required to sustain the production of massive particles. Various
         types of particles &ldquo;froze out&rdquo; of the radiation field,
-        becoming permanent features of the universe. This is why the
+        becoming permanent features of the Universe. This is why the
         bosons emerged in a specific order: the hypothetical graviton first
-        (Planck epoch), then gluons at the GUT epoch around 10⁻³⁵ seconds,
-        and finally the photons and W/Z bosons at 10⁻¹² seconds.
+        (Planck epoch), then gluons at the GUT epoch around $10^&#123;-35&#125;$ seconds,
+        and finally the photons and W/Z bosons at $10^&#123;-12&#125;$ seconds.
       </p>
 
       <p data-fade>
         Fermions followed, stabilising in order of mass. Within the first
-        microsecond, the universe was a <strong>quark-gluon plasma</strong>.
-        As the temperature fell below 10¹³ Kelvin (≈1 microsecond), quarks
+        microsecond, the Universe was a <strong>quark-gluon plasma</strong>.
+        As the temperature fell below $10^&#123;13&#125;$ Kelvin (≈1 microsecond), quarks
         bound permanently into hadrons — protons and neutrons. By 1 second,
         neutrinos decoupled and began their journey as leftover radiation.
-        By 1 minute and 10⁹ Kelvin, electrons froze out, ending the primary
+        By 1 minute and $10^&#123;9&#125;$ Kelvin, electrons froze out, ending the primary
         matter-creation phase.
       </p>
 
@@ -167,7 +172,7 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
         matter were produced. As the cosmos cooled, matter and antimatter
         annihilated in a near-total erasure, transforming their mass back
         into the radiant energy that permeates the modern sky as the Cosmic
-        Microwave Background. The entire observable universe — every galaxy,
+        Microwave Background. The entire observable Universe — every galaxy,
         star, and human being — is constructed from the minuscule{" "}
         <strong>one-in-a-billion</strong> residue of survivors.
       </p>
@@ -176,7 +181,7 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
 
       <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
         Seventeen particles, three generations, one Higgs field — and a
-        rounding error from cosmic accounting that lets a universe of
+        rounding error from cosmic accounting that lets a Universe of
         matter exist at all.
       </p>
     </div>

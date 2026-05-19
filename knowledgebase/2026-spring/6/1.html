@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6.1 Tree of Life — AST 100</title>
+<meta name="description" content="This map depicts the three domains of life, Bacteria, Archaea, and Eukarya, utilizing genomic data from over 1,000 newly discovered uncultivated organisms.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/minds/ast100/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/minds/ast100/" class="nav-brand">AST 100</a>
+    <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+    <ul class="nav-links">
+      <li><a href="/minds/ast100/">Home</a></li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">0</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/0/">Seven Ages of the Universe</a></li>
+          <li><a href="/minds/ast100/0/1.html">0.1 SpaceTime and Energy-Matter</a></li>
+          <li><a href="/minds/ast100/0/2.html">0.2 Cosmic Evolution</a></li>
+          <li><a href="/minds/ast100/0/3.html">0.3 Observable Universe</a></li>
+          <li><a href="/minds/ast100/0/4.html">0.4 Light and Telescopes</a></li>
+        </ul>
+      </li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">1</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/1/">Particle Age</a></li>
+          <li><a href="/minds/ast100/1/1.html">1.1 The Four Fundamental Forces</a></li>
+          <li><a href="/minds/ast100/1/2.html">1.2 Formation of Elementary Particles</a></li>
+          <li><a href="/minds/ast100/1/3.html">1.3 Synthesis of Elements</a></li>
+          <li><a href="/minds/ast100/1/4.html">1.4 Cosmic Microwave Background</a></li>
+        </ul>
+      </li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">2</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/2/">Galactic Age</a></li>
+          <li><a href="/minds/ast100/2/1.html">2.1 The Milky Way</a></li>
+          <li><a href="/minds/ast100/2/2.html">2.2 Types of Galaxies</a></li>
+          <li><a href="/minds/ast100/2/3.html">2.3 Formation and Evolution of Galaxies</a></li>
+          <li><a href="/minds/ast100/2/4.html">2.4 Hubble's Law</a></li>
+        </ul>
+      </li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">3</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/3/">Stellar Age</a></li>
+          <li><a href="/minds/ast100/3/1.html">3.1 The Sun</a></li>
+          <li><a href="/minds/ast100/3/2.html">3.2 Types of Stars</a></li>
+          <li><a href="/minds/ast100/3/3.html">3.3 Formation and Evolution of Stars</a></li>
+          <li><a href="/minds/ast100/3/4.html">3.4 Stellar Remnants</a></li>
+        </ul>
+      </li>
+      <li><a href="/minds/ast100/mid/">MID</a></li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">4</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/4/">Planetary Age</a></li>
+          <li><a href="/minds/ast100/4/1.html">4.1 The Solar System</a></li>
+          <li><a href="/minds/ast100/4/2.html">4.2 Types of Planets</a></li>
+          <li><a href="/minds/ast100/4/3.html">4.3 Formation and Evolution of Planets</a></li>
+          <li><a href="/minds/ast100/4/4.html">4.4 Discovering Exoplanets</a></li>
+        </ul>
+      </li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">5</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/5/">Chemical Age</a></li>
+          <li><a href="/minds/ast100/5/1.html">5.1 The Periodic Table</a></li>
+          <li><a href="/minds/ast100/5/2.html">5.2 Formation of Oceans and Atmospheres</a></li>
+          <li><a href="/minds/ast100/5/3.html">5.3 Origin of Life on Earth</a></li>
+          <li><a href="/minds/ast100/5/4.html">5.4 Life on Other Planets</a></li>
+        </ul>
+      </li>
+      <li class="active-dropdown">
+        <button class="nav-toggle-link active-num" aria-haspopup="true">6</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/6/">Biological Age</a></li>
+          <li><a href="/minds/ast100/6/1.html">6.1 Tree of Life</a></li>
+          <li><a href="/minds/ast100/6/2.html">6.2 Rise of the Eukaryotes</a></li>
+          <li><a href="/minds/ast100/6/3.html">6.3 Mass Extinctions</a></li>
+          <li><a href="/minds/ast100/6/4.html">6.4 Life in the Universe</a></li>
+        </ul>
+      </li>
+      <li>
+        <button class="nav-toggle-link" aria-haspopup="true">7</button>
+        <ul class="nav-dropdown">
+          <li><a class="dropdown-header-link" href="/minds/ast100/7/">Cultural Age</a></li>
+          <li><a href="/minds/ast100/7/1.html">7.1 History of the World</a></li>
+          <li><a href="/minds/ast100/7/2.html">7.2 History of Mapping the Worlds</a></li>
+          <li><a href="/minds/ast100/7/3.html">7.3 Role of the Sky in Culture</a></li>
+          <li><a href="/minds/ast100/7/4.html">7.4 Search for Extraterrestrial Intelligence</a></li>
+        </ul>
+      </li>
+      <li><a href="/minds/ast100/fin/">FIN</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero compact">
+  <div class="hero-bg" style="background-image: url('/minds/ast100/media/tol.webp');"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="card-number">Topic 6.1</span>
+    <h1>Tree of Life</h1>
+    <p class="hero-subtitle">This map depicts the three domains of life, Bacteria, Archaea, and Eukarya, utilizing genomic data from over 1,000 newly discovered uncultivated organisms.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="section-inner reveal">
+    <div class="content">
+
+                    
+<h1 class="sectionedit1" id="tree-of-life">6.1 Tree of Life</h1>
+<div class="level1">
+
+<p>
+<img src="/minds/ast100/media/tol.webp" class="media" loading="lazy" alt="" width="850" />
+</p>
+
+<p>
+This map depicts the three domains of life, Bacteria, Archaea, and Eukarya, utilizing genomic data from over 1,000 newly discovered uncultivated organisms. It expands our understanding of biological diversity by including lineages previously invisible to older gene surveys. The tree acts as a global snapshot, highlighting major lineages that lack isolated representatives, which are marked by red dots. This comprehensive view proves that the biological world is far more diverse than previously imagined, centering on microbial life rather than visible species and providing a robust and clear overview of life.
+</p>
+
+<p>
+Scientists constructed this tree by aligning sixteen specific ribosomal proteins found in every organism. This multi-protein approach offers higher resolution than single-gene methods, such as the 16S rRNA survey, and avoids errors caused by genes with unrelated evolutionary histories. These proteins are typically co-located in the genome, which reduces technical errors during reconstruction. By using metagenomics, sequencing DNA directly from environmental samples, researchers identified metabolic capacities and identities of organisms that have never been grown in a laboratory setting. This process provides a high-resolution snapshot of life using genomes rather than genes.
+</p>
+
+<p>
+The scale bar labeled 0.4 measures evolutionary distance, specifically the expected number of amino acid substitutions per site in the aligned protein sequences. In this diagram, branch length represents genetic change over time; longer lines indicate more genetic modification. By using this metric, scientists can compare all three domains on a fair, mathematical basis rather than relying on physical traits. Shorter paths reveal close relatives, while sprawling branches demonstrate the immense genetic variation within the bacterial domain. These lengths provide perspective on the structure of the tree and also illustrate history.
+</p>
+
+<p>
+The tree encompasses 92 bacterial phyla, 26 archaeal phyla, and five eukaryotic supergroups. A striking feature is the purple section known as the Candidate Phyla Radiation , which contains a massive amount of evolutionary diversity. Members of this radiation typically have small genomes and limited metabolic capacities, often living as symbionts within other organisms. Because these lineages lack cultivated representatives, their inclusion dramatically shifts our understanding of the tree’s scale, showing that most of life’s variety is found in these unstudied microbes. This radiation highlights major lineages currently underrepresented in genomic models.
+</p>
+
+<p>
+A key takeaway from this map is that Domain Bacteria dominates biological diversification. Most of the branches belong to bacteria, proving they have evolved into far more distinct types than Archaea or Eukarya. This is not a result of sampling bias, as modern genetic methods detect all domains equally well. Instead, it reflects the true prominence of bacteria across diverse environments like soil and deep subsurface aquifers. In contrast, all animals, plants, and fungi, the complex life we see daily, make up only a tiny fraction of total diversity. This dominance reveals bacterial diversification.
+</p>
+
+<p>
+The tree explores the deep historical connection between the domains, suggesting that eukaryotes are evolutionary chimaeras. Rather than being a separate branch, Eukarya appeared to emerge from within the Archaea, specifically as a sibling to the Lokiarchaeota within the TACK superphylum. This implies that complex cells began through an endosymbiotic fusion of bacterial and archaeal parts long ago. This view, supported by ribosomal protein data, provides a new perspective on our early origins and the fundamental links between simple and complex cells. This identifies radiations important for future evolutionary analyses.
+</p>
+
+<p>
+This map proves that the majority of life on Earth remains a mystery. Most lineages shown lack isolated representatives, meaning they have never been grown in a controlled environment. These enigmatic organisms, identified only by their genetic sequences, represent the bulk of our planet’s evolutionary history. By using genome-resolved approaches, scientists are finally mapping the full extent of this biological world. This work identifies major radiations essential for future research, ensuring that biogeochemical models accurately reflect the true diversity of life keeping our ecosystems functioning. What emerges is bacterial depth.
+</p>
+
+</div>
+
+
+                    
+    </div>
+  </div>
+</section>
+
+<nav class="subpage-nav">
+  <a href="/minds/ast100/5/4.html" class="nav-prev"><span class="nav-label">&larr; Previous topic</span>5.4 Life on Other Planets</a>
+  <a href="/minds/ast100/6/" class="nav-up"><span class="nav-label">&uarr; Back to chapter</span>Biological Age</a>
+  <a href="/minds/ast100/6/2.html" class="nav-next"><span class="nav-label">Next topic &rarr;</span>6.2 Rise of the Eukaryotes</a>
+</nav>
+
+<footer class="site-footer">
+  <p>AST 100: Our Cosmic History &middot; <a href="https://cassa.site/abekta/">Abekta</a></p>
+</footer>
+
+<script src="/minds/ast100/js/main.js"></script>
+</body>
+</html>

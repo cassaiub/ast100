@@ -1,0 +1,87 @@
+---
+/* Wrap any figure/animation/interactive in a wider centered band that
+   breaks out of the parent prose column, and adds a fullscreen toggle
+   in the top-right. Use inside the prose-cosmic column on lecture
+   pages — the breakout CSS lifts the figure visually without
+   restructuring the surrounding text. */
+interface Props {
+  /** Used in the toggle button's aria-label. */
+  label?: string;
+}
+const { label } = Astro.props;
+---
+<div class="figure-frame" data-figure-frame>
+  <div class="figure-frame-inner">
+    <slot />
+    <button
+      type="button"
+      class="figure-frame-fs-btn"
+      data-fs-enter
+      aria-label={label ? `Open ${label} in fullscreen` : "Open figure in fullscreen"}
+    >
+      <span aria-hidden="true">⛶</span>
+      <span>Fullscreen</span>
+    </button>
+    <button
+      type="button"
+      class="figure-frame-exit-btn"
+      data-fs-exit
+      aria-label="Exit fullscreen"
+    >
+      <span aria-hidden="true">✕</span>
+      <span>Exit · ESC</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  /* Single delegated handler for every FigureFrame on the page. Toggling
+     `.is-fs` on the wrapper switches the figure into a fixed-position
+     viewport overlay (see global.css). ESC closes the active overlay. */
+  function setupFigureFrames() {
+    const frames = document.querySelectorAll<HTMLElement>("[data-figure-frame]");
+    if (frames.length === 0) return;
+    let active: HTMLElement | null = null;
+    let prevOverflow = "";
+
+    function enter(frame: HTMLElement) {
+      if (active && active !== frame) {
+        active.classList.remove("is-fs");
+      }
+      frame.classList.add("is-fs");
+      if (!active) {
+        prevOverflow = document.documentElement.style.overflow;
+        document.documentElement.style.overflow = "hidden";
+      }
+      active = frame;
+    }
+    function exit() {
+      if (!active) return;
+      active.classList.remove("is-fs");
+      active = null;
+      document.documentElement.style.overflow = prevOverflow;
+    }
+
+    frames.forEach((frame) => {
+      if (frame.dataset.figureFrameBound) return;
+      frame.dataset.figureFrameBound = "1";
+      const enterBtn = frame.querySelector<HTMLButtonElement>("[data-fs-enter]");
+      const exitBtn = frame.querySelector<HTMLButtonElement>("[data-fs-exit]");
+      enterBtn?.addEventListener("click", () => enter(frame));
+      exitBtn?.addEventListener("click", exit);
+    });
+
+    if (!document.documentElement.dataset.figureFrameKeyBound) {
+      document.documentElement.dataset.figureFrameKeyBound = "1";
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && active) exit();
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupFigureFrames);
+  } else {
+    setupFigureFrames();
+  }
+</script>

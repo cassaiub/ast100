@@ -14,28 +14,28 @@ export type CosmicEvent = {
 };
 
 export const TIMELINE_AGES: TimelineAge[] = [
-  { id: "particle",   name: "Particle age",   range: "0 — 380 ky",      color: "#fbbf24" },
-  { id: "galactic",   name: "Galactic age",   range: "300 ky — 4 Gyr",  color: "#22d3ee" },
+  { id: "particle",   name: "Particle age",   range: "0 — 1 Myr",       color: "#fbbf24" },
+  { id: "galactic",   name: "Galactic age",   range: "1 Myr — 4 Gyr",   color: "#22d3ee" },
   { id: "stellar",    name: "Stellar age",    range: "4 — 9 Gyr",       color: "#a5f3fc" },
   { id: "planetary",  name: "Planetary age",  range: "9 — 11 Gyr",      color: "#f59e0b" },
   { id: "chemical",   name: "Chemical age",   range: "11 — 13 Gyr",     color: "#c4b5fd" },
-  { id: "biological", name: "Biological age", range: "13 — 14 Gyr",     color: "#34d399" },
-  { id: "cultural",   name: "Cultural age",   range: "last ~300 ky",    color: "#fde68a" },
+  { id: "biological", name: "Biological age", range: "last ~1 Gyr",     color: "#34d399" },
+  { id: "cultural",   name: "Cultural age",   range: "last ~1 Myr",     color: "#fde68a" },
 ];
 
 export const EVENTS: CosmicEvent[] = [
   // PARTICLE
-  { age: 0, marker: "t = 0",                title: "The Big Bang",                              body: 'The singularity event marking the origin of space, time, energy and matter (STEM). The universe emerges as an unimaginably hot and dense "primeval fireball".', pct: 0.0001 },
-  { age: 0, marker: "10⁻³⁵ — 10⁻³² s",      title: "Cosmic Inflation",                          body: "A brief, exponential expansion where the universe swells in size by a factor of roughly 10⁵⁰. This process smoothed out initial irregularities.", pct: 0.0001 },
-  { age: 0, marker: "10⁻⁴³ — 10⁻¹⁰ s",      title: "Separation of Forces",                      body: 'As the universe cooled, the single unified "superforce" separated into the four fundamental forces of nature: gravity, the strong nuclear force, the weak nuclear force, and electromagnetism.', pct: 0.0001 },
+  { age: 0, marker: "t = 0",                title: "The Big Bang",                              body: 'The singularity event marking the origin of space, time, energy and matter (STEM). The Universe emerges as an unimaginably hot and dense "primeval fireball".', pct: 0.0001 },
+  { age: 0, marker: "10⁻³⁵ — 10⁻³² s",      title: "Cosmic Inflation",                          body: "A brief, exponential expansion where the Universe swells in size by a factor of roughly 10⁵⁰. This process smoothed out initial irregularities.", pct: 0.0001 },
+  { age: 0, marker: "10⁻⁴³ — 10⁻¹⁰ s",      title: "Separation of Forces",                      body: 'As the Universe cooled, the single unified "superforce" separated into the four fundamental forces of nature: gravity, the strong nuclear force, the weak nuclear force, and electromagnetism.', pct: 0.0001 },
   { age: 0, marker: "10⁻³⁵ — 1 s",          title: "Particle Creation & Annihilation",          body: 'Energy converted into matter via "pair production". Quarks and leptons (e.g., electrons) emerged. Matter and antimatter collided and annihilated, leaving a slight excess of ordinary matter.', pct: 0.0002 },
-  { age: 0, marker: "3 — 15 min",           title: "Primordial Nucleosynthesis",                body: 'The universe cooled sufficiently (below 10⁹ K) for protons and neutrons to fuse. This "Nuclear Epoch" produced the first atomic nuclei: heavy hydrogen (deuterium), helium, and trace amounts of lithium.', pct: 0.0003 },
+  { age: 0, marker: "3 — 15 min",           title: "Primordial Nucleosynthesis",                body: 'The Universe cooled sufficiently (below 10⁹ K) for protons and neutrons to fuse. This "Nuclear Epoch" produced the first atomic nuclei: heavy hydrogen (deuterium), helium, and trace amounts of lithium.', pct: 0.0003 },
   { age: 0, marker: "50,000 yrs",           title: "Matter Domination",                         body: 'The "crossover point" where the energy density of matter finally exceeded that of radiation. This marked the end of the Radiation Era and the beginning of the Matter Era, setting the stage for structure formation.', pct: 0.0004 },
   { age: 0, marker: "380,000 yrs",          title: "Recombination & Decoupling",                body: "Electrons combined with nuclei to form neutral atoms. This neutralized the charged fog, allowing photons to travel freely — observable today as the Cosmic Microwave Background (CMB).", pct: 0.0005 },
 
   // GALACTIC
-  { age: 1, marker: "300 ky — 200 Myr",     title: "The Cosmic Dark Ages",                      body: "Following recombination, the universe was filled with neutral hydrogen and helium but lacked luminous objects. Gravity slowly pulled matter into denser clumps within a dark, expanding cosmos.", pct: 0.014 },
-  { age: 1, marker: "200 Myr",              title: "Cosmic Dawn · Reionization",                body: "The first massive stars and protogalaxies ignited. Their intense ultraviolet radiation re-ionized the surrounding neutral hydrogen, ending the Dark Ages and making the universe transparent to UV light.", pct: 0.015 },
+  { age: 1, marker: "1 Myr — 200 Myr",      title: "The Cosmic Dark Ages",                      body: "Following recombination, the Universe was filled with neutral hydrogen and helium but lacked luminous objects. Gravity slowly pulled matter into denser clumps within a dark, expanding cosmos.", pct: 0.014 },
+  { age: 1, marker: "200 Myr",              title: "Cosmic Dawn · Reionization",                body: "The first massive stars and protogalaxies ignited. Their intense ultraviolet radiation re-ionized the surrounding neutral hydrogen, ending the Dark Ages and making the Universe transparent to UV light.", pct: 0.015 },
   { age: 1, marker: "500 Myr — 1 Gyr",      title: "Hierarchical Merging",                      body: "Small \"pregalactic blobs\" and dwarf galaxies collided and merged to build up larger galactic structures. This bottom-up process created the massive galaxies we see today, including the Milky Way's halo.", pct: 0.06 },
   { age: 1, marker: "1 — 2 Gyr",            title: "Rise of Supermassive Black Holes",          body: "Massive concentrations of matter collapsed in the centers of young galaxies to form black holes. The accretion of matter into these holes powered the first quasars, which shone with the brightness of a trillion suns.", pct: 0.11 },
   { age: 1, marker: "2 — 3 Gyr",            title: "Peak Quasar Epoch",                         body: "The era of maximum activity for Active Galactic Nuclei. As galactic cores consumed their fuel supplies, this violent activity eventually subsided, leaving dormant supermassive black holes at the centers of most normal galaxies.", pct: 0.18 },
@@ -44,11 +44,11 @@ export const EVENTS: CosmicEvent[] = [
 
   // STELLAR
   { age: 2, marker: "4 Gyr",                title: "Formation of the Milky Way's Thin Disk",    body: "Following the earlier formation of the galactic halo, the Milky Way flattened into a thin disk. This structural change coincided with the birth of metal-rich Population I stars, which contained heavy elements produced by earlier generations.", pct: 0.30 },
-  { age: 2, marker: "4 — 5 Gyr",            title: "Peak Star Formation Rate",                  body: "The universe experienced its maximum rate of star formation. Massive stars fused hydrogen and helium into heavier elements like carbon, oxygen, and iron, acting as nuclear forges for the building blocks of future complexity.", pct: 0.33 },
+  { age: 2, marker: "4 — 5 Gyr",            title: "Peak Star Formation Rate",                  body: "The Universe experienced its maximum rate of star formation. Massive stars fused hydrogen and helium into heavier elements like carbon, oxygen, and iron, acting as nuclear forges for the building blocks of future complexity.", pct: 0.33 },
   { age: 2, marker: "6 Gyr",                title: "Galactic Habitable Zone",                   body: "A region within the galaxy emerged where conditions favored complex life. Metallicity had spread outward, and the frequency of sterilizing supernovae in the inner galaxy had decreased sufficiently to allow safe orbits for planets.", pct: 0.43 },
   { age: 2, marker: "4 — 9 Gyr",            title: "Stellar Nucleosynthesis",                   body: "Main-sequence stars fused hydrogen into helium, while massive evolved stars fused helium into carbon, neon, oxygen, silicon, and finally iron in their cores. This created the chemical complexity required for planetary bodies.", pct: 0.47 },
   { age: 2, marker: "4 — 9 Gyr",            title: "Supernova Enrichment",                      body: "Massive stars died in core-collapse explosions, scattering chemically enriched material into the interstellar medium. These explosions also synthesized elements heavier than iron (such as gold and uranium) via rapid neutron capture.", pct: 0.52 },
-  { age: 2, marker: "7 Gyr",                title: "Acceleration of Cosmic Expansion",          body: 'The expansion of the universe began to accelerate due to repulsive "dark energy". This marked the transition from a matter-dominated era to a dark-energy-dominated era, influencing the formation of large-scale structures.', pct: 0.51 },
+  { age: 2, marker: "7 Gyr",                title: "Acceleration of Cosmic Expansion",          body: 'The expansion of the Universe began to accelerate due to repulsive "dark energy". This marked the transition from a matter-dominated era to a dark-energy-dominated era, influencing the formation of large-scale structures.', pct: 0.51 },
   { age: 2, marker: "9 Gyr",                title: "Solar Nebula Collapse",                     body: "The Stellar Age concluded with the gravitational collapse of a chemically enriched interstellar cloud in our region of the Milky Way. Triggered perhaps by a nearby supernova, this initiated the formation of the Sun and the Solar System about 4.6 billion years ago.", pct: 0.65 },
 
   // PLANETARY

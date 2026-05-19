@@ -206,7 +206,7 @@ export function TugOfWarPanel() {
 }
 
 /* ── Entropy Island ───────────────────────────────────────────────────
-   A bounded "universe" of randomly distributed particles. Inside a
+   A bounded "Universe" of randomly distributed particles. Inside a
    circular island, particles organise into a rotating constellation
    over time; outside, particles randomise further. Total entropy
    rises, even as the island looks orderly — the central point. */
@@ -286,11 +286,11 @@ export function EntropyIslandPanel() {
     <FigurePanel
       idx="0.2.2"
       kicker="Entropy Island · Local Order, Global Chaos"
-      caption="The universe must grow more disordered overall. But local pockets — galaxies, stars, organisms — can become more ordered by exporting their disorder elsewhere. The island sharpens; the surrounding field scatters."
+      caption="The Universe must grow more disordered overall. But local pockets — galaxies, stars, organisms — can become more ordered by exporting their disorder elsewhere. The island sharpens; the surrounding field scatters."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Outer 'universe' border */}
+          {/* Outer 'Universe' border */}
           <rect
             x={0.5}
             y={0.5}
@@ -429,7 +429,7 @@ export function EntropyIslandPanel() {
 /* ── Energy Rate Density ──────────────────────────────────────────────
    A complexity ranking: how much energy flows per gram per second
    through each kind of system. The surprise is that stars — which
-   we think of as the most energetic things in the universe — sit
+   we think of as the most energetic things in the Universe — sit
    at the bottom, and human society sits at the top. */
 const ERD_ROWS: { name: string; value: number; note: string }[] = [
   { name: "Sun (Sol)", value: 2, note: "Average energy flow through a star's body." },
@@ -529,9 +529,9 @@ export function EnergyRateDensityPanel() {
 }
 
 /* ── Inflation Visualizer ────────────────────────────────────────────
-   The first 10⁻³² seconds: the universe grew by a factor of ≥10²⁶ in
+   The first 10⁻³² seconds: the Universe grew by a factor of ≥10²⁶ in
    an instant of exponential expansion.  The user scrubs time across
-   the inflation epoch; the universe-radius readout flips from
+   the inflation epoch; the Universe-radius readout flips from
    sub-Planck to grapefruit-scale.  A logarithmic y-axis shows the
    blade of the exponential curve. */
 export function InflationVisualizerPanel() {
@@ -590,14 +590,14 @@ export function InflationVisualizerPanel() {
     return `10^${lt.toFixed(0)} s`;
   }
 
-  /* Scale-relative size of the universe circle (visual) — also log-y */
+  /* Scale-relative size of the Universe circle (visual) — also log-y */
   const visRadius = Math.min(80, Math.max(4, 4 + (logA / 28) * 76));
 
   return (
     <FigurePanel
       idx="0.2.4"
       kicker="Inflation · 10²⁶ × in 10⁻³² Seconds"
-      caption="Inflation is the single most dramatic event in cosmic history. In a sliver of a sliver of a second, the universe expanded by a factor greater than a hundred-trillion-trillion. Scrub the slider to watch space itself unspool."
+      caption="Inflation is the single most dramatic event in cosmic history. In a sliver of a sliver of a second, the Universe expanded by a factor greater than a hundred-trillion-trillion. Scrub the slider to watch space itself unspool."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">

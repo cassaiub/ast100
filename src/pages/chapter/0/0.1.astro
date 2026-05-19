@@ -9,6 +9,7 @@ import {
 } from "../../../components/scenes/0.1/figures";
 import EqPullQuote from "../../../components/scenes/0.1/EqPullQuote.astro";
 import WheelerQuote from "../../../components/scenes/0.1/WheelerQuote.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/0.1/PrevNext.astro";
 import { chapterPath, subPath } from "../../../data/course-nav";
 ---
@@ -46,7 +47,9 @@ import { chapterPath, subPath } from "../../../data/course-nav";
         </h2>
       </header>
 
-      <SpecialRelativityPanel client:visible />
+      <FigureFrame label="Special relativity">
+        <SpecialRelativityPanel client:visible />
+      </FigureFrame>
 
       <p data-fade class="dropcap">
         Before Einstein, scientists believed that space and time were completely
@@ -67,9 +70,7 @@ import { chapterPath, subPath } from "../../../data/course-nav";
         energy (the ability to do work) were totally different and could not
         change into each other. Einstein discovered that mass is really just a
         super-concentrated form of energy. His famous equation,
-        <span class="katex-faux"
-          >E<span class="op">=</span>m<span>c</span><sup>2</sup></span
-        >, explains this relationship. It shows that a very small amount of mass
+        $E = mc^&#123;2&#125;$, explains this relationship. It shows that a very small amount of mass
         is equal to a huge amount of energy. This proved that matter and energy
         are essentially the same thing in different forms, similar to how ice
         and steam are both just different forms of water.
@@ -100,7 +101,9 @@ import { chapterPath, subPath } from "../../../data/course-nav";
         </h2>
       </header>
 
-      <GeneralRelativityPanel client:visible />
+      <FigureFrame label="General relativity">
+        <GeneralRelativityPanel client:visible />
+      </FigureFrame>
 
       <p data-fade>
         Einstein took his earlier ideas a giant step further with the General
@@ -126,11 +129,13 @@ import { chapterPath, subPath } from "../../../data/course-nav";
         within a day if engineers ignored it.
       </p>
 
-      <GravitationalTimeDilationPanel client:visible />
+      <FigureFrame label="Gravitational time dilation">
+        <GravitationalTimeDilationPanel client:visible />
+      </FigureFrame>
     </div>
 
-    <div class="max-w-[1000px] mx-auto">
-      <section data-fade class="my-20 -mx-2 md:-mx-8 lg:-mx-16">
+    <FigureFrame label="Spacetime fabric interactive">
+      <section data-fade>
         <div class="mb-6 flex items-end justify-between gap-6">
           <div>
             <div
@@ -160,7 +165,7 @@ import { chapterPath, subPath } from "../../../data/course-nav";
           inverse-square — but the visual intuition is the right one.
         </p>
       </section>
-    </div>
+    </FigureFrame>
 
     <div class="max-w-[68ch] mx-auto prose-cosmic">
       <p data-fade>
@@ -172,7 +177,7 @@ import { chapterPath, subPath } from "../../../data/course-nav";
           move.&rdquo;
         </em>
          Because energy and mass are interchangeable, any form of energy acts
-        just like mass to bend space. This means that everything in the universe
+        just like mass to bend space. This means that everything in the Universe
         is connected: a planet isn&rsquo;t just floating in empty nothingness;
         its mass is actively shaping the geometry of the space around it. Even
         light, which has no mass, follows these curves, bending as it passes
@@ -184,15 +189,15 @@ import { chapterPath, subPath } from "../../../data/course-nav";
 
       <p data-fade>
         The most profound implication of this theory was for the history of the
-        universe itself. If matter curves spacetime, then the shape and destiny
-        of the entire universe depend on how much &ldquo;stuff&rdquo; is in it.
-        Einstein&rsquo;s equations suggested the universe could not just be
+        Universe itself. If matter curves spacetime, then the shape and destiny
+        of the entire Universe depend on how much &ldquo;stuff&rdquo; is in it.
+        Einstein&rsquo;s equations suggested the Universe could not just be
         sitting still; it had to be either expanding or contracting. This
         realization allowed scientists to &ldquo;rewind&rdquo; the motion of the
-        expanding universe we see today. It pointed back to a single moment
+        expanding Universe we see today. It pointed back to a single moment
         billions of years ago when all space, time, matter, and energy were
         compressed into a single, infinitely dense point, leading to the
-        <strong>Big Bang theory</strong>—the idea that the universe, and time
+        <strong>Big Bang theory</strong>—the idea that the Universe, and time
         itself, had a beginning.
       </p>
     </div>

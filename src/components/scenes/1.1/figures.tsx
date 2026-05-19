@@ -24,7 +24,7 @@ function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: 
 
 /* ── ForceSeparation: cosmic-tree of force decoupling ─────────────────
    A branching diagram showing one Superforce at the left, branching to
-   four distinct forces at the right as the universe cools. The user's
+   four distinct forces at the right as the Universe cools. The user's
    slider sweeps a "current time" cursor through three phase transitions;
    active branches glow. */
 type Stage = { t: number; T: number; label: string; phase: string };

@@ -5,10 +5,13 @@
 
 /* Prepend the configured Astro `base:` to a logical path so the URL
    resolves correctly under a subpath deploy (e.g. cassa.site/courses/ast100).
-   Empty string passes through so the `current=""` default stays a no-op. */
+   Empty string passes through so the `current=""` default stays a no-op.
+   `withBase("/")` (the home link) returns the bare base — never
+   `<base>/` — because the site is configured with trailingSlash:'never'. */
 export function withBase(p: string): string {
   if (!p) return p;
   const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  if (p === "/") return base || "/";
   return base + (p.startsWith("/") ? p : "/" + p);
 }
 

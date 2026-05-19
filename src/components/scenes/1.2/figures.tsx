@@ -88,7 +88,7 @@ export function StandardModelPanel() {
     <FigurePanel
       idx="1.2.1"
       kicker="The Standard Model · Bricks & Mortar"
-      caption="Seventeen particles that build the entire physical universe. Click any one to inspect its mass, charge, and role. Quarks and leptons are the 'bricks'; gauge bosons are the 'mortar' that holds them together; the Higgs is what gives the bricks their weight."
+      caption="Seventeen particles that build the entire physical Universe. Click any one to inspect its mass, charge, and role. Quarks and leptons are the 'bricks'; gauge bosons are the 'mortar' that holds them together; the Higgs is what gives the bricks their weight."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
@@ -260,7 +260,7 @@ export function AntiparticleAnnihilationPanel() {
     <FigurePanel
       idx="1.2.2"
       kicker="Annihilation · One in a Billion Survived"
-      caption="Matter and antimatter annihilate on contact — particle plus antiparticle = pure energy. Play the animation to watch an electron meet a positron and become two gamma photons. Then look at the cosmic asymmetry: a billion-and-one to a billion. The universe you live in is built from the leftover survivors."
+      caption="Matter and antimatter annihilate on contact — particle plus antiparticle = pure energy. Play the animation to watch an electron meet a positron and become two gamma photons. Then look at the cosmic asymmetry: a billion-and-one to a billion. The Universe you live in is built from the leftover survivors."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
@@ -353,7 +353,7 @@ export function AntiparticleAnnihilationPanel() {
         <div>
           <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mb-2">cosmic asymmetry</div>
           <div className="text-[14px] text-white/85 leading-[1.6]">
-            For every billion antimatter particles in the early universe,
+            For every billion antimatter particles in the early Universe,
             there were about a <strong>billion-and-one</strong> matter particles.
             Everything you can see is the leftover <em>one</em>.
           </div>

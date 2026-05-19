@@ -30,7 +30,7 @@ export default function Hero() {
           </span>
         </h1>
         <p data-fade style={{ ["--delay" as string]: "420ms" }} className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]">
-          A fifteen-minute window of cosmic alchemy. The universe forged
+          A fifteen-minute window of cosmic alchemy. The Universe forged
           deuterium, helium, and traces of lithium — then expanded so
           quickly that the recipe stayed forever: 75% hydrogen, 25% helium.
         </p>
@@ -40,7 +40,7 @@ export default function Hero() {
       </div>
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>t = 1 µs &nbsp;◇&nbsp; 15 min</div>
-        <div className="text-plasma/60">deuterium bottleneck · 10⁹ K</div>
+        <div className="text-plasma/60">{"deuterium bottleneck · $10^{9}$ K"}</div>
       </div>
     </section>
   );

@@ -55,7 +55,7 @@ const SCALE_OBJECTS: ScaleObject[] = [
   { id: "galcentre", name: "Galactic Centre", yearsAgo: 26000,                           blurb: "26,000 years. The supermassive black hole at the heart of our Milky Way — its light left in the Stone Age." },
   { id: "andromeda", name: "Andromeda",       yearsAgo: 2.5e6,                           blurb: "2.5 million years. The Andromeda Galaxy as it looked before our species existed." },
   { id: "virgo",     name: "Virgo Cluster",   yearsAgo: 5.4e7,                           blurb: "54 million years. Dinosaurs were still around when this cluster's light set out." },
-  { id: "cmb",       name: "CMB",             yearsAgo: 1.378e10,                        blurb: "13.78 billion years. The Cosmic Microwave Background — the wall of light from when the universe cooled enough to become transparent. We cannot see past this." },
+  { id: "cmb",       name: "CMB",             yearsAgo: 1.378e10,                        blurb: "13.78 billion years. The Cosmic Microwave Background — the wall of light from when the Universe cooled enough to become transparent. We cannot see past this." },
 ];
 
 function fmtYearsAgo(y: number): string {
@@ -296,7 +296,7 @@ export function CosmicScalePanel() {
 }
 
 /* ── Horizon Shells: concentric look-back rings around Earth ─────────
-   Visualises the universe as nested time-shells, with the 13.8 Gyr
+   Visualises the Universe as nested time-shells, with the 13.8 Gyr
    decoupling wall (CMB) as the edge. Hover or tap each ring to see
    what we observe at that distance. */
 type Shell = {
@@ -313,7 +313,7 @@ const SHELLS: Shell[] = [
   { id: "supercluster", yearsAgo: 1e8, label: "Supercluster", desc: "Laniakea — our home supercluster, hundreds of millions of light-years across." },
   { id: "structure", yearsAgo: 1e9, label: "Large-scale", desc: "Filaments and voids — the cosmic web." },
   { id: "deepfield", yearsAgo: 1.34e10, label: "First galaxies", desc: "JWST deep fields — galaxies a few hundred million years after the Big Bang." },
-  { id: "cmb", yearsAgo: 1.378e10, label: "CMB · opacity wall", desc: "The wall of last scattering. The universe was an opaque fog before 380,000 years. We cannot see past this." },
+  { id: "cmb", yearsAgo: 1.378e10, label: "CMB · opacity wall", desc: "The wall of last scattering. The Universe was an opaque fog before 380,000 years. We cannot see past this." },
 ];
 
 export function HorizonShellsPanel() {
@@ -343,7 +343,7 @@ export function HorizonShellsPanel() {
     <FigurePanel
       idx="0.3.2"
       kicker="Horizon Shells · The Edge is a Wall of Time"
-      caption="Concentric rings around Earth show what we see at each look-back distance. The outermost is the CMB — the universe was an opaque fog before that. We see no further, not because there is no further, but because no signal has had time to arrive."
+      caption="Concentric rings around Earth show what we see at each look-back distance. The outermost is the CMB — the Universe was an opaque fog before that. We see no further, not because there is no further, but because no signal has had time to arrive."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
@@ -623,7 +623,7 @@ export function BalloonAnalogyPanel() {
       <div className="mt-4">
         <div className="flex items-center justify-between mb-2">
           <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-            inflate the universe
+            inflate the Universe
           </label>
           <span className="font-mono text-[10px] text-plasma">
             scale × {scale.toFixed(2)}

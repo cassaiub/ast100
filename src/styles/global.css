@@ -281,6 +281,95 @@ body {
     repeating-linear-gradient(135deg, rgb(var(--c-text-rgb) / 0.018) 0 8px, transparent 8px 16px);
 }
 
+/* ── Figure frame ──────────────────────────────────────────────────
+   Breaks an inline figure out of its narrow parent (the 68ch prose
+   column) into a wider centered band, and adds a fullscreen toggle.
+   At lg+ widths the band is shifted right by ~120px so it sits clear
+   of the fixed left Rail sidebar. */
+.figure-frame {
+  position: relative;
+  margin-block: 3rem;
+  width: min(1400px, calc(100vw - 48px));
+  margin-left: calc(50% - min(700px, (100vw - 48px) / 2));
+}
+@media (min-width: 1024px) {
+  .figure-frame {
+    width: min(1340px, calc(100vw - 308px));
+    margin-left: calc(50% - min(670px, (100vw - 308px) / 2) + 120px);
+  }
+}
+
+.figure-frame-inner {
+  position: relative;
+  border-radius: 10px;
+}
+
+.figure-frame-fs-btn,
+.figure-frame-exit-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  background: rgb(var(--c-bg-rgb) / 0.78);
+  border: 1px solid rgb(var(--c-accent-rgb) / 0.35);
+  border-radius: 9999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 200ms var(--ease), background 200ms;
+}
+.figure-frame-fs-btn:hover,
+.figure-frame-exit-btn:hover {
+  background: rgb(var(--c-bg-rgb) / 0.92);
+}
+.figure-frame-fs-btn:active,
+.figure-frame-exit-btn:active {
+  transform: scale(0.97);
+}
+.figure-frame-exit-btn { display: none; }
+
+/* Fullscreen state — pins the wrapper to the viewport. Specificity (0,2,0)
+   wins over the default .figure-frame rules even inside the lg @media. */
+.figure-frame.is-fs {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  z-index: 60;
+  background: rgb(var(--c-bg-rgb));
+}
+.figure-frame.is-fs .figure-frame-inner {
+  width: 100%;
+  height: 100%;
+  padding: 32px 24px;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.figure-frame.is-fs .figure-frame-inner > :first-child {
+  width: 100%;
+  max-width: 1600px;
+  max-height: 100%;
+  margin: 0;
+}
+.figure-frame.is-fs .figure-frame-fs-btn { display: none; }
+.figure-frame.is-fs .figure-frame-exit-btn {
+  display: inline-flex;
+  top: 16px;
+  right: 16px;
+}
+
 /* ── Sticky left rail ───────────────────────────────────────────────── */
 .rail-item .label {
   opacity: 0;
@@ -972,6 +1061,20 @@ a.rail-item:hover .rail-dot {
   0%   { transform: scale(0.6); opacity: 0.6; }
   60%  { transform: scale(1.5); opacity: 0;   }
   100% { transform: scale(1.5); opacity: 0;   }
+}
+
+/* Swap-in animation for the active age description paragraph. The
+   `key={idx}` on the React element remounts the node, which retriggers
+   this animation each time the user picks a new age. */
+.age-fade {
+  animation: age-fade 420ms var(--ease) both;
+}
+@keyframes age-fade {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0);   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .age-fade { animation: none; }
 }
 
 /* River map segments */

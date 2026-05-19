@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 /* PrimordialTimeline — log-scale scrubber through the first 380,000
-   years of the universe. Each event marker is placed at its log(t)
+   years of the Universe. Each event marker is placed at its log(t)
    position; selecting one swaps the snapshot panel below. The slider
-   lets students "scrub" continuously, watching the universe cool. */
+   lets students "scrub" continuously, watching the Universe cool. */
 
 type Event = {
   id: string;
@@ -29,7 +29,7 @@ const EVENTS: Event[] = [
     shortLabel: "Planck / Gravity",
     phase: "Superforce → Three forces",
     blurb:
-      "All four forces unified in a single Superforce. The universe is 10⁻³⁵ m across — the Planck length. At 10⁻⁴³ seconds gravity becomes the first force to separate, leaving the strong, weak, and electromagnetic forces still combined.",
+      "All four forces unified in a single Superforce. The Universe is $10^{-35}$ m across — the Planck length. At $10^{-43}$ seconds gravity becomes the first force to separate, leaving the strong, weak, and electromagnetic forces still combined.",
     hue: "#a78bfa",
   },
   {
@@ -40,7 +40,7 @@ const EVENTS: Event[] = [
     shortLabel: "Inflation",
     phase: "Exponential Growth",
     blurb:
-      "Strong nuclear force splits off. The release of energy drives a sudden exponential expansion — space itself grows by ≥10²⁶ in a fraction of a second.",
+      "Strong nuclear force splits off. The release of energy drives a sudden exponential expansion — space itself grows by $\\geq 10^{26}$ in a fraction of a second.",
     hue: "#22d3ee",
   },
   {
@@ -73,7 +73,7 @@ const EVENTS: Event[] = [
     shortLabel: "ν Decouple",
     phase: "Lepton Era",
     blurb:
-      "After 1 second, neutrinos stop interacting with matter and stream freely. They still pass through the universe today as the Cosmic Neutrino Background.",
+      "After 1 second, neutrinos stop interacting with matter and stream freely. They still pass through the Universe today as the Cosmic Neutrino Background.",
     hue: "#fbbf24",
   },
   {
@@ -95,7 +95,7 @@ const EVENTS: Event[] = [
     shortLabel: "Recombination",
     phase: "End of Particle Age",
     blurb:
-      "380,000 years in. The universe cools enough for electrons to bind to nuclei, forming neutral atoms. Light decouples from matter. The fog lifts. The cosmic microwave background is created.",
+      "380,000 years in. The Universe cools enough for electrons to bind to nuclei, forming neutral atoms. Light decouples from matter. The fog lifts. The cosmic microwave background is created.",
     hue: "#fb923c",
   },
 ];
@@ -354,7 +354,7 @@ export default function PrimordialTimeline() {
         <span className="text-plasma font-mono tracking-[0.14em]">Fig. 1.0.1</span>
         <span className="mx-2 text-white/35">/</span>
         The Particle Age is a fifteen-orders-of-magnitude story compressed into 380,000 years.
-        Click any event to read what's happening; or drag the scrubber to feel the universe cool.
+        Click any event to read what's happening; or drag the scrubber to feel the Universe cool.
       </figcaption>
     </figure>
   );

@@ -73,13 +73,13 @@ export const RIVER_WAYPOINTS: Array<[number, number]> = [
 ];
 
 export const RIVER_SEGMENTS: RiverSegment[] = [
-  { id: "angsi",       name: "Angsi",       age: "Particle age",   range: "0 — 380,000 yrs", w: 1.6, country: "Tibet · source",   lat: 30.92, lng: 82.50, fromIdx: 0,  toIdx: 3  },
-  { id: "tsangpo",     name: "Tsangpo",     age: "Galactic age",   range: "300 ky — 4 Gyr",  w: 2.1, country: "Tibetan plateau",  lat: 29.85, lng: 88.00, fromIdx: 3,  toIdx: 11 },
-  { id: "siang",       name: "Siang",       age: "Stellar age",    range: "4 — 9 Gyr",       w: 2.6, country: "Himalayan gorge",  lat: 28.85, lng: 95.40, fromIdx: 11, toIdx: 15 },
-  { id: "brahmaputra", name: "Brahmaputra", age: "Planetary age",  range: "9 — 11 Gyr",      w: 3.1, country: "Assam plains",     lat: 26.55, lng: 92.10, fromIdx: 15, toIdx: 22 },
-  { id: "jamuna",      name: "Jamuna",      age: "Chemical age",   range: "11 — 13 Gyr",     w: 3.6, country: "Bangladesh north", lat: 24.55, lng: 89.70, fromIdx: 22, toIdx: 25 },
-  { id: "padma",       name: "Padma",       age: "Biological age", range: "13 — 14 Gyr",     w: 4.1, country: "Bengal mid-delta", lat: 23.50, lng: 90.10, fromIdx: 25, toIdx: 28 },
-  { id: "meghna",      name: "Meghna",      age: "Cultural age",   range: "last ~300 ky",    w: 4.6, country: "Bay of Bengal",    lat: 22.55, lng: 90.85, fromIdx: 28, toIdx: 32 },
+  { id: "angsi",       name: "Angsi",       age: "Particle age",   range: "0 — 1 Myr",      w: 1.6, country: "Tibet · source",   lat: 30.92, lng: 82.50, fromIdx: 0,  toIdx: 3  },
+  { id: "tsangpo",     name: "Tsangpo",     age: "Galactic age",   range: "1 Myr — 4 Gyr",  w: 2.1, country: "Tibetan plateau",  lat: 29.85, lng: 88.00, fromIdx: 3,  toIdx: 11 },
+  { id: "siang",       name: "Siang",       age: "Stellar age",    range: "4 — 9 Gyr",      w: 2.6, country: "Himalayan gorge",  lat: 28.85, lng: 95.40, fromIdx: 11, toIdx: 15 },
+  { id: "brahmaputra", name: "Brahmaputra", age: "Planetary age",  range: "9 — 11 Gyr",     w: 3.1, country: "Assam plains",     lat: 26.55, lng: 92.10, fromIdx: 15, toIdx: 22 },
+  { id: "jamuna",      name: "Jamuna",      age: "Chemical age",   range: "11 — 13 Gyr",    w: 3.6, country: "Bangladesh north", lat: 24.55, lng: 89.70, fromIdx: 22, toIdx: 25 },
+  { id: "padma",       name: "Padma",       age: "Biological age", range: "last ~1 Gyr",    w: 4.1, country: "Bengal mid-delta", lat: 23.50, lng: 90.10, fromIdx: 25, toIdx: 28 },
+  { id: "meghna",      name: "Meghna",      age: "Cultural age",   range: "last ~1 Myr",    w: 4.6, country: "Bay of Bengal",    lat: 22.55, lng: 90.85, fromIdx: 28, toIdx: 32 },
 ];
 
 /* Major cities as map landmarks. */
@@ -111,16 +111,43 @@ export const GANGES_WAYPOINTS: Array<[number, number]> = [
   [24.00, 89.70],   // joins Brahmaputra at Aricha
 ];
 
-/* Mt Kailash — source reference. */
-export const SOURCE_PEAK = { name: "Mt Kailash", lat: 31.07, lng: 81.32 };
+/* Mt Kailash — source reference. Placed on the northern side of the
+   Angsi source node (~30.92 N, 82.50 E) so the spatial relationship
+   "Kailash sits to the north of the Brahmaputra source" reads
+   immediately on the map. */
+export const SOURCE_PEAK = { name: "Mt Kailash", lat: 31.85, lng: 82.05 };
+
+/* The twin sacred lakes just west of the Angsi source: Manasarovar
+   (east, round, freshwater) and Rakshashtal (west, crescent, salt),
+   linked by the narrow Ganga-Chhu channel. Stylized northward so
+   they sit between the Angsi node and Mt Kailash on the map. */
+export const LAKES: Array<{
+  id: "manasarovar" | "rakshashtal";
+  label: string;
+  /** Center latitude. */
+  lat: number;
+  /** Center longitude. */
+  lng: number;
+  /** Ellipse radii in degrees (rx along lng, ry along lat). */
+  rxDeg: number;
+  ryDeg: number;
+  /** Side to place the text label on, relative to the ellipse. */
+  labelSide: "east" | "west";
+}> = [
+  { id: "manasarovar", label: "Manasarovar", lat: 31.27, lng: 81.65, rxDeg: 0.14, ryDeg: 0.12, labelSide: "east" },
+  { id: "rakshashtal", label: "Rakshashtal", lat: 31.32, lng: 81.15, rxDeg: 0.16, ryDeg: 0.13, labelSide: "west" },
+];
 
 /* Country / region labels. */
 export const REGIONS: Array<{ name: string; lat: number; lng: number; size: "lg" | "md" | "sm" }> = [
   { name: "TIBET · CHINA", lat: 31.7, lng: 88.0, size: "lg" },
   { name: "INDIA",         lat: 25.5, lng: 83.5, size: "lg" },
-  { name: "BANGLADESH",    lat: 24.2, lng: 90.4, size: "md" },
-  { name: "NEPAL",         lat: 28.4, lng: 84.0, size: "sm" },
-  { name: "BHUTAN",        lat: 27.3, lng: 90.4, size: "sm" },
+  /* BANGLADESH shifted east to clear the Jamuna (5) node + Dhaka text. */
+  { name: "BANGLADESH",    lat: 24.2, lng: 91.5, size: "md" },
+  /* NEPAL nudged north so its label clears the ANNAPURNA peak text. */
+  { name: "NEPAL",         lat: 28.8, lng: 84.5, size: "sm" },
+  /* BHUTAN nudged north so its label clears the Thimphu city label. */
+  { name: "BHUTAN",        lat: 28.05, lng: 90.4, size: "sm" },
   { name: "MYANMAR",       lat: 24.0, lng: 95.6, size: "sm" },
   { name: "BAY OF BENGAL", lat: 21.0, lng: 89.5, size: "md" },
 ];

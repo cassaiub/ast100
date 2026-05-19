@@ -73,7 +73,7 @@ export default function Hero() {
       </div>
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>gravity · strong · EM · weak</div>
-        <div className="text-plasma/60">10³² K → 10¹⁵ K · 1 ps</div>
+        <div className="text-plasma/60">{"$10^{32}$ K → $10^{15}$ K · 1 ps"}</div>
       </div>
     </section>
   );

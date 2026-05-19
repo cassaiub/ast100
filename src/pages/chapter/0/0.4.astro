@@ -7,6 +7,7 @@ import {
   TelescopeBestiaryPanel,
   TelescopeAnatomyPanel,
 } from "../../../components/scenes/0.4/figures";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
 ---
 
@@ -99,7 +100,7 @@ import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
         rapidly fluctuating electric (<strong>E</strong>) and magnetic (<strong>B</strong>)
         fields that vibrate perpendicular to one another and to their
         direction of travel, moving through the vacuum of space at a constant,
-        finite speed, <span class="katex-faux">c</span>. This radiation arises
+        finite speed, $c$. This radiation arises
         whenever electrically charged particles, such as <strong>electrons</strong>,
         undergo <strong>acceleration</strong> or a change in motion; for
         instance, in a lightning bolt, accelerated charged particles release
@@ -118,7 +119,9 @@ import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
         carried is directly proportional to the frequency.
       </p>
 
-      <EmWaveOscillatorPanel client:visible />
+      <FigureFrame label="EM wave oscillator">
+        <EmWaveOscillatorPanel client:visible />
+      </FigureFrame>
 
       {/* ── §3 EM Spectrum ────────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="spectrum">
@@ -167,7 +170,9 @@ import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
         space.
       </p>
 
-      <EmSpectrumScrubberPanel client:visible />
+      <FigureFrame label="EM spectrum scrubber">
+        <EmSpectrumScrubberPanel client:visible />
+      </FigureFrame>
 
       {/* ── §4 Telescope Bestiary ─────────────────────────────────── */}
       <header class="mt-24 mb-10" id="bestiary">
@@ -194,7 +199,7 @@ import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
       </header>
 
       <p data-fade>
-        To study the universe, astronomers use specialized tools tuned to
+        To study the Universe, astronomers use specialized tools tuned to
         different wavelengths of the electromagnetic spectrum. Radio waves
         are captured by instruments like LOFAR and the Five-hundred-meter
         Aperture Spherical Telescope (FAST). For microwaves, the South Pole
@@ -204,10 +209,12 @@ import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
         by the Keck Observatory and Hubble. In higher energies, GALEX maps
         the ultraviolet sky, Chandra captures X-rays from black holes, and
         the Fermi telescope plus the Cherenkov Telescope Array observe the
-        extremely high-energy universe.
+        extremely high-energy Universe.
       </p>
 
-      <TelescopeBestiaryPanel client:visible />
+      <FigureFrame label="Telescope bestiary">
+        <TelescopeBestiaryPanel client:visible />
+      </FigureFrame>
 
       {/* ── §5 Anatomy ────────────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="anatomy">
@@ -266,7 +273,9 @@ import PrevNext from "../../../components/scenes/0.4/PrevNext.astro";
         times fainter than anything the human eye could spot on its own.
       </p>
 
-      <TelescopeAnatomyPanel client:visible />
+      <FigureFrame label="Telescope anatomy">
+        <TelescopeAnatomyPanel client:visible />
+      </FigureFrame>
 
       <div data-fade class="my-16 rule"></div>
 

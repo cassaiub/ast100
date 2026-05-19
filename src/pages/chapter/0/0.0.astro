@@ -2,7 +2,7 @@
 import ChapterOverviewLayout from "../../../layouts/ChapterOverviewLayout.astro";
 import Hero from "../../../components/scenes/0/Hero";
 import RiverScene from "../../../components/scenes/0/RiverScene";
-import ChapterFooter from "../../../components/scenes/0/ChapterFooter.astro";
+import PrevNext from "../../../components/scenes/0/PrevNext.astro";
 import { withBase } from "../../../data/course-nav";
 ---
 
@@ -15,7 +15,7 @@ import { withBase } from "../../../data/course-nav";
   <RiverScene client:load />
 
   {/* Teaser for the full 49-event timeline, which now lives on its own page. */}
-  <section class="relative px-6 md:px-10 py-24 md:py-32">
+  <section class="relative px-6 md:px-10 pt-24 md:pt-32 pb-16 md:pb-20">
     <div class="max-w-[1100px] mx-auto">
       <a
         href={withBase("/timeline")}
@@ -56,5 +56,5 @@ import { withBase } from "../../../data/course-nav";
     </div>
   </section>
 
-  <ChapterFooter />
+  <PrevNext />
 </ChapterOverviewLayout>

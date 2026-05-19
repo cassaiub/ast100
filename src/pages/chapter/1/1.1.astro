@@ -5,6 +5,7 @@ import {
   ForceSeparationPanel,
   ForceStrengthLadderPanel,
 } from "../../../components/scenes/1.1/figures";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
 ---
 
@@ -32,10 +33,10 @@ import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
 
       <p data-fade class="dropcap">
         The evolution of the four fundamental forces began at the Big Bang
-        (<span class="katex-faux">t = 0</span>), a state of infinite density and
-        temperature. During the <strong>Planck Epoch</strong> (0 to 10⁻⁴³ seconds),
-        the universe was a chaotic quantum foam spanning merely 10⁻³⁵ meters
-        (the Planck length) with temperatures exceeding 10³² Kelvin, where
+        ($t = 0$), a state of infinite density and
+        temperature. During the <strong>Planck Epoch</strong> (0 to $10^&#123;-43&#125;$ seconds),
+        the Universe was a chaotic quantum foam spanning merely $10^&#123;-35&#125;$ meters
+        (the Planck length) with temperatures exceeding $10^&#123;32&#125;$ Kelvin, where
         all forces were unified in a single &ldquo;Superforce.&rdquo;
       </p>
 
@@ -51,12 +52,12 @@ import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
       </header>
 
       <p data-fade>
-        At <strong>10⁻⁴³ seconds</strong>, Gravitational Force or gravity
-        became the first to separate from the others. Around 10⁻³⁵ seconds,
-        as the universe cooled to 10²⁸ Kelvin, the <strong>Strong Nuclear
+        At <strong>$10^&#123;-43&#125;$ seconds</strong>, Gravitational Force or gravity
+        became the first to separate from the others. Around $10^&#123;-35&#125;$ seconds,
+        as the Universe cooled to $10^&#123;28&#125;$ Kelvin, the <strong>Strong Nuclear
         Force</strong> separated, an event associated with the release of
-        energy that drove cosmic inflation. Finally, at 10⁻¹² seconds (1
-        picosecond) and 10¹⁵ Kelvin, the <strong>Electroweak</strong> force
+        energy that drove cosmic inflation. Finally, at $10^&#123;-12&#125;$ seconds (1
+        picosecond) and $10^&#123;15&#125;$ Kelvin, the <strong>Electroweak</strong> force
         split into <strong>Electromagnetic Force</strong> and the{" "}
         <strong>Weak Nuclear Force</strong>.
       </p>
@@ -64,17 +65,19 @@ import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
       <p data-fade>
         Physicists describe the separation of these forces using the analogy
         of &ldquo;freezing&rdquo; or a phase transition, similar to liquid
-        water turning into ice. In the extreme heat of the early universe,
+        water turning into ice. In the extreme heat of the early Universe,
         the forces were symmetric and indistinguishable, much like the
         uniformity of liquid water. As the cosmos expanded and cooled, it
         passed through critical thresholds where this symmetry was
         spontaneously broken. Just as cooling water releases latent heat and
-        crystallizes into distinct structures, the cooling universe underwent
+        crystallizes into distinct structures, the cooling Universe underwent
         phase transitions that allowed the unified forces to &ldquo;freeze
         out&rdquo; into the distinct, asymmetric identities we observe today.
       </p>
 
-      <ForceSeparationPanel client:visible />
+      <FigureFrame label="Force separation timeline">
+        <ForceSeparationPanel client:visible />
+      </FigureFrame>
 
       {/* ── §3 Hierarchy ───────────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="hierarchy">
@@ -93,15 +96,17 @@ import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
         the <strong>Strong Nuclear Force</strong>, the most powerful interaction
         with a relative strength of 1, mediated by the exchange of massless
         <strong>gluons</strong>. Far weaker is <strong>Electromagnetism</strong>,
-        with a strength of approximately 10⁻² (or 1/137), efficiently carried
+        with a strength of approximately $10^&#123;-2&#125;$ (or 1/137), efficiently carried
         by the photon. The <strong>Weak Nuclear Force</strong> drops to roughly
-        10⁻⁵ and relies on the massive W⁺, W⁻, and Z⁰ bosons. Finally,{" "}
+        $10^&#123;-5&#125;$ and relies on the massive $W^&#123;+&#125;$, $W^&#123;-&#125;$, and $Z^&#123;0&#125;$ bosons. Finally,{" "}
         <strong>Gravity</strong> is the feeblest force by far at a strength
-        of 10⁻³⁹; while it is hypothetically carried by the graviton, it
+        of $10^&#123;-39&#125;$; while it is hypothetically carried by the graviton, it
         remains unique in its theoretical description.
       </p>
 
-      <ForceStrengthLadderPanel client:visible />
+      <FigureFrame label="Force strength ladder">
+        <ForceStrengthLadderPanel client:visible />
+      </FigureFrame>
 
       {/* ── §4 Roles ───────────────────────────────────────────────── */}
       <header class="mt-24 mb-10" id="carriers">
@@ -144,7 +149,7 @@ import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
 
       <p data-fade>
         In modern physics, a force is not merely a &ldquo;push&rdquo; or
-        &ldquo;pull&rdquo; but the mechanism by which the universe manages
+        &ldquo;pull&rdquo; but the mechanism by which the Universe manages
         energy distribution. At the quantum level, forces are exchanges of
         information and momentum mediated by &ldquo;carrier&rdquo; particles
         called <strong>bosons</strong>, creating fields that permeate space
@@ -158,7 +163,7 @@ import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
 
       <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
         One force became four. Each one holds a different scale of the
-        universe together — and the four of them, together, make atoms, stars,
+        Universe together — and the four of them, together, make atoms, stars,
         and the bodies we walk around in.
       </p>
     </div>
