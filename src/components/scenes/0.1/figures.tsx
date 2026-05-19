@@ -177,9 +177,16 @@ function Slider({
 
 function TimeDilation() {
   const reduced = REDUCED();
-  const [v, setV] = useState(reduced ? 0.5 : 0);
+  /* Slider position s ∈ [0,1] is logarithmic in the gap to c:
+       v/c = 1 − 10^(−4·s)
+     so s=0 → 0c (γ=1), s=0.25 → 0.9c (γ≈2.3), s=0.5 → 0.99c (γ≈7),
+     s=0.75 → 0.999c (γ≈22), s=1 → 0.9999c (γ≈71). The relativistic
+     regime spreads across the whole travel instead of crowding the
+     last 10%. */
+  const [s, setS] = useState(reduced ? 0.5 : 0);
   const [lingerRef, lingerOn] = useLinger();
 
+  const v = 1 - Math.pow(10, -4 * s);
   const v2 = Math.min(v * v, 0.999999);
   const gamma = 1 / Math.sqrt(1 - v2);
 
@@ -198,13 +205,16 @@ function TimeDilation() {
       rocketMinRef.current?.setAttribute("transform", "rotate(20 60 60)");
       return;
     }
+    /* Stationary second-hand rate, °/sec. Fast enough that a clearly slowed
+       moving hand (γ up to ~20) is still visibly ticking, not frozen. */
+    const STATIONARY_RATE = 360;
     let raf = 0;
     let last = performance.now();
     function tick(now: number) {
       const dt = (now - last) / 1000;
       last = now;
-      stationaryAngle.current = (stationaryAngle.current + dt * 6) % 360;
-      rocketAngle.current = (rocketAngle.current + (dt * 6) / gamma) % 360;
+      stationaryAngle.current = (stationaryAngle.current + dt * STATIONARY_RATE) % 360;
+      rocketAngle.current = (rocketAngle.current + (dt * STATIONARY_RATE) / gamma) % 360;
       stationaryRef.current?.setAttribute("transform", `rotate(${stationaryAngle.current} 60 60)`);
       rocketRef.current?.setAttribute("transform", `rotate(${rocketAngle.current} 60 60)`);
       stationaryMinRef.current?.setAttribute(
@@ -244,13 +254,17 @@ function TimeDilation() {
       </div>
       <Slider
         label="rocket speed"
-        value={v}
-        onChange={setV}
+        value={s}
+        onChange={setS}
         min={0}
-        max={0.99}
-        step={0.01}
+        max={1}
+        step={0.005}
         disabled={reduced}
-        formatValue={(val) => `${val.toFixed(2)} c`}
+        formatValue={() => {
+          const gap = 1 - v;
+          const digits = gap >= 0.01 ? 2 : gap >= 0.001 ? 3 : gap >= 0.0001 ? 4 : 5;
+          return `${v.toFixed(digits)} c`;
+        }}
       />
       <div className="text-[13px] text-white/75 leading-[1.6] max-w-[58ch]">
         Move very fast through space → time slows down for you compared to someone standing
@@ -507,321 +521,397 @@ export function SpecialRelativityPanel() {
    GENERAL RELATIVITY PANEL
    ==================================================================== */
 
-function LightBending() {
-  const reduced = REDUCED();
-  const [mass, setMass] = useState(reduced ? 0.5 : 0);
-  const [lingerRef, lingerOn] = useLinger();
-  const W = 880;
-  const H = 260;
-  const star = { x: 630, y: 150 };
-  const beamY = 90;
-  const bend = mass * 70;
-  const c1 = { x: 320, y: beamY + bend * 0.55 };
-  const c2 = { x: 560, y: beamY + bend * 1.05 };
-  const end = { x: 880, y: beamY + bend * 0.4 };
-  const beamD = `M 0 ${beamY} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
-
+function LbLabel({
+  x,
+  y,
+  text,
+  color,
+}: {
+  x: number;
+  y: number;
+  text: string;
+  color: string;
+}) {
+  const w = 22;
+  const h = 20;
   return (
-    <div className="flex flex-col gap-5">
-      <div className="relative rounded-md overflow-hidden border border-white/[0.06] bg-black/40">
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          <defs>
-            <radialGradient id="lb-star" cx="35%" cy="35%" r="70%">
-              <stop offset="0%" stopColor="#fde68a" />
-              <stop offset="50%" stopColor="#f59e0b" />
-              <stop offset="100%" stopColor="#7c2d12" />
-            </radialGradient>
-            <radialGradient id="lb-aura" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4" />
-              <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-            </radialGradient>
-            <filter id="lb-glow">
-              <feGaussianBlur stdDeviation="2.5" />
-            </filter>
-          </defs>
-          <rect width={W} height={H} fill="#05060c" />
-          <g stroke="#22d3ee" strokeOpacity="0.06" strokeWidth="0.5">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <line key={`h-${i}`} x1="0" y1={i * (H / 8)} x2={W} y2={i * (H / 8)} />
-            ))}
-            {Array.from({ length: 13 }).map((_, i) => (
-              <line key={`v-${i}`} x1={i * (W / 12)} y1="0" x2={i * (W / 12)} y2={H} />
-            ))}
-          </g>
-          <circle cx={star.x} cy={star.y} r="120" fill="url(#lb-aura)" />
-          <path
-            d={beamD}
-            stroke="#22d3ee"
-            strokeOpacity="0.4"
-            strokeWidth="10"
-            fill="none"
-            filter="url(#lb-glow)"
-            strokeLinecap="round"
-          />
-          <path
-            d={beamD}
-            stroke="#67e8f9"
-            strokeOpacity="0.95"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <circle cx="0" cy={beamY} r="4" fill="#22d3ee" />
-          <circle
-            cx={star.x}
-            cy={star.y}
-            r="22"
-            fill="url(#lb-star)"
-            stroke="#f59e0b"
-            strokeWidth="0.8"
-          />
-          <g
-            transform={`translate(${end.x - 130} ${end.y + (bend > 8 ? 28 : -22)})`}
-            opacity={mass > 0.04 ? 1 : 0}
-            style={{ transition: "opacity 320ms var(--ease)" }}
-          >
-            <line
-              x1="0"
-              y1="0"
-              x2="100"
-              y2={bend > 8 ? -bend * 0.4 : 0}
-              stroke="#f59e0b"
-              strokeOpacity="0.6"
-              strokeWidth="0.8"
-            />
-            <text
-              x="0"
-              y={bend > 8 ? -bend * 0.4 - 8 : -10}
-              fill="#f59e0b"
-              fillOpacity="0.85"
-              fontSize="10"
-              fontFamily="ui-monospace, 'JetBrains Mono', monospace"
-              letterSpacing="1"
-            >
-              deflection: {(mass * 1.75).toFixed(2)}″
-            </text>
-          </g>
-          <text
-            x="14"
-            y={beamY - 12}
-            fill="#22d3ee"
-            fillOpacity="0.7"
-            fontSize="10"
-            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
-            letterSpacing="1.4"
-          >
-            LIGHT
-          </text>
-          <text
-            x={star.x + 30}
-            y={star.y + 4}
-            fill="#f59e0b"
-            fillOpacity="0.8"
-            fontSize="10"
-            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
-            letterSpacing="1.4"
-          >
-            STAR
-          </text>
-        </svg>
-      </div>
-      <Slider
-        label="star mass"
-        value={mass}
-        onChange={setMass}
-        min={0}
-        max={1}
-        step={0.01}
-        disabled={reduced}
-        formatValue={(val) => val.toFixed(2)}
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx="2"
+        fill="rgb(var(--c-bg-rgb) / 0.55)"
+        stroke={color}
+        strokeWidth="0.9"
       />
-      <div className="text-[13px] text-white/75 leading-[1.6] max-w-[58ch]">
-        Even light, which has no mass, follows these curves.
-      </div>
-      <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
-        Arthur Eddington&rsquo;s 1919 solar-eclipse expedition measured starlight bending by 1.61
-        arcseconds as it grazed the Sun — within 5% of Einstein&rsquo;s predicted 1.75″. It was
-        the first experimental confirmation of General Relativity.
-      </LingerCaption>
-    </div>
+      <text
+        x={x + w / 2}
+        y={y + 14}
+        fontSize="12"
+        fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+        textAnchor="middle"
+        fill={color}
+      >
+        {text}
+      </text>
+    </g>
   );
 }
 
-function BigBangRewinder() {
-  const reduced = REDUCED();
-  const [t, setT] = useState(reduced ? 0.5 : 1);
-  const [playing, setPlaying] = useState(false);
-  const [lingerRef, lingerOn] = useLinger();
-  const W = 880;
-  const H = 260;
-  const cx = 110;
-  const cy = H / 2;
+/* Mass-dependent star palette — interpolates a red-dwarf → Sun → blue-giant
+   gradient in RGB, with discrete spectral-type labels for the readout. */
+function hexToRgb(hex: string): [number, number, number] {
+  return [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16),
+  ];
+}
+function lerpHex(a: string, b: string, t: number): string {
+  const A = hexToRgb(a);
+  const B = hexToRgb(b);
+  const h = (v: number) =>
+    Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0");
+  return `#${h(A[0] + (B[0] - A[0]) * t)}${h(A[1] + (B[1] - A[1]) * t)}${h(
+    A[2] + (B[2] - A[2]) * t,
+  )}`;
+}
+const COOL_PAL = { core: "#ffe7c2", mid: "#ef6635", edge: "#5b1f0e" };
+const SUN_PAL = { core: "#fffbeb", mid: "#f59e0b", edge: "#7c2d12" };
+const HOT_PAL = { core: "#f0f5ff", mid: "#93b8ff", edge: "#1e3a8a" };
 
-  const homesRef = useRef<{ x: number; y: number; r: number; tint: number }[] | null>(null);
-  if (!homesRef.current) {
-    const rng = mulberry32(20240514);
-    const homes: { x: number; y: number; r: number; tint: number }[] = [];
-    for (let i = 0; i < 44; i++) {
-      const x = 220 + rng() * (W - 260);
-      const y = 24 + rng() * (H - 48);
-      const r = 0.8 + rng() * 1.6;
-      const tint = rng();
-      homes.push({ x, y, r, tint });
-    }
-    homesRef.current = homes;
+function starPalette(m: number) {
+  if (m <= 1) {
+    const t = (m - 0.25) / 0.75;
+    return {
+      core: lerpHex(COOL_PAL.core, SUN_PAL.core, t),
+      mid: lerpHex(COOL_PAL.mid, SUN_PAL.mid, t),
+      edge: lerpHex(COOL_PAL.edge, SUN_PAL.edge, t),
+    };
   }
+  const t = (m - 1) / 3;
+  return {
+    core: lerpHex(SUN_PAL.core, HOT_PAL.core, t),
+    mid: lerpHex(SUN_PAL.mid, HOT_PAL.mid, t),
+    edge: lerpHex(SUN_PAL.edge, HOT_PAL.edge, t),
+  };
+}
+function stellarType(m: number): string {
+  if (m < 0.45) return "Red dwarf";
+  if (m < 0.8) return "K-type";
+  if (m <= 1.1) return "Sun-like";
+  if (m < 1.5) return "F-type";
+  if (m < 2.1) return "A-type";
+  return "B-type";
+}
 
-  useEffect(() => {
-    if (!playing || reduced) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const start = 1;
-    const end = 0;
-    const dur = 6000;
-    function tick(now: number) {
-      const k = Math.min((now - t0) / dur, 1);
-      const value = start + (end - start) * easeInOutCubic(k);
-      setT(value);
-      if (k < 1) raf = requestAnimationFrame(tick);
-      else {
-        setTimeout(() => {
-          setT(1);
-          setPlaying(false);
-        }, 600);
-      }
-    }
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [playing, reduced]);
+function LightBending() {
+  const reduced = REDUCED();
+  const [lingerRef, lingerOn] = useLinger();
 
-  const homes = homesRef.current!;
-  const ageGyr = (1 - t) * 13.8;
+  /* Mass slider s ∈ [0,1]; M/M☉ = 4^(2s−1) so the range is [¼, 4] and the
+     midpoint (and default) is exactly the Sun. Einstein's deflection
+     α = 4GM/(c²b) is linear in M at fixed impact parameter, so α(M) =
+     1.75″ × (M/M☉) — the slider walks this single equation. */
+  const [s, setS] = useState(0.5);
+  const M = Math.pow(4, 2 * s - 1);
+  const alphaArcsec = 1.75 * M;
+  const pal = starPalette(M);
+  const sType = stellarType(M);
+
+  /* viewBox coords (y grows downward). Source A on the left, observer D on
+     the right at the same y. Mass centre below the A–D line so light
+     passing OVER it is bent DOWN toward it.
+
+     Thin-lens approximation: the kink happens at the lens plane x = Mc.x.
+     Bend point P sits δ pixels ABOVE A–D, so the ray tilts up from A to P,
+     kinks DOWN at P (toward the mass), then tilts down to reach D. δ
+     scales linearly with M — the same scaling as the deflection angle. */
+  const W = 1000;
+  const H = 340;
+  const A = { x: 110, y: 210 };
+  const D = { x: 910, y: 210 };
+  const Mc = { x: 500, y: 260 };
+
+  const DELTA_SUN = 22;
+  const delta = DELTA_SUN * M;
+  const P = { x: Mc.x, y: A.y - delta };
+
+  /* B is where the back-extrapolation of the P→D segment crosses x = A.x.
+     y_B = A.y − ((D.x − A.x) / (D.x − P.x)) · δ. */
+  const tBack = (D.x - A.x) / (D.x - P.x);
+  const B = { x: A.x, y: A.y - tBack * delta };
+
+  const bentRayD = `M ${A.x} ${A.y} L ${P.x} ${P.y.toFixed(2)} L ${D.x} ${D.y}`;
+
+  /* Star disc — scale gently with mass (R ∝ M^0.3 to keep it visible at
+     both ends without dwarfing the rest of the figure). */
+  const starR = 16 * Math.pow(M, 0.3);
+  const auraR = Math.max(78, starR * 4.8);
+  const chipY = Mc.y + starR + 14;
+
+  const massStr = M.toFixed(2);
+  const isSun = massStr === "1.00";
 
   return (
     <div className="flex flex-col gap-5">
       <div className="relative rounded-md overflow-hidden border border-white/[0.06] bg-black/40">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           <defs>
-            <radialGradient id="bb-sing" cx="50%" cy="50%" r="50%">
+            <radialGradient id="lb-star-disc" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stopColor={pal.core} />
+              <stop offset="60%" stopColor={pal.mid} />
+              <stop offset="100%" stopColor={pal.edge} />
+            </radialGradient>
+            <radialGradient id="lb-star-aura" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={pal.mid} stopOpacity="0.45" />
+              <stop offset="55%" stopColor={pal.mid} stopOpacity="0.08" />
+              <stop offset="100%" stopColor={pal.mid} stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="lb-earth-disc" cx="35%" cy="35%" r="70%">
+              <stop offset="0%" stopColor="#bae6fd" />
+              <stop offset="55%" stopColor="#0284c7" />
+              <stop offset="100%" stopColor="#082f49" />
+            </radialGradient>
+            <radialGradient id="lb-source-disc" cx="40%" cy="40%" r="60%">
               <stop offset="0%" stopColor="#fffbeb" />
-              <stop offset="35%" stopColor="#fde68a" />
-              <stop offset="70%" stopColor="#f59e0b" />
-              <stop offset="100%" stopColor="#7c2d12" stopOpacity="0" />
+              <stop offset="60%" stopColor="#fde68a" />
+              <stop offset="100%" stopColor="#b45309" />
             </radialGradient>
-            <radialGradient id="bb-aura" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#fde68a" stopOpacity="0.55" />
-              <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-            </radialGradient>
+            <filter id="lb-glow">
+              <feGaussianBlur stdDeviation="1.4" />
+            </filter>
           </defs>
+
           <rect width={W} height={H} fill="#05060c" />
+
+          {/* Star aura — grows with mass */}
+          <circle cx={Mc.x} cy={Mc.y} r={auraR} fill="url(#lb-star-aura)" />
+
+          {/* No-mass reference: faint dotted A→D line (the path the light
+              would have taken if C weren't there) */}
           <line
-            x1={cx}
-            y1={H - 26}
-            x2={W - 22}
-            y2={H - 26}
+            x1={A.x}
+            y1={A.y}
+            x2={D.x}
+            y2={D.y}
+            stroke="rgb(var(--c-text-rgb) / 0.22)"
+            strokeWidth="0.8"
+            strokeDasharray="2 6"
+          />
+
+          {/* Apparent ray — dashed B→D (what the observer at D infers) */}
+          <line
+            x1={B.x}
+            y1={B.y.toFixed(2)}
+            x2={D.x}
+            y2={D.y}
+            stroke="rgb(var(--c-text-rgb) / 0.55)"
+            strokeWidth="1"
+            strokeDasharray="6 4"
+          />
+
+          {/* Real (bent) ray — glow halo */}
+          <path
+            d={bentRayD}
             stroke="#22d3ee"
-            strokeOpacity="0.25"
-            strokeWidth="0.7"
-            strokeDasharray="3 4"
+            strokeOpacity="0.32"
+            strokeWidth="7"
+            fill="none"
+            filter="url(#lb-glow)"
+            strokeLinejoin="round"
           />
-          <text
-            x={cx}
-            y={H - 10}
-            fill="#22d3ee"
-            fillOpacity="0.7"
-            fontSize="10"
-            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
-            letterSpacing="1.4"
-            textAnchor="middle"
-          >
-            BIG BANG
-          </text>
-          <text
-            x={W - 22}
-            y={H - 10}
-            fill="#ffffff"
-            fillOpacity="0.55"
-            fontSize="10"
-            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
-            letterSpacing="1.4"
-            textAnchor="end"
-          >
-            TODAY
-          </text>
+          {/* Real ray — sharp line */}
+          <path
+            d={bentRayD}
+            stroke="#67e8f9"
+            strokeOpacity="0.95"
+            strokeWidth="1.8"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
 
+          {/* Photon — animateMotion picks up the new path on each render */}
+          {!reduced && (
+            <circle
+              key={bentRayD}
+              r="3.5"
+              fill="#bef0ff"
+              style={{ filter: "drop-shadow(0 0 8px #22d3ee)" }}
+            >
+              <animateMotion dur="5s" repeatCount="indefinite" path={bentRayD} />
+            </circle>
+          )}
+
+          {/* Star (C) disc */}
           <circle
-            cx={cx}
-            cy={cy}
-            r={26 + (1 - t) * 30}
-            fill="url(#bb-aura)"
-            opacity={1 - t * 0.9}
+            cx={Mc.x}
+            cy={Mc.y}
+            r={starR}
+            fill="url(#lb-star-disc)"
+            stroke={pal.mid}
+            strokeWidth="0.6"
           />
 
-          {homes.map((g, i) => {
-            const px = cx + (g.x - cx) * t;
-            const py = cy + (g.y - cy) * t;
-            const fill = g.tint < 0.15 ? "#fde68a" : g.tint < 0.35 ? "#a5f3fc" : "#ffffff";
-            const r = g.r * (0.6 + 0.6 * t);
-            const alpha = 0.45 + 0.55 * t;
-            return <circle key={i} cx={px} cy={py} r={r} fill={fill} opacity={alpha} />;
-          })}
+          {/* Earth (D) disc */}
+          <circle
+            cx={D.x}
+            cy={D.y}
+            r="7"
+            fill="url(#lb-earth-disc)"
+            stroke="#7dd3fc"
+            strokeWidth="0.5"
+          />
 
-          <circle cx={cx} cy={cy} r={Math.max(2, (1 - t) * 14)} fill="url(#bb-sing)" />
+          {/* True source (A) — solid */}
+          <circle
+            cx={A.x}
+            cy={A.y}
+            r="5"
+            fill="url(#lb-source-disc)"
+            stroke="#f59e0b"
+            strokeWidth="0.6"
+          />
+
+          {/* Apparent source (B) — ghost outline */}
+          <circle
+            cx={B.x}
+            cy={B.y.toFixed(2)}
+            r="5"
+            fill="none"
+            stroke="rgb(var(--c-text-rgb) / 0.7)"
+            strokeWidth="1"
+            strokeDasharray="1.8 1.8"
+          />
+
+          {/* Deflection arrow — vertical double-arrow between A and B */}
+          <g fill="rgb(var(--c-accent-rgb))" stroke="rgb(var(--c-accent-rgb))" strokeWidth="1">
+            <line x1={A.x + 18} y1={A.y - 7} x2={A.x + 18} y2={B.y + 7} />
+            <path
+              d={`M ${A.x + 14} ${B.y + 11} L ${A.x + 18} ${B.y + 4} L ${A.x + 22} ${B.y + 11} Z`}
+              stroke="none"
+            />
+            <path
+              d={`M ${A.x + 14} ${A.y - 11} L ${A.x + 18} ${A.y - 4} L ${A.x + 22} ${A.y - 11} Z`}
+              stroke="none"
+            />
+          </g>
+          <text
+            x={A.x + 28}
+            y={(A.y + B.y) / 2 + 4}
+            fontSize="10"
+            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+            letterSpacing="0.5"
+            fill="rgb(var(--c-accent-rgb))"
+          >
+            α ≈ {alphaArcsec.toFixed(2)}″
+          </text>
+
+          {/* Letter labels */}
+          <LbLabel x={A.x - 38} y={A.y - 10} text="A" color="rgb(var(--c-text-rgb) / 0.85)" />
+          <LbLabel x={B.x - 38} y={B.y - 10} text="B" color="rgb(var(--c-text-rgb) / 0.85)" />
+          <LbLabel x={Mc.x - 11} y={chipY} text="C" color={pal.mid} />
+          <LbLabel x={D.x + 14} y={D.y - 10} text="D" color="rgb(var(--c-accent-rgb))" />
+
+          {/* Descriptive sub-captions */}
+          <text
+            x={A.x + 28}
+            y={A.y + 26}
+            fontSize="10"
+            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+            letterSpacing="1"
+            fill="rgb(var(--c-text-rgb) / 0.55)"
+          >
+            STAR · TRUE POSITION
+          </text>
+          <text
+            x={B.x + 28}
+            y={B.y - 8}
+            fontSize="10"
+            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+            letterSpacing="1"
+            fill="rgb(var(--c-text-rgb) / 0.55)"
+          >
+            STAR · APPARENT POSITION
+          </text>
+          <text
+            x={Mc.x + 22}
+            y={chipY + 16}
+            fontSize="10"
+            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+            letterSpacing="1"
+            fill={pal.mid}
+          >
+            {sType.toUpperCase()} · {massStr} M☉
+          </text>
+          <text
+            x={D.x + 14}
+            y={D.y + 28}
+            fontSize="10"
+            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+            letterSpacing="1"
+            fill="rgb(var(--c-accent-rgb))"
+          >
+            EARTH
+          </text>
+
+          {/* Scale note */}
+          <text
+            x={W - 14}
+            y={H - 12}
+            fontSize="9"
+            textAnchor="end"
+            fontFamily="ui-monospace, 'JetBrains Mono', monospace"
+            letterSpacing="2"
+            fill="rgb(var(--c-text-rgb) / 0.32)"
+          >
+            DEFLECTION ANGLE EXAGGERATED FOR CLARITY
+          </text>
         </svg>
       </div>
 
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={() => {
-            if (reduced) return;
-            if (playing) {
-              setPlaying(false);
-            } else {
-              setT(1);
-              setPlaying(true);
-            }
-          }}
-          disabled={reduced}
-          className="pill rounded-full px-3.5 py-1.5 text-[11px] font-mono tracking-[0.18em] uppercase shrink-0"
-        >
-          {playing ? "■ stop" : "▶ rewind"}
-        </button>
-        <div className="flex-1 flex flex-col gap-1">
-          <div className="flex items-baseline justify-between gap-3">
-            <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-              cosmic time
-            </label>
-            <span className="font-mono text-[11px] text-plasma">
-              {t > 0.001 ? `${ageGyr.toFixed(2)} Gyr ago` : "singularity"}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.005"
-            value={t}
-            disabled={reduced}
-            onChange={(e) => {
-              setPlaying(false);
-              setT(parseFloat(e.target.value));
-            }}
-            className="cosmic-slider"
-          />
-        </div>
+      <Slider
+        label="deflector mass"
+        value={s}
+        onChange={setS}
+        min={0}
+        max={1}
+        step={0.005}
+        disabled={reduced}
+        formatValue={() =>
+          `${massStr} M☉${isSun ? " · Sun" : ""} · α = ${alphaArcsec.toFixed(2)}″`
+        }
+      />
+      <div className="-mt-2 flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40">
+        <span>red dwarf · ¼ M☉</span>
+        <span>Sun · 1 M☉</span>
+        <span>blue giant · 4 M☉</span>
       </div>
 
       <div className="text-[13px] text-white/75 leading-[1.6] max-w-[68ch]">
-        Rewind the motion of the expanding universe — it points to a single moment when all
-        space, time, matter, and energy were compressed into one point.
+        Light from star{" "}
+        <span className="font-mono text-white/90">A</span> heads toward Earth{" "}
+        <span className="font-mono text-plasma">D</span> in a straight line.
+        Near a massive body{" "}
+        <span className="font-mono" style={{ color: pal.mid }}>
+          C
+        </span>{" "}
+        the ray kinks <em>toward</em> the mass; trace the kinked outgoing
+        segment backward from D and the observer infers the star at the
+        displaced apparent position{" "}
+        <span className="font-mono text-white/90">B</span>. Heavier deflector,
+        bigger bend — α = 4GM/(c²b), linear in M.
       </div>
       <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
-        We cannot see the first 380,000 years — the universe was opaque to light. The Cosmic
-        Microwave Background is the photosphere of the Big Bang itself, the oldest image
-        obtainable.
+        Arthur Eddington&rsquo;s 1919 solar-eclipse expedition measured the
+        angular separation between A and B for starlight grazing the Sun and
+        found 1.61 arcseconds — within 5% of Einstein&rsquo;s predicted 1.75″
+        for one solar mass. The slider walks the same equation across a
+        stellar cast: at 4 M☉ the bend grows to ≈ 7″; at ¼ M☉, barely
+        ¼ arcsecond.
       </LingerCaption>
     </div>
   );
@@ -832,14 +922,9 @@ export function GeneralRelativityPanel() {
     <FigurePanel
       idx="0.1.b"
       kicker="general relativity · gravity as geometry"
-      caption="Mass bends the very paths that light follows. Wind that motion all the way back, and you arrive at a single, infinitely dense beginning."
+      caption="Mass bends the very paths that light follows. Slide the deflector across a stellar cast: at one solar mass you land on Eddington's 1919 eclipse measurement (≈ 1.75″); double the mass and the bend doubles with it."
     >
-      <div className="flex flex-col gap-8">
-        <LightBending />
-        <div className="border-t border-white/[0.06] pt-8">
-          <BigBangRewinder />
-        </div>
-      </div>
+      <LightBending />
     </FigurePanel>
   );
 }
@@ -1040,18 +1125,3 @@ export function GravitationalTimeDilationPanel() {
   );
 }
 
-/* ── utilities ──────────────────────────────────────────────────────── */
-function mulberry32(seed: number) {
-  let a = seed >>> 0;
-  return function () {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function easeInOutCubic(x: number) {
-  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-}
