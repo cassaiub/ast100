@@ -4,8 +4,9 @@ Read this before adding a new chapter or lesson. It captures the visual
 and content conventions that already shaped chapters 0 and 1. Following
 them keeps the site coherent as we extend to chapters 2–7.
 
-Companion: the `/port-lesson` skill in `.claude/skills/port-lesson/`
-drives the new-lesson workflow automatically.
+Companions: the `/ast100-create` and `/ast100-edit` skills in
+`.claude/skills/` drive the create and edit workflows automatically,
+referring back to this doc for the deep rules.
 
 ---
 
@@ -47,7 +48,9 @@ ast100/
 │   ├── media/                        ← all figure assets
 │   └── SPEC.md                       ← parallel plain-HTML spec
 ├── .github/workflows/deploy.yml      ← CI: build + rsync to Bluehost
-└── .claude/skills/port-lesson/       ← the authoring skill
+└── .claude/skills/                  ← the authoring skills
+    ├── ast100-create/                  for new lessons
+    └── ast100-edit/                    for tweaking existing
 ```
 
 The Astro `src/` and the static `knowledgebase/` are **two separate
