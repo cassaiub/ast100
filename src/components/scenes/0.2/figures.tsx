@@ -426,291 +426,401 @@ export function EntropyIslandPanel() {
   );
 }
 
+
 /* ── Energy Rate Density ──────────────────────────────────────────────
-   A complexity ranking: how much energy flows per gram per second
-   through each kind of system. The surprise is that stars — which
-   we think of as the most energetic things in the Universe — sit
-   at the bottom, and human society sits at the top. */
-const ERD_ROWS: { name: string; value: number; note: string }[] = [
-  { name: "Sun (Sol)", value: 2, note: "Average energy flow through a star's body." },
-  { name: "Galaxy", value: 0.5, note: "Whole-galaxy energy rate density." },
-  { name: "Earth's biosphere", value: 900, note: "All life on Earth, averaged." },
-  { name: "Mature plant", value: 5_000, note: "Photosynthesis + metabolic flow." },
-  { name: "Mammal", value: 20_000, note: "A warm-blooded animal at rest." },
-  { name: "Human brain", value: 150_000, note: "≈20 W in 1.4 kg — neurons are dense." },
+   Chaisson's complexity metric Φₘ: free energy flowing through every
+   kilogram of a system, every second. Plotted against cosmic time it
+   forms a steeply rising curve from the first proto-galaxies to a
+   modern jet engine — nine orders of magnitude in 13.8 billion years. */
+const ERD_POINTS: {
+  name: string;
+  t: number;
+  erd: number;
+  note: string;
+}[] = [
+  {
+    name: "First galaxies",
+    t: 0.5,
+    erd: 1e-5,
+    note: "Primordial hydrogen-helium clumps assembling — feeble luminous matter at the cosmic dawn.",
+  },
+  {
+    name: "Sun ignites",
+    t: 9.2,
+    erd: 2e-4,
+    note: "A G-type main-sequence star — only ≈2 erg/g/s averaged across its plasma mass.",
+  },
+  {
+    name: "Earth forms",
+    t: 9.3,
+    erd: 7.5e-3,
+    note: "Radiogenic, tidal, and insolation flux through a rocky planet — about 75 erg/g/s.",
+  },
+  {
+    name: "First life",
+    t: 10.3,
+    erd: 5e-2,
+    note: "Prokaryotic single cells — chemistry promoted to metabolism for the first time.",
+  },
+  {
+    name: "Land plants",
+    t: 13.3,
+    erd: 0.7,
+    note: "Photosynthetic flora — orders of magnitude above the average biosphere throughput.",
+  },
+  {
+    name: "Mammals",
+    t: 13.6,
+    erd: 4,
+    note: "Endothermic vertebrates burn ≈4×10⁴ erg/s through every gram of warm-blooded body.",
+  },
+  {
+    name: "Human brain",
+    t: 13.799,
+    erd: 15,
+    note: "≈20 W flowing through 1.4 kg of neurons — the densest biological energy flux known.",
+  },
   {
     name: "Modern society",
-    value: 500_000,
-    note: "Global civilisation: power-per-mass of the technosphere.",
+    t: 13.7999,
+    erd: 50,
+    note: "Industrial + digital civilisation — per-capita power-to-mass of the technosphere.",
+  },
+  {
+    name: "Jet engine",
+    t: 13.79999,
+    erd: 8200,
+    note: "Modern turbofan — the highest sustained energy rate density humans have ever built.",
   },
 ];
 
 export function EnergyRateDensityPanel() {
   const [hover, setHover] = useState<number | null>(null);
-  const max = Math.max(...ERD_ROWS.map((r) => r.value));
-  /* Use log scale for bar widths because values span 6 orders of magnitude. */
-  const logMax = Math.log10(max + 1);
-  const widthOf = (v: number) =>
-    Math.max(0.04, Math.log10(v + 1) / logMax) * 100;
+
+  const W = 720;
+  const H = 380;
+  const PAD_L = 78;
+  const PAD_R = 110;
+  const PAD_T = 40;
+  const PAD_B = 70;
+  const plotW = W - PAD_L - PAD_R;
+  const plotH = H - PAD_T - PAD_B;
+
+  /* x: time in Gyr (linear, 0 → 14)
+     y: log10(erd in W/kg), (−5 → 4) */
+  const X_MIN = 0;
+  const X_MAX = 14;
+  const Y_MIN = -5;
+  const Y_MAX = 4;
+  const toX = (t: number) =>
+    PAD_L + ((t - X_MIN) / (X_MAX - X_MIN)) * plotW;
+  const toY = (logE: number) =>
+    PAD_T + plotH - ((logE - Y_MIN) / (Y_MAX - Y_MIN)) * plotH;
+
+  /* Per-point screen coords + label placement.
+     Bunched right-edge points fan their labels left/right alternately. */
+  const LABEL_OFFSETS: { dx: number; dy: number; anchor: "start" | "end" | "middle" }[] = [
+    { dx: 14, dy: -10, anchor: "start" },    // First galaxies
+    { dx: 0, dy: 20, anchor: "middle" },     // Sun ignites
+    { dx: 10, dy: -12, anchor: "start" },    // Earth forms
+    { dx: 14, dy: -14, anchor: "start" },    // First life
+    { dx: -14, dy: 4, anchor: "end" },       // Land plants
+    { dx: 14, dy: 5, anchor: "start" },      // Mammals
+    { dx: -14, dy: -2, anchor: "end" },      // Human brain
+    { dx: 14, dy: 5, anchor: "start" },      // Modern society
+    { dx: -14, dy: -2, anchor: "end" },      // Jet engine
+  ];
+  const points = ERD_POINTS.map((p, i) => ({
+    ...p,
+    x: toX(p.t),
+    y: toY(Math.log10(p.erd)),
+    lo: LABEL_OFFSETS[i],
+  }));
+
+  /* Smooth Catmull-Rom curve through the data (tension 0.5) */
+  const curveD = (() => {
+    const parts: string[] = [];
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[Math.max(0, i - 1)];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[Math.min(points.length - 1, i + 2)];
+      const c1x = p1.x + (p2.x - p0.x) / 6;
+      const c1y = p1.y + (p2.y - p0.y) / 6;
+      const c2x = p2.x - (p3.x - p1.x) / 6;
+      const c2y = p2.y - (p3.y - p1.y) / 6;
+      if (i === 0) parts.push(`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`);
+      parts.push(
+        `C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`,
+      );
+    }
+    return parts.join(" ");
+  })();
+
+  const X_TICKS = [0, 2, 4, 6, 8, 10, 12, 14];
+  const Y_TICKS = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4];
+  const supDigit: Record<string, string> = {
+    "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+    "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "-": "⁻",
+  };
+  const sup = (n: number) =>
+    String(n).split("").map((c) => supDigit[c] ?? c).join("");
 
   return (
     <FigurePanel
       idx="0.2.3"
-      kicker="Energy Rate Density · the Complexity Ladder"
-      caption="Eric Chaisson's metric for measuring complexity: erg per gram per second. Stars are huge but spread thin — only a few erg/g/s pass through them. A human society burns half a million erg/g/s — more concentrated energy flow than anything else we know."
-    >
-      <ol className="flex flex-col gap-2 my-2">
-        {ERD_ROWS.map((row, i) => {
-          const isHover = hover === i;
-          return (
-            <li
-              key={row.name}
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover(null)}
-              className="grid grid-cols-[160px_1fr_120px] gap-3 items-center cursor-default"
-            >
-              <div
-                className="font-serif text-[14px] leading-tight"
-                style={{
-                  color: isHover ? "var(--c-accent)" : "var(--c-text-strong)",
-                  transition: "color 200ms var(--ease)",
-                }}
-              >
-                {row.name}
-              </div>
-              <div className="relative h-6 rounded-full overflow-hidden" style={{ background: "rgb(var(--c-text-rgb) / 0.06)" }}>
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${widthOf(row.value)}%`,
-                    background: isHover
-                      ? "linear-gradient(90deg, rgb(var(--c-accent-rgb) / 0.85), rgb(var(--c-accent-rgb) / 0.55))"
-                      : "linear-gradient(90deg, rgb(var(--c-accent-rgb) / 0.55), rgb(var(--c-accent-rgb) / 0.3))",
-                    boxShadow: isHover ? "0 0 18px rgb(var(--c-accent-rgb) / 0.4)" : "none",
-                    transition: "width 600ms var(--ease), background 200ms var(--ease), box-shadow 200ms var(--ease)",
-                  }}
-                />
-              </div>
-              <div
-                className="font-mono text-[11px] tracking-[0.1em] text-right"
-                style={{
-                  color: isHover
-                    ? "var(--c-accent)"
-                    : "rgb(var(--c-text-rgb) / 0.7)",
-                  transition: "color 200ms var(--ease)",
-                }}
-              >
-                {row.value.toLocaleString()}{" "}
-                <span className="text-white/40">erg/g/s</span>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
-      <div
-        className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[68ch] min-h-[3em]"
-      >
-        {hover !== null ? (
-          <>
-            <span className="text-plasma font-mono tracking-[0.14em]">
-              {ERD_ROWS[hover].name.toUpperCase()}
-            </span>
-            <span className="mx-2 text-white/35">/</span>
-            {ERD_ROWS[hover].note}
-          </>
-        ) : (
-          <span className="text-white/55 italic">
-            Hover a row to read what each ladder rung means.
-          </span>
-        )}
-      </div>
-    </FigurePanel>
-  );
-}
-
-/* ── Inflation Visualizer ────────────────────────────────────────────
-   The first 10⁻³² seconds: the Universe grew by a factor of ≥10²⁶ in
-   an instant of exponential expansion.  The user scrubs time across
-   the inflation epoch; the Universe-radius readout flips from
-   sub-Planck to grapefruit-scale.  A logarithmic y-axis shows the
-   blade of the exponential curve. */
-export function InflationVisualizerPanel() {
-  /* log10(t) range: −43 (Planck) → −32 (inflation ends) */
-  const [logT, setLogT] = useState(-36);
-  const W = 720;
-  const H = 320;
-  const PAD_X = 60;
-  const PAD_Y_TOP = 40;
-  const PAD_Y_BOT = 220;
-
-  /* Approximate scale factor a(t) across inflation. We model the
-     pre-inflation epoch as nearly constant (radiation-era), then an
-     exponential jump during inflation (e-folds N(t) = (t - t_start)/τ),
-     then a smooth handoff. Numbers are pedagogical, not precise.
-     End-state target: a multiplied by ~10²⁶ during inflation. */
-  function aFor(lt: number): number {
-    const tStart = -36;
-    const tEnd = -32;
-    if (lt <= tStart) return 1; // pre-inflation reference
-    if (lt >= tEnd) return 1e26;
-    const k = (lt - tStart) / (tEnd - tStart);
-    return Math.pow(10, k * 26);
-  }
-  const a = aFor(logT);
-  const logA = Math.log10(a);
-
-  /* Curve points on a log y-axis */
-  const curvePts: string[] = [];
-  const N = 200;
-  const lMin = -43;
-  const lMax = -30;
-  for (let i = 0; i <= N; i++) {
-    const t = lMin + (i / N) * (lMax - lMin);
-    const v = Math.log10(aFor(t));
-    const x = PAD_X + ((t - lMin) / (lMax - lMin)) * (W - 2 * PAD_X);
-    /* y on log scale 0 → 28 e-folds */
-    const y = PAD_Y_BOT - (v / 28) * (PAD_Y_BOT - PAD_Y_TOP);
-    curvePts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
-  }
-  const cursorX = PAD_X + ((logT - lMin) / (lMax - lMin)) * (W - 2 * PAD_X);
-  const cursorY = PAD_Y_BOT - (logA / 28) * (PAD_Y_BOT - PAD_Y_TOP);
-
-  /* Universe-radius readout. Reference: at lMin, observable patch ~10⁻³⁵ m
-     (Planck length). Multiplied by a(t). */
-  const radius = 1e-35 * a;
-  function fmtRadius(r: number): string {
-    if (r < 1e-30) return `${r.toExponential(2)} m (sub-Planck)`;
-    if (r < 1e-15) return `${r.toExponential(2)} m (sub-atomic)`;
-    if (r < 1e-9) return `${r.toExponential(2)} m (atomic-scale)`;
-    if (r < 1) return `${(r * 100).toFixed(2)} cm`;
-    if (r < 1000) return `${r.toFixed(1)} m`;
-    return `${(r / 1000).toFixed(1)} km`;
-  }
-  function fmtTime(lt: number): string {
-    return `10^${lt.toFixed(0)} s`;
-  }
-
-  /* Scale-relative size of the Universe circle (visual) — also log-y */
-  const visRadius = Math.min(80, Math.max(4, 4 + (logA / 28) * 76));
-
-  return (
-    <FigurePanel
-      idx="0.2.4"
-      kicker="Inflation · 10²⁶ × in 10⁻³² Seconds"
-      caption="Inflation is the single most dramatic event in cosmic history. In a sliver of a sliver of a second, the Universe expanded by a factor greater than a hundred-trillion-trillion. Scrub the slider to watch space itself unspool."
+      kicker="Energy Rate Density · Cosmic History"
+      caption="Eric Chaisson's complexity metric: free energy flowing through every kilogram of a system, every second. Across 13.8 billion years the value climbs nine orders of magnitude — from the first proto-galaxies to a modern jet engine."
     >
       <div className="relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Axes frame */}
-          <line x1={PAD_X} y1={PAD_Y_TOP} x2={PAD_X} y2={PAD_Y_BOT} stroke="rgb(var(--c-text-rgb) / 0.18)" strokeWidth="0.8" />
-          <line x1={PAD_X} y1={PAD_Y_BOT} x2={W - PAD_X} y2={PAD_Y_BOT} stroke="rgb(var(--c-text-rgb) / 0.18)" strokeWidth="0.8" />
-          {/* Y ticks at e-folds 0, 10, 20, 26 */}
-          {[0, 10, 20, 26].map((e) => {
-            const y = PAD_Y_BOT - (e / 28) * (PAD_Y_BOT - PAD_Y_TOP);
+          {/* Y-axis gridlines */}
+          {Y_TICKS.map((e) => (
+            <line
+              key={`yg-${e}`}
+              x1={PAD_L}
+              x2={W - PAD_R}
+              y1={toY(e)}
+              y2={toY(e)}
+              stroke="rgb(var(--c-text-rgb) / 0.06)"
+              strokeWidth="0.6"
+              strokeDasharray="2 4"
+            />
+          ))}
+          {/* X-axis gridlines */}
+          {X_TICKS.map((t) => (
+            <line
+              key={`xg-${t}`}
+              x1={toX(t)}
+              x2={toX(t)}
+              y1={PAD_T}
+              y2={H - PAD_B}
+              stroke="rgb(var(--c-text-rgb) / 0.06)"
+              strokeWidth="0.6"
+              strokeDasharray="2 4"
+            />
+          ))}
+
+          {/* Axis frame */}
+          <line
+            x1={PAD_L}
+            y1={PAD_T}
+            x2={PAD_L}
+            y2={H - PAD_B}
+            stroke="rgb(var(--c-text-rgb) / 0.22)"
+            strokeWidth="0.9"
+          />
+          <line
+            x1={PAD_L}
+            y1={H - PAD_B}
+            x2={W - PAD_R}
+            y2={H - PAD_B}
+            stroke="rgb(var(--c-text-rgb) / 0.22)"
+            strokeWidth="0.9"
+          />
+
+          {/* X ticks + labels */}
+          {X_TICKS.map((t) => {
+            const x = toX(t);
             return (
-              <g key={e}>
-                <line x1={PAD_X - 4} y1={y} x2={PAD_X} y2={y} stroke="rgb(var(--c-text-rgb) / 0.3)" />
-                <text x={PAD_X - 8} y={y + 3} textAnchor="end" fontSize="9" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
-                  10^{e}
+              <g key={`xt-${t}`}>
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={H - PAD_B}
+                  y2={H - PAD_B + 4}
+                  stroke="rgb(var(--c-text-rgb) / 0.4)"
+                  strokeWidth="0.8"
+                />
+                <text
+                  x={x}
+                  y={H - PAD_B + 18}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontFamily="var(--font-mono)"
+                  fill="rgb(var(--c-text-rgb) / 0.6)"
+                >
+                  {t}
                 </text>
               </g>
             );
           })}
-          <text x={20} y={PAD_Y_TOP - 12} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.55)">
-            SCALE · a(t)
+          <text
+            x={(PAD_L + W - PAD_R) / 2}
+            y={H - PAD_B + 42}
+            textAnchor="middle"
+            fontSize="9"
+            letterSpacing="3"
+            fontFamily="var(--font-mono)"
+            fill="rgb(var(--c-text-rgb) / 0.55)"
+          >
+            TIME AFTER BIG BANG · Gyr
           </text>
-          {/* X ticks at log10 t = -42, -38, -34, -30 */}
-          {[-42, -38, -34, -30].map((lt) => {
-            const x = PAD_X + ((lt - lMin) / (lMax - lMin)) * (W - 2 * PAD_X);
+
+          {/* Y ticks + labels */}
+          {Y_TICKS.map((e) => {
+            const y = toY(e);
             return (
-              <g key={lt}>
-                <line x1={x} y1={PAD_Y_BOT} x2={x} y2={PAD_Y_BOT + 4} stroke="rgb(var(--c-text-rgb) / 0.3)" />
-                <text x={x} y={PAD_Y_BOT + 16} textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
-                  10^{lt} s
+              <g key={`yt-${e}`}>
+                <line
+                  x1={PAD_L - 4}
+                  x2={PAD_L}
+                  y1={y}
+                  y2={y}
+                  stroke="rgb(var(--c-text-rgb) / 0.4)"
+                  strokeWidth="0.8"
+                />
+                <text
+                  x={PAD_L - 8}
+                  y={y + 3}
+                  textAnchor="end"
+                  fontSize="10"
+                  fontFamily="var(--font-mono)"
+                  fill="rgb(var(--c-text-rgb) / 0.6)"
+                >
+                  10{sup(e)}
                 </text>
               </g>
             );
           })}
-          <text x={W - PAD_X} y={PAD_Y_BOT + 32} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.55)">
-            TIME →
+          <text
+            transform={`translate(${PAD_L - 56}, ${PAD_T + plotH / 2}) rotate(-90)`}
+            textAnchor="middle"
+            fontSize="9"
+            letterSpacing="3"
+            fontFamily="var(--font-mono)"
+            fill="rgb(var(--c-text-rgb) / 0.55)"
+          >
+            ENERGY RATE DENSITY · W/kg
           </text>
 
-          {/* Inflation epoch shading */}
-          {(() => {
-            const x1 = PAD_X + ((-36 - lMin) / (lMax - lMin)) * (W - 2 * PAD_X);
-            const x2 = PAD_X + ((-32 - lMin) / (lMax - lMin)) * (W - 2 * PAD_X);
+          {/* Endpoint annotations */}
+          <text
+            x={PAD_L + 6}
+            y={PAD_T + 14}
+            fontSize="9"
+            letterSpacing="3"
+            fontFamily="var(--font-mono)"
+            fill="rgb(var(--c-accent-rgb) / 0.8)"
+          >
+            BIG BANG →
+          </text>
+          <line
+            x1={toX(13.8)}
+            x2={toX(13.8)}
+            y1={PAD_T}
+            y2={H - PAD_B}
+            stroke="rgb(var(--c-accent-rgb) / 0.3)"
+            strokeWidth="0.8"
+            strokeDasharray="2 3"
+          />
+          <text
+            x={toX(13.8) - 6}
+            y={PAD_T + 14}
+            textAnchor="end"
+            fontSize="9"
+            letterSpacing="3"
+            fontFamily="var(--font-mono)"
+            fill="rgb(var(--c-accent-rgb) / 0.8)"
+          >
+            ← NOW
+          </text>
+
+          {/* Rising curve */}
+          <path
+            d={curveD}
+            fill="none"
+            stroke="rgb(var(--c-accent-rgb) / 0.6)"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            style={{
+              filter: "drop-shadow(0 0 5px rgb(var(--c-accent-rgb) / 0.4))",
+            }}
+          />
+
+          {/* Data points + leaders + labels */}
+          {points.map((p, i) => {
+            const isHover = hover === i;
+            const lx = p.x + p.lo.dx;
+            const ly = p.y + p.lo.dy;
             return (
-              <g>
-                <rect x={x1} y={PAD_Y_TOP} width={x2 - x1} height={PAD_Y_BOT - PAD_Y_TOP} fill="rgb(var(--c-accent-rgb) / 0.06)" />
-                <text x={(x1 + x2) / 2} y={PAD_Y_TOP - 4} textAnchor="middle" fontSize="9" letterSpacing="3" fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb) / 0.8)">
-                  INFLATION
+              <g
+                key={p.name}
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(null)}
+                style={{ cursor: "default" }}
+              >
+                <line
+                  x1={p.x}
+                  y1={p.y}
+                  x2={lx}
+                  y2={ly - 3}
+                  stroke={
+                    isHover
+                      ? "rgb(var(--c-accent-rgb) / 0.75)"
+                      : "rgb(var(--c-accent-rgb) / 0.3)"
+                  }
+                  strokeWidth="0.7"
+                />
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={isHover ? 6.5 : 4}
+                  fill="rgb(var(--c-accent-rgb))"
+                  style={{
+                    filter: isHover
+                      ? "drop-shadow(0 0 12px rgb(var(--c-accent-rgb) / 0.9))"
+                      : "drop-shadow(0 0 4px rgb(var(--c-accent-rgb) / 0.45))",
+                    transition:
+                      "r 200ms var(--ease), filter 200ms var(--ease)",
+                  }}
+                />
+                <text
+                  x={lx}
+                  y={ly}
+                  textAnchor={p.lo.anchor}
+                  fontSize={isHover ? "12" : "11"}
+                  fontFamily="var(--font-sans)"
+                  fontWeight={isHover ? 500 : 400}
+                  fill={
+                    isHover
+                      ? "rgb(var(--c-accent-rgb))"
+                      : "rgb(var(--c-text-rgb) / 0.85)"
+                  }
+                  style={{
+                    transition:
+                      "fill 200ms var(--ease), font-size 200ms var(--ease)",
+                  }}
+                >
+                  {p.name}
                 </text>
+                {/* Invisible hover catcher */}
+                <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
               </g>
             );
-          })()}
-
-          {/* Exponential curve */}
-          <path d={curvePts.join(" ")} stroke="rgb(var(--c-accent-rgb))" strokeWidth="2.2" fill="none" style={{ filter: "drop-shadow(0 0 5px rgb(var(--c-accent-rgb) / 0.5))" }} />
-
-          {/* Cursor */}
-          <line x1={cursorX} x2={cursorX} y1={PAD_Y_TOP} y2={PAD_Y_BOT} stroke="rgb(var(--c-text-rgb) / 0.95)" strokeWidth="1.2" />
-          <circle cx={cursorX} cy={cursorY} r="5" fill="rgb(var(--c-text-rgb))" />
-
-          {/* Universe-size visual on the right */}
-          <g transform={`translate(${W - 120}, ${PAD_Y_TOP + 100})`}>
-            <circle cx={0} cy={0} r={visRadius} fill="rgb(var(--c-accent-rgb) / 0.25)" stroke="rgb(var(--c-accent-rgb))" strokeWidth="1.4" />
-            <circle cx={0} cy={0} r="2" fill="rgb(var(--c-accent-rgb))" />
-            <text x={0} y={visRadius + 16} textAnchor="middle" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb) / 0.8)">
-              OBSERVABLE PATCH
-            </text>
-          </g>
+          })}
         </svg>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        <div className="p-3 rounded-md" style={{ background: "rgb(var(--c-accent-rgb) / 0.05)", border: "1px solid rgb(var(--c-accent-rgb) / 0.18)" }}>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">time</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.2rem", color: "var(--c-accent)" }}>
-            {fmtTime(logT)}
-          </div>
-        </div>
-        <div className="p-3 rounded-md" style={{ background: "rgb(var(--c-accent-rgb) / 0.05)", border: "1px solid rgb(var(--c-accent-rgb) / 0.18)" }}>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">scale factor a</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.2rem", color: "var(--c-accent)" }}>
-            ×10^{logA.toFixed(1)}
-          </div>
-        </div>
-        <div className="p-3 rounded-md" style={{ background: "rgb(var(--c-accent-rgb) / 0.05)", border: "1px solid rgb(var(--c-accent-rgb) / 0.18)" }}>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">patch radius</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.05rem", color: "var(--c-accent)" }}>
-            {fmtRadius(radius)}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-1">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-            scrub log₁₀(t)
-          </label>
-          <span className="font-mono text-[10px] text-plasma">
-            t = {fmtTime(logT)}
+      <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[68ch] min-h-[3.4em]">
+        {hover !== null ? (
+          <>
+            <span className="text-plasma font-mono tracking-[0.14em]">
+              {ERD_POINTS[hover].name.toUpperCase()}
+            </span>
+            <span className="mx-2 text-white/35">/</span>
+            <span className="text-white/75">{ERD_POINTS[hover].note}</span>
+            <div className="font-mono text-[11px] text-white/55 mt-1">
+              t ≈ {ERD_POINTS[hover].t} Gyr · Φₘ ≈{" "}
+              {ERD_POINTS[hover].erd.toExponential(1)} W/kg
+            </div>
+          </>
+        ) : (
+          <span className="text-white/55 italic">
+            Hover a point to read what each rung of complexity represents.
           </span>
-        </div>
-        <input
-          type="range"
-          min={-43}
-          max={-30}
-          step={0.1}
-          value={logT}
-          onChange={(e) => setLogT(parseFloat(e.target.value))}
-          className="cosmic-slider"
-        />
-        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
-          <span>Planck epoch</span>
-          <span>inflation begins</span>
-          <span>inflation ends</span>
-        </div>
+        )}
       </div>
     </FigurePanel>
   );
