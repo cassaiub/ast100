@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview (`/chapter/1`) card. See `course-nav.ts` sub `tease`. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -34,10 +37,12 @@ export default function Hero() {
             Elementary <span className="italic font-light text-white/70">Particles</span>
           </span>
         </h1>
-        <p data-fade style={{ ["--delay" as string]: "420ms" }} className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]">
-          The Standard Model — bricks of matter, mortar of energy, and a
-          Higgs at the centre that gives everything its weight. Plus a
-          one-in-a-billion accident that left a Universe of matter behind.
+        <p
+          data-fade
+          style={{ ["--delay" as string]: "420ms" }}
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/70"
+        >
+          {tease}
         </p>
         <div data-fade style={{ ["--delay" as string]: "620ms" }} className="mt-16 font-mono text-[11px] tracking-[0.24em] uppercase text-white/40 flex items-center gap-3">
           <span className="scroll-cue inline-block">↓</span> scroll to begin
@@ -45,7 +50,7 @@ export default function Hero() {
       </div>
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>17 particles · 3 generations</div>
-        <div className="text-plasma/60">{"$E = mc^2$ · Higgs · annihilation"}</div>
+        <div className="text-plasma/60">E = mc² · Higgs · annihilation</div>
       </div>
     </section>
   );

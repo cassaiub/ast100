@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><title>scroll</title>
+<script>
+const s = parseInt((new URL(location.href).searchParams.get('s')) || '0', 10);
+window.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo({top: s, behavior: 'auto'});
+  setTimeout(() => window.scrollTo({top: s, behavior: 'auto'}), 500);
+});
+</script>
+</head><body><div id="here">Use ?s=NNN to scroll an iframe</div>
+<script>
+const s = parseInt((new URL(location.href).searchParams.get('s')) || '0', 10);
+const ifr = document.createElement('iframe');
+ifr.src = '/courses/ast100/chapter/0/0.3';
+ifr.style.cssText = 'width:100vw; height:100vh; border:0; position:fixed; top:0; left:0;';
+document.body.appendChild(ifr);
+ifr.onload = () => {
+  for (let t = 100; t < 9000; t += 200) {
+    setTimeout(() => { try { ifr.contentWindow.scrollTo({top: s, behavior: 'auto'}); } catch(e){} }, t);
+  }
+};
+</script>
+</body></html>

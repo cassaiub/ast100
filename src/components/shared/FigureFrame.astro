@@ -3,14 +3,30 @@
    breaks out of the parent prose column, and adds a fullscreen toggle
    in the top-right. Use inside the prose-cosmic column on lecture
    pages — the breakout CSS lifts the figure visually without
-   restructuring the surrounding text. */
+   restructuring the surrounding text.
+
+   Variants (via the `variant` prop):
+     "default" — 1080 / 1040 px wide band (most figures)
+     "narrow"  — 820 / 780 px (simple/single-purpose figures so the
+                 page rhythm varies between full-width and intimate)
+     "wide"    — 1320 / 1280 px (figures that genuinely need more room) */
 interface Props {
   /** Used in the toggle button's aria-label. */
   label?: string;
+  /** Width variant — controls the breakout band size. */
+  variant?: "default" | "narrow" | "wide";
 }
-const { label } = Astro.props;
+const { label, variant = "default" } = Astro.props;
+const variantClass =
+  variant === "narrow" ? " is-narrow" : variant === "wide" ? " is-wide" : "";
 ---
-<div class="figure-frame" data-figure-frame>
+<div
+  class={`figure-frame${variantClass}`}
+  data-figure-frame
+  tabindex="0"
+  role="group"
+  aria-label={label ?? "interactive figure"}
+>
   <div class="figure-frame-inner">
     <slot />
     <button
@@ -35,14 +51,27 @@ const { label } = Astro.props;
 </div>
 
 <script>
-  /* Single delegated handler for every FigureFrame on the page. Toggling
-     `.is-fs` on the wrapper switches the figure into a fixed-position
-     viewport overlay (see global.css). ESC closes the active overlay. */
+  /* Single delegated handler for every FigureFrame on the page.
+     - Toggling `.is-fs` on the wrapper switches the figure into a
+       fixed-position viewport overlay (see global.css).
+     - ESC closes the active overlay.
+     - Per-figure keyboard shortcuts: when the frame is `:focus-within`
+       or `.is-fs`, ←/→ adjusts the first range slider, and any element
+       carrying `data-shortcut="<key>"` is clicked when that key is
+       pressed. This keeps shortcuts scoped to one figure so multiple
+       interactive figures on the same page never fight over keys. */
   function setupFigureFrames() {
     const frames = document.querySelectorAll<HTMLElement>("[data-figure-frame]");
     if (frames.length === 0) return;
     let active: HTMLElement | null = null;
     let prevOverflow = "";
+    let prevFocus: HTMLElement | null = null;
+
+    function firstFocusable(frame: HTMLElement): HTMLElement | null {
+      return frame.querySelector<HTMLElement>(
+        'input[type="range"]:not(:disabled), button:not(:disabled):not([data-fs-enter]):not([data-fs-exit]), [tabindex]:not([tabindex="-1"]):not([data-figure-frame])',
+      );
+    }
 
     function enter(frame: HTMLElement) {
       if (active && active !== frame) {
@@ -52,14 +81,253 @@ const { label } = Astro.props;
       if (!active) {
         prevOverflow = document.documentElement.style.overflow;
         document.documentElement.style.overflow = "hidden";
+        prevFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       }
       active = frame;
+      // Focus a control inside so arrow keys / shortcuts work immediately.
+      const target = firstFocusable(frame) ?? frame;
+      target.focus({ preventScroll: true });
     }
     function exit() {
       if (!active) return;
-      active.classList.remove("is-fs");
+      const closing = active;
+      closing.classList.remove("is-fs");
       active = null;
       document.documentElement.style.overflow = prevOverflow;
+      // Restore focus to whatever had it before entering FS (else the frame itself).
+      const restore = prevFocus ?? closing;
+      restore.focus({ preventScroll: true });
+      prevFocus = null;
+    }
+
+    /* Slider step nudge — Shift = ×10 for coarse motion. Respects native
+       min/max/step on <input type="range">. Dispatches both `input` and
+       `change` so React's onChange fires. */
+    function nudgeSlider(slider: HTMLInputElement, direction: -1 | 1, shift: boolean) {
+      const step = parseFloat(slider.step || "1") || 1;
+      const factor = shift ? 10 : 1;
+      const min = slider.min !== "" ? parseFloat(slider.min) : -Infinity;
+      const max = slider.max !== "" ? parseFloat(slider.max) : Infinity;
+      const cur = parseFloat(slider.value);
+      const next = Math.min(max, Math.max(min, cur + direction * step * factor));
+      // Snap to step grid relative to min when one is provided.
+      const base = Number.isFinite(min) ? min : 0;
+      const snapped = base + Math.round((next - base) / step) * step;
+      const finalVal = Math.min(max, Math.max(min, snapped));
+      slider.value = String(finalVal);
+      slider.dispatchEvent(new Event("input", { bubbles: true }));
+      slider.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    /* The unified "step the figure one notch left or right" primitive
+       used by BOTH the keyboard (←/→) and the wheel/pinch handlers.
+       Resolution order (first match wins):
+         1. A button with `data-shortcut="ArrowLeft"` / `"ArrowRight"`
+            (figures with discrete prev/next buttons — e.g. RiverScene).
+         2. The first enabled `<input type="range">` (slider-driven figures).
+         3. A "pill set" — multiple buttons marked with numeric
+            `data-shortcut="N"` (N = 1, 2, 3, …). The currently-selected
+            pill is identified by `.is-active`, `[aria-selected="true"]`,
+            or `[aria-pressed="true"]`; we click the previous/next pill
+            in document order. This is what makes 1.3 Nucleosynthesis,
+            1.4 Penzias-Wilson, and 1.4 CMB-satellites figures respond
+            to ←/→ and wheel uniformly with slider-based figures.
+       Returns true if a step was taken, false otherwise. */
+    function stepFrame(frame: HTMLElement, direction: -1 | 1, shift: boolean): boolean {
+      const key = direction === 1 ? "ArrowRight" : "ArrowLeft";
+      const btn = frame.querySelector<HTMLElement>(`[data-shortcut="${key}"]`);
+      if (btn && !btn.hasAttribute("disabled")) {
+        btn.click();
+        return true;
+      }
+      const slider = frame.querySelector<HTMLInputElement>(
+        'input[type="range"]:not(:disabled)',
+      );
+      if (slider) {
+        nudgeSlider(slider, direction, shift);
+        return true;
+      }
+      const pills = Array.from(
+        frame.querySelectorAll<HTMLElement>("[data-shortcut]"),
+      ).filter((el) => /^\d+$/.test(el.dataset.shortcut || ""));
+      if (pills.length >= 2) {
+        const activeIdx = pills.findIndex(
+          (el) =>
+            el.classList.contains("is-active") ||
+            el.getAttribute("aria-selected") === "true" ||
+            el.getAttribute("aria-pressed") === "true",
+        );
+        const base = activeIdx >= 0 ? activeIdx : 0;
+        const nextIdx = Math.max(0, Math.min(pills.length - 1, base + direction));
+        if (nextIdx !== activeIdx && !pills[nextIdx].hasAttribute("disabled")) {
+          pills[nextIdx].click();
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function frameKey(frame: HTMLElement, e: KeyboardEvent) {
+      // Never hijack typing into a text/number input or textarea.
+      const t = e.target;
+      if (
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLInputElement && t.type !== "range" && t.type !== "button" && t.type !== "submit")
+      ) {
+        return;
+      }
+
+      // 1) Explicit single-character shortcuts via `data-shortcut="1"` /
+      //    `"r"` (number/letter pills). Modifiers other than shift are
+      //    ignored so the user can still use browser shortcuts (Ctrl+R,
+      //    Cmd+L, etc.) when the figure happens to have focus.
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        e.key.length === 1
+      ) {
+        const sc = frame.querySelector<HTMLElement>(
+          `[data-shortcut="${CSS.escape(e.key.toLowerCase())}"], [data-shortcut="${CSS.escape(e.key)}"]`,
+        );
+        if (sc && !sc.hasAttribute("disabled")) {
+          e.preventDefault();
+          sc.click();
+          return;
+        }
+      }
+
+      // 2) Arrow keys → unified `stepFrame` (which checks, in order,
+      //    `data-shortcut="ArrowLeft"`/`"ArrowRight"`, then the first
+      //    `<input type="range">`, then a numeric `data-shortcut`
+      //    pill-set). The same primitive backs the wheel handler, so
+      //    ← / → and a one-notch wheel scroll do exactly the same
+      //    thing on every figure.
+      if (
+        (e.key === "ArrowLeft" || e.key === "ArrowRight") &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey
+      ) {
+        // If the focused element is itself a range, let the browser handle it.
+        if (t instanceof HTMLInputElement && t.type === "range") return;
+        if (stepFrame(frame, e.key === "ArrowLeft" ? -1 : 1, e.shiftKey)) {
+          e.preventDefault();
+        }
+        return;
+      }
+    }
+
+    /* `canStep(frame)` — quick predicate: does this figure have any of
+       the three things stepFrame() can act on (arrow data-shortcut,
+       slider, or a ≥2-item numeric pill set)? Used by the wheel
+       handler to decide whether to intercept the event (and thereby
+       block page scroll) or let it pass through. */
+    function canStep(frame: HTMLElement): boolean {
+      if (frame.querySelector('[data-shortcut="ArrowLeft"], [data-shortcut="ArrowRight"]')) return true;
+      if (frame.querySelector('input[type="range"]:not(:disabled)')) return true;
+      const pills = Array.from(frame.querySelectorAll<HTMLElement>("[data-shortcut]"));
+      return pills.filter((el) => /^\d+$/.test(el.dataset.shortcut || "")).length >= 2;
+    }
+
+    /* Wheel / trackpad / pinch handler — unified across every figure.
+       Whatever ←/→ does (slider nudge OR data-shortcut click OR pill
+       cycle), the wheel does the same. Direction convention matches
+       the browser-native range-input wheel mapping:
+         - scroll up   (deltaY < 0) → step right (slider value increases)
+         - scroll down (deltaY > 0) → step left  (slider value decreases)
+       Trackpad pinch arrives as a wheel event with ctrlKey=true; same
+       mapping (pinch out = "zoom in" = step right).
+
+       Trackpads emit many small deltas per gesture, so we accumulate
+       deltaY per-frame and only fire one step per STEP_PX of motion to
+       avoid hyperscrubbing. `Shift` multiplies the step ×10 (matches
+       arrow-with-Shift).
+
+       SCOPING — the wheel only scrubs the figure when the frame is in
+       fullscreen (`.is-fs`). In the normal in-page view the wheel
+       belongs to the page (so the reader can scroll through prose past
+       a figure). The dedicated Fullscreen button + double-clicking the
+       panel chrome (see frameDblClick) are how the reader opts into
+       wheel/pinch control of the figure.
+
+       A figure that wants different wheel semantics (e.g. 0.3 Balloon-
+       Analogy's deltaY-proportional smooth scaling) can still install
+       its own listener on an inner element; this handler skips the
+       event if `defaultPrevented` is set by an inner handler that ran
+       first during bubbling. */
+    const STEP_PX = 50;
+    const wheelAcc = new WeakMap<HTMLElement, number>();
+    function frameWheel(frame: HTMLElement, e: WheelEvent) {
+      if (e.defaultPrevented) return;
+      // Normal in-page view: wheel = page scroll, not figure scrub.
+      if (!frame.classList.contains("is-fs")) return;
+      const t = e.target;
+      // Skip events targeted directly at a native range input — the
+      // browser already nudges those on wheel.
+      if (t instanceof HTMLInputElement && t.type === "range") return;
+      if (!e.deltaY) return;
+      // No step target → nothing to do.
+      if (!canStep(frame)) return;
+
+      e.preventDefault();
+      let acc = (wheelAcc.get(frame) ?? 0) + e.deltaY;
+      while (Math.abs(acc) >= STEP_PX) {
+        // deltaY > 0 means scroll down → step LEFT.
+        // deltaY < 0 means scroll up   → step RIGHT.
+        const dir: -1 | 1 = acc > 0 ? -1 : 1;
+        if (!stepFrame(frame, dir, e.shiftKey)) {
+          acc = 0;
+          break;
+        }
+        acc -= Math.sign(acc) * STEP_PX;
+      }
+      wheelAcc.set(frame, acc);
+    }
+
+    /* Double-click on empty panel chrome opens fullscreen — global UX
+       affordance the reader can discover without finding the small
+       ⛶ button in the corner.
+
+       "Empty space" = a structural wrapper element directly under the
+       cursor, NOT an interactive control or the main visualization
+       area. The whitelist below targets exactly the four wrappers
+       FigureFrame guarantees on every figure:
+         .figure-frame        (the outermost focusable band)
+         .figure-frame-inner  (the relative-positioned inner band)
+         .figure-stub         (the React-rendered <figure> panel)
+         .figure-body         (the body wrapper inside figure-stub)
+       Clicks on .fig-viz, on buttons/inputs/links, on figcaption text,
+       on draggable SVG handles, etc. fall through to their existing
+       handlers (drag-mass, slider scrub, word selection, …).
+
+       Also skipped: clicks that initiated a text selection (the user
+       wanted to select text, not toggle fullscreen). */
+    function frameDblClick(frame: HTMLElement, e: MouseEvent) {
+      if (frame.classList.contains("is-fs")) return; // already there
+      const t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      // Whitelist: only structural wrappers count as "empty space".
+      const wrapper = t.closest<HTMLElement>(
+        ".figure-frame, .figure-frame-inner, .figure-stub, .figure-body",
+      );
+      if (!wrapper || !frame.contains(wrapper)) return;
+      // If the cursor is over a wrapper but the immediate target is
+      // an interactive descendant, skip.
+      if (
+        t !== wrapper &&
+        t.closest(
+          '.fig-viz, button, input, select, textarea, a, label, figcaption, [role="button"], [role="slider"], [data-shortcut]',
+        )
+      ) {
+        return;
+      }
+      // If the user just made a text selection by double-clicking text,
+      // honor that — don't yank the page into fullscreen on top.
+      const sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return;
+      e.preventDefault();
+      enter(frame);
     }
 
     frames.forEach((frame) => {
@@ -69,12 +337,34 @@ const { label } = Astro.props;
       const exitBtn = frame.querySelector<HTMLButtonElement>("[data-fs-exit]");
       enterBtn?.addEventListener("click", () => enter(frame));
       exitBtn?.addEventListener("click", exit);
+
+      // Scoped keydown — fires only when something inside this frame has
+      // focus (frame is tabindex=0 so the user can click into it), so two
+      // figures on the same page never collide.
+      frame.addEventListener("keydown", (e) => frameKey(frame, e as KeyboardEvent));
+      // Scoped wheel — fires when the pointer is over the frame. Uses
+      // `passive: false` because we may call preventDefault() to stop
+      // the page from scrolling while the user nudges the figure
+      // (only in fullscreen — see frameWheel).
+      frame.addEventListener("wheel", (e) => frameWheel(frame, e as WheelEvent), { passive: false });
+      // Double-click on empty panel chrome → fullscreen.
+      frame.addEventListener("dblclick", (e) => frameDblClick(frame, e as MouseEvent));
     });
 
     if (!document.documentElement.dataset.figureFrameKeyBound) {
       document.documentElement.dataset.figureFrameKeyBound = "1";
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && active) exit();
+        // ESC always exits, regardless of focus.
+        if (e.key === "Escape" && active) {
+          e.preventDefault();
+          exit();
+          return;
+        }
+        // While in fullscreen, ensure shortcuts work even if focus drifted
+        // off any focusable child (e.g. user clicked the dark background).
+        if (active && !active.contains(document.activeElement)) {
+          frameKey(active, e);
+        }
       });
     }
   }

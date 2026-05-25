@@ -1,8 +1,9 @@
 ---
 import ChapterOverviewLayout from "../../../layouts/ChapterOverviewLayout.astro";
 import Hero from "../../../components/scenes/0/Hero";
-import RiverScene from "../../../components/scenes/0/RiverScene";
 import PrevNext from "../../../components/scenes/0/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import RiverFigure from "../../../components/scenes/0/RiverScene";
 import { withBase } from "../../../data/course-nav";
 ---
 
@@ -11,18 +12,55 @@ import { withBase } from "../../../data/course-nav";
   description="Fourteen billion years, traced along a river — from the first hot moment of being, through the slow assembly of stars and worlds, to the very recent invention of culture."
   current="/chapter/0/0.0"
 >
-  <Hero client:load />
-  <RiverScene client:load />
+  <Hero
+    tease="The whole fourteen-billion-year story, traced along a river. The seven named segments of the international Brahmaputra — Angsi glacier in Tibet, Tsangpo plateau, Siang gorge, wide Brahmaputra, silt-rich Jamuna, joined Padma, and Meghna into the Bay of Bengal — map onto the seven cosmic ages, from the first hot moment to the present. Click any segment to enter its age. A forty-nine-event cosmic timeline lives one click away on its own page."
+    client:load
+  />
 
-  {/* Teaser for the full 49-event timeline, which now lives on its own page. */}
-  <section class="relative px-6 md:px-10 pt-24 md:pt-32 pb-16 md:pb-20">
-    <div class="max-w-[1100px] mx-auto">
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="a-river-of-time">A river of time</h2>
+
+      <p>The history of the Universe is organized into seven ages, ordered by rising complexity. The first three are cosmic in scope: the <strong>Particle age</strong> (0 — 1 Myr) cooks fundamental particles into the first hydrogen and helium atoms; the <strong>Galactic age</strong> (1 Myr — 4 Gyr) assembles those atoms into the first stars, galaxies, and the great cosmic web; the <strong>Stellar age</strong> (4 — 9 Gyr) forges every element heavier than helium inside stellar cores and seeds them across the galaxy through supernovae. From there the story zooms in. The <strong>Planetary age</strong> (9 — 11 Gyr) follows just one star system — ours — as the Sun, Earth, Moon, and the first oceans take shape. The <strong>Chemical age</strong> (11 — 13 Gyr) is the chemistry of one young planet: organic molecules in Earth's oceans, the origin of life. The <strong>Biological age</strong> (last ~1 Gyr) is a billion years of life diversifying — single cells to forests, fish, dinosaurs, mammals. The <strong>Cultural age</strong> (last ~1 Myr) is one hominid lineage learning fire, language, agriculture, and finally science.</p>
+
+      <p>To make this enormous arc walkable, we map the seven ages onto the seven named segments of the international Brahmaputra river. The river is born as the <strong>Angsi</strong> glacier near Mt Kailash in Tibet, runs east across the plateau as the <strong>Tsangpo</strong>, plunges through the Himalayas as the <strong>Siang</strong>, settles into the Assam plains as the <strong>Brahmaputra</strong>, gathers silt in Bangladesh as the <strong>Jamuna</strong>, joins the Ganges to become the <strong>Padma</strong>, and finally pours into the Bay of Bengal as the <strong>Meghna</strong>. Each segment matches its cosmic age in scale and energy: a narrow, intense source for the hot first instants; a long patient plateau for the slow cosmic assembly; a roaring high-energy gorge for the age of stars; a wide stable channel for the age of planets; a richening current for the chemistry that becomes life; a fertile delta for biological diversification; and a final reach dissolving into open water for the human present.</p>
+
+      <p>The metaphor cuts in both directions. A river only flows downstream — and history, like the river, gains complexity and volume but cannot reverse. The Universe at 14 billion years contains far more structure, chemistry, and meaning than the Universe at one second. Yet a river also ends. As the Brahmaputra meets the Bay of Bengal, that single carved channel dissolves into a horizon of open water — many possible futures, none yet written. Where you sit on this page is the very edge of the delta. Click any segment on the map below to step into its age.</p>
+
+      <FigureFrame label="A river of time" variant="wide">
+        <RiverFigure client:load />
+      </FigureFrame>
+
+      <aside class="my-24 pullquote">
+        <div class="rule mb-10"></div>
+        <div class="max-w-[64ch] mx-auto text-center">
+          <div class="font-mono text-[10px] tracking-[0.28em] uppercase text-plasma/70 mb-6">
+            river-as-time
+          </div>
+          <blockquote
+            class="font-serif italic text-white leading-[1.2] tracking-tight"
+            style="font-size: clamp(1.6rem, 3.2vw, 2.6rem);"
+          >
+            <span class="text-solar/90 mr-1">“</span>
+            The ocean represents the many possibilities of the future; while the past is a
+            singular track we can look back upon, the future is an expansive, unwritten
+            space where all paths merge.
+            <span class="text-solar/90 ml-1">”</span>
+          </blockquote>
+        </div>
+        <div class="rule mt-10"></div>
+      </aside>
+
+      <h2 id="the-cosmic-chronology">The cosmic chronology</h2>
+
+      <p>The river of time names seven great ages; the chronology names every milestone inside them. We pick seven moments from each age — forty‑nine in all — chosen as the instants when the Universe stops being one kind of thing and becomes another: the first nucleus, the first star, the first ocean, the first cell, the first written word. Together they trace the full fourteen‑billion‑year arc, beat by beat. The card below opens the live, scroll‑driven timeline; the preview inside lists the seven turning points within each age.</p>
+
       <a
         href={withBase("/timeline")}
         class="cta-card surface-card is-link block rounded-xl border overflow-hidden"
       >
         <div class="p-6 md:p-9">
-          <div class="flex items-center gap-3 mb-3 flex-wrap">
+          <div class="flex items-center gap-3 mb-5 flex-wrap">
             <span class="font-mono text-[13px] tracking-[0.18em] text-plasma">
               cosmic timeline
             </span>
@@ -42,19 +80,82 @@ import { withBase } from "../../../data/course-nav";
           >
             Forty-nine turning points
           </h3>
-          <p class="mt-3 text-[15px] md:text-[16px] leading-[1.6] text-white/70 max-w-[64ch]">
-            Every milestone in 14 billion years — the Big Bang, the first
-            atoms, the first stars, the first cells, the first cities. The
-            full scroll-driven timeline now lives on its own page.
-          </p>
-          <div class="mt-5 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-plasma">
+
+          {/* Mini-preview: one row per age, listing its seven events. */}
+          <ul class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 list-none p-0 m-0">
+            <li>
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">01 · Particle</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">0 — 1 Myr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                Big Bang · inflation · quark–hadron transition · primordial nucleosynthesis · matter–radiation equality · recombination · cosmic dark ages
+              </p>
+            </li>
+            <li>
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">02 · Galactic</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">1 Myr — 4 Gyr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                First (Pop III) stars · cosmic reionization · first galaxies · first quasars · cosmic web assembles · Milky Way progenitor · cosmic star‑formation peak
+              </p>
+            </li>
+            <li>
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">03 · Stellar</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">4 — 9 Gyr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                Stellar nucleosynthesis · first Type Ia supernovae · heavy elements seed the disk · Milky Way thin disk settles · Gaia–Enceladus merger · pre‑solar nebula collapses · Sun ignites
+              </p>
+            </li>
+            <li>
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">04 · Planetary</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">9 — 11 Gyr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                Protoplanetary disk · planetesimals accrete · terrestrial planets form · Theia impact, Moon forms · magma ocean cools · Late Heavy Bombardment · first oceans condense
+              </p>
+            </li>
+            <li>
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">05 · Chemical</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">11 — 13 Gyr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                Atmospheric outgassing · abiotic organic synthesis · RNA‑world precursors · first protocells · LUCA emerges · oxygenic photosynthesis · Great Oxidation Event
+              </p>
+            </li>
+            <li>
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">06 · Biological</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">last ~1 Gyr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                Eukaryotes diversify · multicellularity · Cambrian Explosion · plants colonize land · age of dinosaurs · K–Pg impact, mammals rise · primates to hominids
+              </p>
+            </li>
+            <li class="md:col-span-2">
+              <div class="flex items-baseline gap-2 mb-1.5 flex-wrap">
+                <span class="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90">07 · Cultural</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-white/35">last ~1 Myr</span>
+              </div>
+              <p class="text-[13.5px] text-white/75 leading-[1.55] m-0">
+                Genus Homo masters fire · Homo sapiens · language and symbolic art · agriculture · writing · industrial revolution · space age
+              </p>
+            </li>
+          </ul>
+
+          <div class="mt-7 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-plasma">
             open the timeline
             <span class="inline-block transition-transform duration-500">→</span>
           </div>
         </div>
       </a>
     </div>
-  </section>
+  </article>
 
   <PrevNext />
 </ChapterOverviewLayout>

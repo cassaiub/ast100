@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview (`/chapter/1`) card. See `course-nav.ts` sub `tease`. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -56,12 +59,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/70"
         >
-          One Superforce. Cool it down past three critical thresholds, and
-          it crystallises into gravity, the strong nuclear force,
-          electromagnetism, and the weak nuclear force — the four laws that
-          govern everything.
+          {tease}
         </p>
         <div
           data-fade
@@ -73,7 +73,7 @@ export default function Hero() {
       </div>
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>gravity · strong · EM · weak</div>
-        <div className="text-plasma/60">{"$10^{32}$ K → $10^{15}$ K · 1 ps"}</div>
+        <div className="text-plasma/60">10³² K → 10¹⁵ K · 1 ps</div>
       </div>
     </section>
   );

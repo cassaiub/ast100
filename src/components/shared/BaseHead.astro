@@ -73,7 +73,10 @@ const {
 
   /* Re-render after a brief delay so math that lands via React-island
      hydration (client:visible) gets typeset too. KaTeX skips elements
-     already wrapped in .katex, so repeated calls are idempotent. */
+     already wrapped in .katex, so repeated calls are idempotent. The
+     third pass at 3500 ms is a safety net for slow-loading or
+     intersection-observer-gated islands deep in the page. */
   setTimeout(renderAll, 600);
   setTimeout(renderAll, 1800);
+  setTimeout(renderAll, 3500);
 </script>

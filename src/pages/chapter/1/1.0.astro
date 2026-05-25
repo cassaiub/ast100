@@ -1,9 +1,9 @@
 ---
 import ChapterLayout from "../../../layouts/ChapterLayout.astro";
 import Hero from "../../../components/scenes/1.0/Hero";
-import PrimordialTimeline from "../../../components/scenes/1.0/PrimordialTimeline";
-import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/1.0/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import PrimordialTimeline from "../../../components/scenes/1.0/PrimordialTimeline";
 ---
 
 <ChapterLayout
@@ -13,59 +13,21 @@ import PrevNext from "../../../components/scenes/1.0/PrevNext.astro";
   chapter={1}
   current="/chapter/1/1.0"
 >
-  <Hero client:load />
+  <Hero
+    tease="The first 380,000 years of cosmic history, in fifteen rewrites. Beginning at the Planck epoch — when all four forces are fused into a single Superforce and the cosmos is 10⁻³⁵ m across — we trace gravity peeling off, inflation hurling space outward, the electroweak split, quarks freezing into protons and neutrons, and the forging of the first light nuclei. The Particle Age ends with recombination: electrons bind to nuclei, the fog lifts, and light streams free for the very first time."
+    client:load
+  />
 
-  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
-    <div class="max-w-[68ch] mx-auto prose-cosmic">
-      {/* ── Intro ──────────────────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="overview">
-        <div
-          data-fade
-          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-        >
-          <span class="block w-6 h-px bg-plasma/50"></span> the first second
-        </div>
-        <h2
-          data-fade
-          style="--delay: 80ms"
-          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
-        >
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
-            >Fifteen rewrites before t = 1 second</span
-          >
-        </h2>
-      </header>
-
-      <p data-fade class="dropcap">
-        Most of what makes the Universe interesting happens before the
-        Universe is a single second old. In that first second, gravity
-        separates from the other three forces. Space exponentially inflates.
-        Strong and electroweak forces split. Quarks freeze into protons and
-        neutrons. By the time a human heartbeat could have completed, the
-        cosmos has gone through more phase transitions than the rest of its
-        history combined.
-      </p>
-
-      <p data-fade>
-        The Particle Age — Chapter 1 of <em>Our Cosmic History</em> — is
-        about that astonishing first stretch, from <strong>t = 0</strong> at
-        the Big Bang singularity all the way to <strong>380,000 years</strong>{" "}
-        later, when the cosmos finally cooled enough for light to stream
-        free. Everything we are made of, every force we feel, every
-        ingredient of every star — all of it is set during this window.
-      </p>
-
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="fifteen-rewrites-before-t-1-second">Fifteen rewrites before t = 1 second</h2>
+      <p>Most of what makes the Universe interesting happens before the Universe is a single second old. In that first second, gravity separates from the other three forces. Space exponentially inflates. Strong and electroweak forces split. Quarks freeze into protons and neutrons. By the time a human heartbeat could have completed, the cosmos has gone through more phase transitions than the rest of its history combined.</p>
+      <p>The Particle Age — Chapter 1 of <em>Our Cosmic History</em> — is about that astonishing first stretch, from <strong>t = 0</strong> at the Big Bang singularity all the way to <strong>380,000 years</strong> later, when the cosmos finally cooled enough for light to stream free. Everything we are made of, every force we feel, every ingredient of every star — all of it is set during this window.</p>
       <FigureFrame label="Primordial timeline">
         <PrimordialTimeline client:visible />
       </FigureFrame>
-
-      <div data-fade class="my-16 rule"></div>
-
-      <p data-fade class="text-[16px] italic leading-[1.7] max-w-[60ch]" style="color: var(--c-text-soft);">
-        The Particle Age is over before our species can begin to imagine its
-        own beginning. Everything that came after — every star, every world,
-        every reader of every word — is downstream of these 380,000 years.
-      </p>
+      <hr />
+      <blockquote><p>The Particle Age is over before our species can begin to imagine its own beginning. Everything that came after — every star, every world, every reader of every word — is downstream of these 380,000 years.</p></blockquote>
     </div>
   </article>
 

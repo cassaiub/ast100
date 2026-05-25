@@ -19,6 +19,9 @@ export type SubPage = {
   id: string;
   title: string;
   live: boolean;
+  /** Optional ~50-word card description shown on the chapter overview
+      page ([num]/index.astro). Falls back to "" when not set. */
+  tease?: string;
 };
 
 export type Chapter = {
@@ -29,6 +32,12 @@ export type Chapter = {
   weeks: string;
   /** Whether the chapter overview (N.0) page is built and clickable. */
   overviewLive: boolean;
+  /** Optional ~100-word chapter description shown under the title on
+      the chapter overview page. Falls back to a generic teaser. */
+  description?: string;
+  /** Optional ~50-word card description for the N.0 chapter-overview
+      card on the chapter overview page. Falls back to a generic line. */
+  overviewTease?: string;
   subs: SubPage[];
 };
 
@@ -40,11 +49,39 @@ export const CHAPTERS: Chapter[] = [
     telescope: "All",
     weeks: "1–2",
     overviewLive: true,
+    description:
+      "Chapter 0 is the panoramic view of the entire fourteen-billion-year story — the river before we walk to any particular bend. Across four lessons it sets up the conceptual instruments the rest of the course relies on: the language of spacetime and matter, the staircase of cosmic evolution from Big Bang to brain, the geometry of distance and lookback time in an expanding universe, and the telescopes that let us actually see across that geometry. Start with the cinematic Brahmaputra-as-time map below, then read the four lessons in any order — they build on each other but stand alone.",
+    overviewTease:
+      "The whole fourteen-billion-year story, traced along a river. The seven named segments of the international Brahmaputra — Angsi glacier in Tibet, Tsangpo plateau, Siang gorge, wide Brahmaputra, silt-rich Jamuna, joined Padma, and Meghna into the Bay of Bengal — map onto the seven cosmic ages, from the first hot moment to the present. Click any segment to enter its age. A forty-nine-event cosmic timeline lives one click away on its own page.",
     subs: [
-      { id: "0.1", title: "Spacetime and Energy-Matter", live: true },
-      { id: "0.2", title: "Cosmic Evolution", live: true },
-      { id: "0.3", title: "Observable Universe", live: true },
-      { id: "0.4", title: "Light and Telescopes", live: true },
+      {
+        id: "0.1",
+        title: "Spacetime and Energy-Matter",
+        live: true,
+        tease:
+          "Einstein's two revolutions, made interactive. Special relativity collapses space and time into a single fabric: a moving clock ticks slowly compared to a stationary one, and mass and energy turn out to be two forms of the same conserved quantity (E = mc²). General relativity then warps that fabric — gravity is no longer a force but the geometry of curved spacetime, and even massless light bends as it skims a star.",
+      },
+      {
+        id: "0.2",
+        title: "Cosmic Evolution",
+        live: true,
+        tease:
+          "How does anything complex get built in a universe that only cools and expands? Cosmic evolution gives the answer: a long tug-of-war between expansion and gravity, with islands of local order forming inside an overall growth of entropy. Inflation, recombination, gravitational clumping, stellar nucleosynthesis, biological complexity — each step adds new structure. Walk a nine-point complexity ladder calibrated in erg per gram per second, from Big Bang to human brain.",
+      },
+      {
+        id: "0.3",
+        title: "Observable Universe",
+        live: true,
+        tease:
+          "Looking out is looking back — every photon carries the date stamp of its emission, so a telescope is also a time machine. The observable universe is a sphere of light still in transit toward us. Drag through twenty-seven real cosmological objects sorted by light-travel time, from the Moon at 1.3 seconds to the cosmic microwave background at 13.8 billion years — the practical limit of what we can ever see.",
+      },
+      {
+        id: "0.4",
+        title: "Light and Telescopes",
+        live: true,
+        tease:
+          "Astronomy's only signal is light. This lesson peels back what light actually is — coupled oscillating electric and magnetic fields propagating at the speed c — then walks the full electromagnetic spectrum from kilometre-wavelength radio waves through visible light to gamma rays at 10⁻²² metres. A bestiary of fourteen working telescopes across every band, plus a step-through of the Cassegrain reflector's optics, closes the chapter and prepares you to read the data.",
+      },
     ],
   },
   {

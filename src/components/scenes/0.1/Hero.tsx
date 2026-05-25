@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview (`/chapter/0`) card. See `course-nav.ts` sub `tease`. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -66,11 +69,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[58ch] text-[17px] md:text-[19px] text-white/70 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/70"
         >
-          Two theories — eleven quiet years apart — that stitched space, time, matter, and energy
-          into one fabric. The stage and the actors are no longer separate. The geometry of the
-          cosmos depends on what we put inside it.
+          {tease}
         </p>
 
         <div

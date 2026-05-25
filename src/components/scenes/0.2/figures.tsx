@@ -14,22 +14,11 @@ function FigurePanel({
   children: ReactNode;
 }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">
-            interactive
-          </div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
@@ -95,11 +84,11 @@ export function TugOfWarPanel() {
 
   return (
     <FigurePanel
-      idx="0.2.1"
+      idx="0.2.a"
       kicker="Cosmic Tug-of-War · Expansion vs Gravity"
       caption="The same fourteen-billion-year story, told as a single dial. Slide too far toward gravity and structure collapses; slide too far toward expansion and matter scatters before it can clump. The interesting middle is where galaxies, stars, and worlds live."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Faint rope / cosmic stretch line */}
           <line
@@ -284,11 +273,11 @@ export function EntropyIslandPanel() {
 
   return (
     <FigurePanel
-      idx="0.2.2"
+      idx="0.2.b"
       kicker="Entropy Island · Local Order, Global Chaos"
       caption="The Universe must grow more disordered overall. But local pockets — galaxies, stars, organisms — can become more ordered by exporting their disorder elsewhere. The island sharpens; the surrounding field scatters."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Outer 'Universe' border */}
           <rect
@@ -402,6 +391,8 @@ export function EntropyIslandPanel() {
               setPlaying((p) => !p);
             }
           }}
+          data-shortcut=" "
+          aria-label={t >= 1 ? "Replay" : playing ? "Pause" : "Play"}
           className="pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.22em] uppercase"
         >
           {t >= 1 ? "▶ replay" : playing ? "■ pause" : "▶ play"}
@@ -568,11 +559,44 @@ export function EnergyRateDensityPanel() {
 
   return (
     <FigurePanel
-      idx="0.2.3"
+      idx="0.2.c"
       kicker="Energy Rate Density · Cosmic History"
       caption="Eric Chaisson's complexity metric: free energy flowing through every kilogram of a system, every second. Across 13.8 billion years the value climbs nine orders of magnitude — from the first proto-galaxies to a modern jet engine."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
+        {/* Hover description — absolute overlay inside fig-viz so it never
+            competes with the SVG for vertical space. Without this, growing
+            the description sibling would shrink fig-viz, relocate the data
+            points under the cursor, and trigger an endless hover-flip
+            (visible as screen "shake" in fullscreen). */}
+        <div
+          className="absolute left-3 right-3 bottom-3 md:left-5 md:right-auto md:bottom-5 md:max-w-md p-3 rounded-md text-[13px] leading-[1.6] pointer-events-none z-10"
+          style={{
+            background: "rgb(var(--c-bg-rgb) / 0.86)",
+            border: "1px solid rgb(var(--c-text-rgb) / 0.1)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            minHeight: "5.4em",
+          }}
+        >
+          {hover !== null ? (
+            <>
+              <span className="text-plasma font-mono tracking-[0.14em]">
+                {ERD_POINTS[hover].name.toUpperCase()}
+              </span>
+              <span className="mx-2 text-white/35">/</span>
+              <span className="text-white/85">{ERD_POINTS[hover].note}</span>
+              <div className="font-mono text-[11px] text-white/55 mt-1">
+                t ≈ {ERD_POINTS[hover].t} Gyr · Φₘ ≈{" "}
+                {ERD_POINTS[hover].erd.toExponential(1)} W/kg
+              </div>
+            </>
+          ) : (
+            <span className="text-white/55 italic">
+              Hover a point to read what each rung of complexity represents.
+            </span>
+          )}
+        </div>
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Y-axis gridlines */}
           {Y_TICKS.map((e) => (
@@ -803,25 +827,6 @@ export function EnergyRateDensityPanel() {
         </svg>
       </div>
 
-      <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[68ch] min-h-[3.4em]">
-        {hover !== null ? (
-          <>
-            <span className="text-plasma font-mono tracking-[0.14em]">
-              {ERD_POINTS[hover].name.toUpperCase()}
-            </span>
-            <span className="mx-2 text-white/35">/</span>
-            <span className="text-white/75">{ERD_POINTS[hover].note}</span>
-            <div className="font-mono text-[11px] text-white/55 mt-1">
-              t ≈ {ERD_POINTS[hover].t} Gyr · Φₘ ≈{" "}
-              {ERD_POINTS[hover].erd.toExponential(1)} W/kg
-            </div>
-          </>
-        ) : (
-          <span className="text-white/55 italic">
-            Hover a point to read what each rung of complexity represents.
-          </span>
-        )}
-      </div>
     </FigurePanel>
   );
 }

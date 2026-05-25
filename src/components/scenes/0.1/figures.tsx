@@ -106,22 +106,11 @@ function FigurePanel({
   children: ReactNode;
 }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_#22d3ee] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">
-            interactive
-          </div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
@@ -233,7 +222,7 @@ function TimeDilation() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-2 gap-6 md:gap-10 place-items-center">
+      <div className="fig-viz grid grid-cols-2 gap-6 md:gap-10 place-items-center">
         <Clock
           label="stationary observer"
           handRef={stationaryRef}
@@ -295,7 +284,7 @@ function Clock({
   const tintHex = tint === "plasma" ? "#22d3ee" : "#ffffff";
   return (
     <div className="flex flex-col items-center gap-2">
-      <svg viewBox="0 0 120 120" className="w-[110px] h-[110px] md:w-[130px] md:h-[130px]">
+      <svg viewBox="0 0 120 120" className="clock-svg w-[110px] h-[110px] md:w-[130px] md:h-[130px]">
         <defs>
           <radialGradient id={`clock-face-${tint}`} cx="50%" cy="40%" r="65%">
             <stop offset="0%" stopColor="#0b1224" />
@@ -401,7 +390,7 @@ function IceWaterSteam() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex gap-2">
-        {PHASES.map((p) => {
+        {PHASES.map((p, i) => {
           const active = p.id === phase;
           return (
             <button
@@ -409,6 +398,7 @@ function IceWaterSteam() {
               type="button"
               onClick={() => !reduced && setPhase(p.id)}
               disabled={reduced && p.id !== "water"}
+              data-shortcut={String(i + 1)}
               className={[
                 "pill rounded-full px-4 py-1.5 text-[11px] font-mono tracking-[0.18em] uppercase transition-all duration-300",
                 active ? "is-active" : "",
@@ -420,8 +410,8 @@ function IceWaterSteam() {
           );
         })}
       </div>
-      <div className="relative h-[140px] md:h-[160px] flex items-center justify-center">
-        <svg viewBox="0 0 120 120" className="h-full w-auto">
+      <div className="fig-viz relative h-[140px] md:h-[160px] flex items-center justify-center">
+        <svg viewBox="0 0 120 120" className="phase-svg h-full w-auto">
           <defs>
             <linearGradient id="phase-ice" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#dbeafe" stopOpacity="0.95" />
@@ -657,7 +647,7 @@ function LightBending() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="relative rounded-md overflow-hidden border border-white/[0.06] bg-black/40">
+      <div className="fig-viz relative rounded-md overflow-hidden border border-white/[0.06] bg-black/40">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           <defs>
             <radialGradient id="lb-star-disc" cx="50%" cy="50%" r="55%">
@@ -708,9 +698,10 @@ function LightBending() {
             y1={B.y.toFixed(2)}
             x2={D.x}
             y2={D.y}
-            stroke="rgb(var(--c-text-rgb) / 0.55)"
-            strokeWidth="1"
-            strokeDasharray="6 4"
+            stroke="rgb(var(--c-text-rgb) / 0.7)"
+            strokeWidth="1.4"
+            strokeDasharray="1.5 3.5"
+            strokeLinecap="round"
           />
 
           {/* Real (bent) ray — glow halo */}
@@ -891,28 +882,30 @@ function LightBending() {
         <span>blue giant · 4 M☉</span>
       </div>
 
-      <div className="text-[13px] text-white/75 leading-[1.6] max-w-[68ch]">
-        Light from star{" "}
-        <span className="font-mono text-white/90">A</span> heads toward Earth{" "}
-        <span className="font-mono text-plasma">D</span> in a straight line.
-        Near a massive body{" "}
-        <span className="font-mono" style={{ color: pal.mid }}>
-          C
-        </span>{" "}
-        the ray kinks <em>toward</em> the mass; trace the kinked outgoing
-        segment backward from D and the observer infers the star at the
-        displaced apparent position{" "}
-        <span className="font-mono text-white/90">B</span>. Heavier deflector,
-        bigger bend — α = 4GM/(c²b), linear in M.
+      <div className="grid md:grid-cols-2 gap-5 md:gap-7">
+        <div className="text-[13px] text-white/75 leading-[1.6]">
+          Light from star{" "}
+          <span className="font-mono text-white/90">A</span> heads toward Earth{" "}
+          <span className="font-mono text-plasma">D</span> in a straight line.
+          Near a massive body{" "}
+          <span className="font-mono" style={{ color: pal.mid }}>
+            C
+          </span>{" "}
+          the ray kinks <em>toward</em> the mass; trace the kinked outgoing
+          segment backward from D and the observer infers the star at the
+          displaced apparent position{" "}
+          <span className="font-mono text-white/90">B</span>. Heavier deflector,
+          bigger bend — α = 4GM/(c²b), linear in M.
+        </div>
+        <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
+          Arthur Eddington&rsquo;s 1919 solar-eclipse expedition measured the
+          angular separation between A and B for starlight grazing the Sun and
+          found 1.61 arcseconds — within 5% of Einstein&rsquo;s predicted 1.75″
+          for one solar mass. The slider walks the same equation across a
+          stellar cast: at 4 M☉ the bend grows to ≈ 7″; at ¼ M☉, barely
+          ¼ arcsecond.
+        </LingerCaption>
       </div>
-      <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
-        Arthur Eddington&rsquo;s 1919 solar-eclipse expedition measured the
-        angular separation between A and B for starlight grazing the Sun and
-        found 1.61 arcseconds — within 5% of Einstein&rsquo;s predicted 1.75″
-        for one solar mass. The slider walks the same equation across a
-        stellar cast: at 4 M☉ the bend grows to ≈ 7″; at ¼ M☉, barely
-        ¼ arcsecond.
-      </LingerCaption>
     </div>
   );
 }
@@ -1027,7 +1020,7 @@ function GravitationalTimeDilation() {
 
   return (
     <div>
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Two clocks side by side */}
           <ClockFace cx={W * 0.28} cy={70} r={48} angle={distAngle} color="rgb(var(--c-text-rgb) / 0.85)" label="DISTANT" sublabel="far from gravity" />

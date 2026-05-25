@@ -74,6 +74,9 @@ import Hero from "../../../components/scenes/N.M/Hero";
 import { PanelA, PanelB } from "../../../components/scenes/N.M/figures";
 import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import PrevNext from "../../../components/scenes/N.M/PrevNext.astro";
+import { findSub } from "../../../data/course-nav";
+
+const tease = findSub("N.M")?.tease ?? "";
 ---
 
 <ChapterLayout
@@ -82,25 +85,29 @@ import PrevNext from "../../../components/scenes/N.M/PrevNext.astro";
   activeId="N.M"
   current="/chapter/N/N.M"
 >
-  <Hero client:load />
+  <Hero tease={tease} client:load />
 
-  <article class="max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
-    <div class="max-w-[68ch] mx-auto prose-cosmic">
+  <article class="topic-page">
+    <div class="prose-cosmic">
 
-      <section id="anchor-id" data-fade>
-        <h2 class="section-h2">
-          <span class="part-num">N.M.1</span>
-          Section Title
+      <header class="mt-24 mb-10" id="anchor-id">
+        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
+          <span class="block w-6 h-px bg-plasma/50"></span> part one
+        </div>
+        <h2 data-fade style="--delay: 80ms" class="section-title">
+          <span class="section-number">1.</span>
+          <span class="section-title-text">Section Title</span>
         </h2>
-        <p data-fade class="dropcap">First sentence with drop cap…</p>
-        <p data-fade>More prose…</p>
+      </header>
 
-        <FigureFrame label="Panel A name">
-          <PanelA client:visible />
-        </FigureFrame>
+      <p data-fade class="dropcap">First sentence with drop cap…</p>
+      <p data-fade>More prose…</p>
 
-        <p data-fade>Caption / follow-up prose…</p>
-      </section>
+      <FigureFrame label="Panel A name">
+        <PanelA client:visible />
+      </FigureFrame>
+
+      <p data-fade>Caption / follow-up prose…</p>
 
       <!-- repeat sections, typically 3–5 per lesson -->
 
@@ -112,22 +119,46 @@ import PrevNext from "../../../components/scenes/N.M/PrevNext.astro";
 
 **Consistency rules:**
 - `ChapterLayout` for lesson pages (provides the left rail nav).
-- `Layout` with `showBackdrop` for chapter overview pages — pattern is
-  `src/pages/chapter/1/1.0.astro`.
+- `ChapterOverviewLayout` for N.0 chapter-overview lesson pages —
+  pattern is `src/pages/chapter/0/0.0.astro`. (Chapter 1's
+  `1.0.astro` is the previous pattern and is NOT yet migrated to the
+  new tease-in-Hero standard — don't copy from it.)
 - `Hero` always `client:load` (above the fold, needs immediate
-  interactivity).
+  interactivity). The Hero takes a single `tease: string` prop and
+  renders it directly below the H1; the tease text lives in
+  `course-nav.ts` (`subs[].tease` for lessons, `Chapter.overviewTease`
+  for N.0) and is mirrored on the `/chapter/N` card grid.
 - Interactive figures always `client:visible` (hydrate lazily) and
   wrapped in `<FigureFrame>`.
-- Prose wrapped in `<div class="max-w-[68ch] mx-auto prose-cosmic">`.
+- Prose wrapped in `<div class="prose-cosmic">` (the class already
+  sets `max-width: 68ch; margin-inline: auto` — don't duplicate).
+- Outer article uses `class="topic-page"` (defined in `global.css`:
+  `max-width: 1100px; margin-inline: auto; padding: 0 24px 112px`).
 - Section headers carry an `id` that matches `RAIL_ANCHORS["N.M"]` in
   `src/data/course-nav.ts`.
 - First paragraph of each section: `class="dropcap"`.
 - Footer is always `<PrevNext />`. Never a bespoke chapter footer.
+- All non-figure paragraphs share `text-[1.05em] leading-[1.74]`
+  typography — Hero tease, chapter description, card teases, and
+  lesson body prose. Don't introduce per-tease font sizes.
+
+**The chapter card-grid page (`/chapter/N`)** is the dynamic
+`src/pages/chapter/[num]/index.astro`. It reads every chapter from
+`CHAPTERS` in `course-nav.ts`. To populate a chapter overview:
+1. Set `Chapter.description` (~100 words) — shown directly under H1.
+2. Set `Chapter.overviewTease` (~70 words) — the N.0 card text.
+3. Set each `SubPage.tease` (~70 words) — the per-lesson card text.
+4. Set `live: true` / `overviewLive: true` to mark cards clickable.
+The page renders single-column, no "live" badge, no live/total
+count. The per-card 70-word teases span the full card content width.
 
 **Gold-standard reference pages:**
 - `src/pages/chapter/0/0.1.astro` — the canonical lesson template.
 - `src/pages/chapter/0/0.2.astro` — multiple `FigureFrame` examples.
-- `src/pages/chapter/1/1.0.astro` — the chapter-overview pattern.
+- `src/pages/chapter/0/0.0.astro` — the canonical N.0
+  chapter-overview lesson (uses `ChapterOverviewLayout`).
+- `src/pages/chapter/[num]/index.astro` — the dynamic
+  `/chapter/N` card-grid page.
 
 ---
 
@@ -191,8 +222,15 @@ Two-link footer (← previous · next →). Reusable.
   pointing at the adjacent subs.
 
 ### `Hero.tsx` (per-scene)
-Parallax ghost-number + title at the top of the page.
-- Default-exported React component, no props.
+Parallax ghost-number + title at the top of the page, with a 70-word
+tease paragraph directly below the H1.
+- Default-exported React component.
+- Single prop: `tease: string` — rendered as the `<p>` below the H1
+  using the canonical class `mt-10 max-w-[64ch] text-[1.05em]
+  leading-[1.74] text-white/70` (or `text-white/75`). The Hero MUST
+  not hard-code tease text — the page reads it from `course-nav.ts`
+  (`findSub(id)?.tease` or `findChapter(N)?.overviewTease`) and
+  passes it in.
 - Pattern: `src/components/scenes/0.1/Hero.tsx`.
 
 ### `figures.tsx` (per-scene)
@@ -254,15 +292,74 @@ Use SVG `viewBox` + `preserveAspectRatio`, or canvas with
 `ResizeObserver` to redraw at the new container size. Test all three
 sizes during the build/preview step.
 
-### C. Keyboard-operable, both normal AND fullscreen
+### C. Keyboard + mouse/trackpad navigation (global, via FigureFrame)
 
-Every control must be reachable and operable by keyboard in **both**
-the normal and fullscreen state. Concrete rules:
+`FigureFrame.astro` ships a **single delegated global navigator** that
+gives every wrapped figure ←/→ arrow scrubbing, wheel/pinch scrubbing
+in fullscreen, and double-click-to-fullscreen on the panel chrome.
+This is the shared standard — don't reimplement it per-figure, just
+opt into it by tagging the right elements.
+
+**Three input modes:**
+
+1. **Keyboard (always — normal AND fullscreen).** ←/→ steps the
+   figure one notch left/right; Shift = ×10. ESC always exits
+   fullscreen. Single-character `data-shortcut="1"`/`"r"`/etc.
+   trigger their button.
+2. **Mouse / trackpad wheel + pinch (FULLSCREEN ONLY, by design).**
+   Wheel-up = step right, wheel-down = step left. Trackpad pinch
+   (ctrl+wheel) maps the same way (pinch-out = "zoom in" = step
+   right). Shift = ×10. Deltas accumulate per-frame; one step per
+   50px of motion (avoids hyperscrubbing on trackpad smooth-scroll).
+   In normal in-page view the wheel belongs to the page (scrolls
+   through prose past the figure) — no interception.
+3. **Double-click in normal view → fullscreen.** Double-clicking the
+   panel chrome enters fullscreen for that figure. "Panel chrome" is
+   exactly the four structural wrappers FigureFrame guarantees:
+   `.figure-frame`, `.figure-frame-inner`, `.figure-stub`,
+   `.figure-body`. Clicks on `.fig-viz`, buttons, inputs, links,
+   labels, figcaption, draggable handles, or any element with
+   `data-shortcut` are NOT treated as empty space and fall through
+   to their existing handlers. Text-selection double-clicks (active
+   selection present) are also honored and don't trigger fullscreen.
+   The dedicated `⛶ Fullscreen` button + ESC remain the primary
+   discoverable affordance.
+
+**The three-target resolution order** for ←/→ and wheel:
+
+1. A button with `data-shortcut="ArrowLeft"` / `"ArrowRight"`
+   (prev/next pattern).
+2. The first enabled `<input type="range">` inside the figure
+   (slider nudge — one step per arrow, ×10 with Shift).
+3. A numeric pill set — ≥2 buttons with `data-shortcut="1"`, `"2"`,
+   … with the active one marked via `.is-active`,
+   `aria-selected="true"`, or `aria-pressed="true"`. Arrow stepping
+   advances/retreats through the pills.
+
+The navigator picks the first matching target per figure and uses
+it for both keyboard and wheel.
+
+**What a new figure author has to do:**
+
+1. Wrap the figure in `<FigureFrame label="…">` as before.
+2. The figure root in the React panel is a `<figure class="figure-stub">`
+   with a single `<div class="figure-body">` body wrapper + figcaption.
+3. Mark the main visualization wrapper `class="fig-viz"`.
+4. Slider-driven figure → nothing else. ←/→ and wheel scrub it.
+5. N-option figure (pills, tabs, swatches) → add
+   `data-shortcut={String(i+1)}` to each option, and mark the active
+   one with `.is-active` (or `aria-selected="true"` /
+   `aria-pressed="true"`).
+6. Prev/next-driven figure → mark the buttons
+   `data-shortcut="ArrowLeft"` / `"ArrowRight"`.
+
+**Per-control accessibility still applies on top:**
 
 - **Sliders** — prefer native `<input type="range">` (arrow keys
-  free). If a custom SVG slider: `tabindex="0"` + `role="slider"` +
-  `aria-valuemin/max/now` + `keydown` handler responding to Arrow
-  keys, Home (min), End (max), Shift = larger step.
+  free, and the global navigator can find it). If a custom SVG
+  slider: `tabindex="0"` + `role="slider"` + `aria-valuemin/max/now`
+  + `keydown` handler responding to Arrow keys, Home (min), End
+  (max), Shift = larger step.
 - **Draggable targets** — `tabindex="0"` on the handle, arrow-key
   nudge, Home = reset to centre.
 - **Buttons** — native `<button>`; Enter and Space both activate;
@@ -336,12 +433,18 @@ The polished figures use γ as a Unicode glyph and the full
 ## 5. Navigation registry — `src/data/course-nav.ts`
 
 Single source of truth for: top nav, mobile menu, chapter card grid,
-left rail scroll-spy, prev/next defaults.
+left rail scroll-spy, prev/next defaults, AND lesson tease /
+chapter description prose.
 
 When you ship a lesson:
 1. Flip `live: true` on the matching `subs[]` entry inside `CHAPTERS`.
-2. When a chapter overview ships, flip `overviewLive: true`.
-3. Add the section anchors to `RAIL_ANCHORS["N.M"]`:
+2. Write the 70-word lesson `tease` on the matching sub entry. The
+   same text renders on the lesson page (Hero, directly below H1)
+   AND on the `/chapter/N` card. Single source of truth.
+3. When a chapter overview ships, flip `overviewLive: true` AND set
+   the chapter-level `description` (~100 words, shown under H1 on
+   `/chapter/N`) and `overviewTease` (~70 words, the N.0 card text).
+4. Add the section anchors to `RAIL_ANCHORS["N.M"]`:
    ```ts
    "N.M": [
      { id: "anchor-id-1", label: "Short Label" },
@@ -350,13 +453,40 @@ When you ship a lesson:
    ```
 
 Never hard-code "coming soon" anywhere — flipping `live` is enough.
+Never inline tease/description text in `.astro` pages or React
+components — both the lesson page Hero and the chapter card pull from
+`course-nav.ts`; inlining causes the two surfaces to drift.
 
-Always use the helpers when emitting an `href`:
+Type shape:
+
+```ts
+type SubPage = {
+  id: string;
+  title: string;
+  live: boolean;
+  tease?: string;        // ~70 words, ±5
+};
+type Chapter = {
+  num: number;
+  age: string;
+  title: string;
+  telescope: string;
+  weeks: string;
+  overviewLive: boolean;
+  description?: string;     // ~100 words, chapter blurb under H1
+  overviewTease?: string;   // ~70 words, N.0 card text
+  subs: SubPage[];
+};
+```
+
+Helpers — always use these when emitting an `href` or looking up
+content:
 - `withBase(p)` — prepends the `base: '/courses/ast100'` from
   `astro.config.mjs`. Required for the subpath deploy.
 - `subPath("N.M")` — full URL for a sub.
-- `overviewPath(N)` — full URL for a chapter overview.
+- `overviewPath(N)` — full URL for a chapter overview lesson (`N.0`).
 - `chapterPath(N)` — full URL for the dynamic `/chapter/N` card grid.
+- `findChapter(N)` / `findSub("N.M")` — look up the entry by id.
 
 ---
 
@@ -410,35 +540,75 @@ can't escape.
     portrait. Use SVG `viewBox` or canvas + `ResizeObserver`. Test all
     three during preview.
 11. **No mouse-only interactives.** Every control must be
-    keyboard-operable in both normal and fullscreen states
-    (see §4½ rule C).
+    keyboard-operable in both normal and fullscreen states. Opt into
+    FigureFrame's global navigator by tagging the slider, pill set,
+    or prev/next buttons per the resolution order — don't reinvent
+    arrow/wheel handling per-figure (see §4½ rule C).
 12. **Math expressions must render as proper typography.** Never raw
     `a^b` or `x_2`. Use `$inline$` / `$$display$$` in MDX, Unicode
     glyphs or `katex.renderToString()` in JSX/TSX (see §4½ rule D).
 13. **The prose column must stay horizontally centred** — never remove
     `mx-auto` from the prose-cosmic container; never `text-align: center`
     long-form body text (see §4½ rule E).
+14. **Single source of truth for lesson tease + chapter description.**
+    The 70-word lesson tease lives in `subs[].tease` in
+    `course-nav.ts` and is consumed by BOTH the lesson page Hero
+    (`<Hero tease={tease} />`) AND the `/chapter/N` card grid. The
+    100-word chapter description lives in `Chapter.description`. Never
+    inline either text in a page or component — that causes the two
+    surfaces to drift.
+15. **Figure DOM contract.** Every figure renders as
+    `<figure.figure-stub> → <div.figure-body> → <figcaption>`,
+    with exactly one `.figure-body` (non-figcaption) child inside
+    `.figure-stub`. The local `FigurePanel` helper in every
+    `figures.tsx` does this — copy it; don't reinvent.
+16. **Never use `:first-child` to target `figure-stub` from CSS.**
+    Astro's `client:visible` directive inserts a hydration `<script>`
+    tag as the first child of `.figure-frame-inner`; `:first-child`
+    selectors that the author intended for `figure-stub` would
+    accidentally promote the script to `display: flex !important`
+    and render its JavaScript source as visible "gibberish" text on
+    the left half of the fullscreen viewport. Target `.figure-stub`
+    directly.
+17. **Typography uniformity for non-figure paragraphs.** Hero tease,
+    chapter description, card teases, and lesson body prose all
+    share `text-[1.05em] leading-[1.74]` (matching the
+    `.prose-cosmic > p` rule). One font size, one line-height, for
+    every paragraph outside a figure panel.
 
 ---
 
 ## 8. Per-lesson authoring checklist
 
 ```
-[ ] 1. Read knowledgebase/2026-spring/raw_html/pN_M.html (or chN.html
-       for overviews).
-[ ] 2. Plan sections (3–5), rail anchors, and figure decisions.
-[ ] 3. Decide per figure: port-as-is photo, port-as-is data plot,
-       replace with bespoke interactive, or omit.
-[ ] 4. Create src/content/chapter/N.M_slug.mdx (frontmatter + body).
-[ ] 5. Create src/components/scenes/N.M/Hero.tsx
-[ ] 6. Create src/components/scenes/N.M/figures.tsx
-[ ] 7. Create src/components/scenes/N.M/PrevNext.astro
-[ ] 8. Create src/pages/chapter/N/N.M.astro (use the §2 template).
-[ ] 9. Update src/data/course-nav.ts: flip live=true, add RAIL_ANCHORS.
-[ ] 10. (If applicable) update src/data/chapter-N-events.ts.
-[ ] 11. npm run build && npm run preview — walk the page in browser.
-[ ] 12. Verify dark + light themes, reduced motion, mobile layout.
-[ ] 13. Commit; push when ready to deploy.
+[ ] 1.  Read knowledgebase/2026-spring/raw_html/pN_M.html (or chN.html
+        for overviews).
+[ ] 2.  Plan sections (3–5), rail anchors, and figure decisions.
+[ ] 3.  Decide per figure: port-as-is photo, port-as-is data plot,
+        replace with bespoke interactive, or omit.
+[ ] 4.  Write the 70-word lesson tease. For N.0 (chapter overview)
+        also write the 100-word Chapter.description and the 70-word
+        Chapter.overviewTease.
+[ ] 5.  Create src/content/chapter/N.M_slug.mdx (frontmatter + body).
+[ ] 6.  Create src/components/scenes/N.M/Hero.tsx (accepts `tease`
+        prop; renders it below the H1).
+[ ] 7.  Create src/components/scenes/N.M/figures.tsx with the local
+        FigurePanel helper that wraps children in
+        <div class="figure-body">.
+[ ] 8.  Create src/components/scenes/N.M/PrevNext.astro.
+[ ] 9.  Create src/pages/chapter/N/N.M.astro (use the §2 template,
+        import `findSub`, pass `tease={tease}` to Hero).
+[ ] 10. Update src/data/course-nav.ts: flip live=true, write tease
+        (and description / overviewTease for N.0), add RAIL_ANCHORS.
+[ ] 11. (If applicable) update src/data/chapter-N-events.ts.
+[ ] 12. pkill stale astro dev/preview; then npm run build &&
+        npm run preview. Walk the page on http://localhost:4321 —
+        not on a stale dev server.
+[ ] 13. Verify Hero tease matches the /chapter/N card text exactly,
+        dark + light themes, reduced motion, mobile layout, and the
+        figure global navigator (←/→ arrows, wheel-in-fullscreen,
+        double-click panel chrome → fullscreen).
+[ ] 14. Commit; push when ready to deploy.
 ```
 
 ---
@@ -449,10 +619,19 @@ can't escape.
 |---|---|
 | See the gold-standard lesson | `src/pages/chapter/0/0.1.astro` |
 | See multiple FigureFrame uses | `src/pages/chapter/0/0.2.astro` |
-| See chapter-overview pattern | `src/pages/chapter/1/1.0.astro` |
+| See the N.0 chapter-overview lesson pattern | `src/pages/chapter/0/0.0.astro` |
+| See the dynamic `/chapter/N` card-grid page | `src/pages/chapter/[num]/index.astro` |
+| See the Hero (with `tease` prop) | `src/components/scenes/0.1/Hero.tsx` |
 | See bespoke interactive examples | `src/components/scenes/0.1/figures.tsx`, `0.2/figures.tsx`, `0.4/figures.tsx` |
-| Understand the rail / nav helpers | `src/data/course-nav.ts` |
+| See the canonical `FigurePanel` body-wrapper helper | `src/components/scenes/0.2/figures.tsx` |
+| Understand the rail / nav helpers + teases | `src/data/course-nav.ts` |
 | Find the design tokens | `src/styles/global.css` (`@theme` block) |
+| Find the figure-frame CSS contract | `src/styles/global.css` (search for `.figure-frame.is-fs`) |
 | Find a source figure / image | `knowledgebase/2026-spring/media/` |
 | Read the parallel plain-HTML spec | `knowledgebase/2026-spring/SPEC.md` |
 | Deploy mechanics | `.github/workflows/deploy.yml` |
+
+Chapter 1 pages are the PREVIOUS pattern — Hero without a `tease`
+prop, longer hard-coded tagline, etc. — and are NOT yet migrated to
+the new standard. Use chapter 0 (pages 0, 0.0, 0.1, 0.2, 0.3, 0.4)
+for everything visual. Chapter 1 will be migrated in a later pass.

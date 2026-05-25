@@ -1,8 +1,11 @@
 import { useEffect, useRef } from "react";
 import LiveTimeCounter from "./LiveTimeCounter";
 
-/* Chapter 0 hero — ghost "0" + parallax + emerging river thread + live time. */
-export default function Hero() {
+/* Chapter 0 hero — ghost "0" + parallax + emerging river thread + live time.
+   The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview (`/chapter/0`) card. See `course-nav.ts` `overviewTease`. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
   const threadRef = useRef<SVGPathElement | null>(null);
 
@@ -124,10 +127,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[58ch] text-[17px] md:text-[19px] text-white/70 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/70"
         >
-          Fourteen billion years, traced along a river — from the first hot moment of being,
-          through the slow assembly of stars and worlds, to the very recent invention of culture.
+          {tease}
         </p>
 
         <div

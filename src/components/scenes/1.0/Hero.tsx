@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview (`/chapter/1`) card. See `course-nav.ts` sub `tease`. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -57,12 +60,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[62ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/70"
         >
-          From a singular instant of impossible heat, through unification and
-          inflation and the first quarks freezing into protons, to the fog
-          lifting and light streaming free for the very first time. The
-          Universe rewrites itself fifteen times before it is one second old.
+          {tease}
         </p>
 
         <div
@@ -76,7 +76,7 @@ export default function Hero() {
 
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>t = 0 &nbsp;◇&nbsp; 380,000 yr</div>
-        <div className="text-plasma/60">{"$10^{32}$ K → 3000 K"}</div>
+        <div className="text-plasma/60">10³² K → 3000 K</div>
       </div>
     </section>
   );

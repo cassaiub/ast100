@@ -20,179 +20,376 @@ interface Props {
 }
 const { chapter } = Astro.props;
 
-/* Build the card list: N.0 Overview first, then the 4 sub-lectures.
-   N.0 reuses the chapter title since it is the overview of the same age. */
 const cards = [
   {
     id: `${chapter.num}.0`,
-    tag: "overview",
+    label: "Overview",
     title: chapter.title,
-    tease:
-      chapter.num === 0
-        ? "The whole 14-billion-year story, traced along a river — Brahmaputra metaphor + the 51-event cosmic timeline."
-        : `A cinematic overview of the ${chapter.age.toLowerCase()} — the story before we zoom into the four lessons.`,
     href: overviewPath(chapter.num),
     live: chapter.overviewLive,
   },
   ...chapter.subs.map((s) => ({
     id: s.id,
-    tag: "lesson",
+    label: `Lesson ${s.id.split(".")[1]}`,
     title: s.title,
-    tease: "",
     href: subPath(s.id),
     live: s.live,
   })),
 ];
-
-const liveCount = cards.filter((c) => c.live).length;
-const totalCount = cards.length;
 ---
 
 <Layout
   title={`${chapter.num} — ${chapter.title} · AST 100`}
-  description={`Chapter ${chapter.num} (${chapter.age}). ${liveCount} of ${totalCount} sections live.`}
+  description={`Chapter ${chapter.num} — ${chapter.age}.`}
   current={chapterPath(chapter.num)}
   showBackdrop={true}
 >
-  {/* ─────────────────────────────  Hero  ───────────────────────────── */}
-  <section class="relative -mt-[72px] pt-[160px] md:pt-[200px] pb-16 md:pb-20 px-6 md:px-10">
-    <div class="max-w-[1100px] mx-auto">
-      <div
-        data-fade
-        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-6 flex items-center gap-3"
-      >
-        <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
-        Chapter {chapter.num} · weeks {chapter.weeks}
-      </div>
-
-      <h1
-        data-fade
-        style="--delay: 220ms"
-        class="title-gradient font-serif font-medium tracking-tight leading-[1.04]"
-      >
-        <span class="block" style="font-size: clamp(2.4rem, 6vw, 4.6rem);">
-          {chapter.title}
-        </span>
-      </h1>
-
-      <p
-        data-fade
-        style="--delay: 420ms; color: var(--c-text-soft);"
-        class="mt-8 max-w-[64ch] text-[16px] md:text-[18px] leading-[1.65]"
-      >
-        Five entry points into the {chapter.age.toLowerCase()}. Start with the
-        cinematic overview, or jump straight to a lesson.
-      </p>
-
-      <div
-        data-fade
-        style="--delay: 620ms"
-        class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
-      >
-        <span class="flex items-center gap-2">
-          <span
-            class="inline-block w-2 h-2 rounded-full"
-            style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"
-          ></span>
-          {totalCount} sections
-        </span>
-        <span style="color: var(--c-text-ghost);">·</span>
-        <span>
-          <span style="color: var(--c-accent);">{liveCount} live</span>
-          <span style="color: var(--c-text-faint);"> / {totalCount} total</span>
-        </span>
+  <section class="ch-hero">
+    <div class="ch-hero-inner">
+      <div data-fade class="ch-eyebrow">
+        <span class="ch-eyebrow-rule"></span>
+        Chapter {chapter.num}
       </div>
     </div>
   </section>
 
-  {/* ─────────────────────────  Card grid  ─────────────────────────── */}
-  <section class="relative px-6 md:px-10 pb-24 md:pb-32">
-    <div class="max-w-[1100px] mx-auto">
-      <ol class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {
-          cards.map((c, i) => {
-            const baseClasses =
-              "block relative rounded-xl border overflow-hidden h-full";
-            const liveClasses =
-              "cta-card surface-card is-link";
-            const soonClasses =
-              "surface-card opacity-65 cursor-not-allowed";
-            const cls = `${baseClasses} ${c.live ? liveClasses : soonClasses}`;
-            const body = (
-              <div class="p-6 md:p-7">
-                <div class="flex items-center gap-3 mb-3 flex-wrap">
-                  <span
-                    class="font-mono text-[13px] tracking-[0.18em]"
-                    style={`color: ${c.live ? "var(--c-accent)" : "var(--c-text-faint)"};`}
-                  >
-                    {c.id}
+  <section class="ch-deck-wrap">
+    <ol class="ch-deck">
+      {
+        cards.map((c, i) => {
+          const Tag = c.live ? "a" : "div";
+          const HeadingTag = i === 0 ? "h1" : "h2";
+          const classes = [
+            "ch-card",
+            i === 0 ? "ch-card-lead" : "",
+            c.live ? "" : "ch-card-soon",
+          ]
+            .filter(Boolean)
+            .join(" ");
+          return (
+            <li class="ch-deck-item">
+              <Tag
+                href={c.live ? c.href : undefined}
+                aria-disabled={c.live ? undefined : "true"}
+                data-fade
+                style={`--delay: ${260 + i * 80}ms`}
+                class={classes}
+              >
+                <span class="ch-card-ghost" aria-hidden="true">
+                  {c.id}
+                </span>
+                <span class="ch-card-body">
+                  <span class="ch-card-tag">{c.label}</span>
+                  <HeadingTag class="ch-card-title">{c.title}</HeadingTag>
+                  <span class="ch-card-cue">
+                    {c.live ? (
+                      <>
+                        <span class="ch-card-cue-text">enter</span>
+                        <span class="ch-card-cue-arrow">→</span>
+                      </>
+                    ) : (
+                      <span class="ch-card-cue-text">coming soon</span>
+                    )}
                   </span>
-                  <span
-                    class="font-mono text-[9px] tracking-[0.22em] uppercase"
-                    style="color: var(--c-text-faint);"
-                  >
-                    {c.tag}
-                  </span>
-                  <span
-                    class="ml-auto font-mono text-[9px] tracking-[0.22em] uppercase rounded-full px-2.5 py-0.5"
-                    style={`color: ${c.live ? "var(--c-accent)" : "var(--c-text-faint)"}; border: 1px solid ${c.live ? "rgb(var(--c-accent-rgb) / 0.45)" : "var(--c-border-strong)"};`}
-                  >
-                    {c.live ? "● live" : "coming soon"}
-                  </span>
-                </div>
-                <h3
-                  class="font-serif font-medium leading-tight"
-                  style={`font-size: clamp(1.4rem, 2.4vw, 1.9rem); color: ${c.live ? "var(--c-text-strong)" : "var(--c-text-soft)"};`}
-                >
-                  {c.title}
-                </h3>
-                {c.tease && (
-                  <p
-                    class="mt-3 text-[14px] leading-[1.55] max-w-[60ch]"
-                    style="color: var(--c-text-soft);"
-                  >
-                    {c.tease}
-                  </p>
-                )}
-                {c.live && (
-                  <div
-                    class="mt-5 flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase"
-                    style="color: var(--c-accent);"
-                  >
-                    read {c.id}
-                    <span
-                      class="inline-block transition-transform duration-500"
-                    >→</span>
-                  </div>
-                )}
-              </div>
-            );
-            return (
-              <li>
-                {c.live ? (
-                  <a href={c.href} data-fade style={`--delay: ${i * 70}ms`} class={cls}>
-                    {body}
-                  </a>
-                ) : (
-                  <div data-fade style={`--delay: ${i * 70}ms`} class={cls} aria-disabled="true">
-                    {body}
-                  </div>
-                )}
-              </li>
-            );
-          })
-        }
-      </ol>
-
-      <p
-        data-fade
-        style="--delay: 700ms; color: var(--c-text-faint);"
-        class="mt-10 text-[13px] font-sans max-w-[60ch]"
-      >
-        {liveCount === totalCount
-          ? "All sections live. Pick where to dive in."
-          : `${liveCount} of ${totalCount} sections currently live — the rest are queued for upcoming iterations.`}
-      </p>
-    </div>
+                </span>
+              </Tag>
+            </li>
+          );
+        })
+      }
+    </ol>
   </section>
 </Layout>
+
+<style>
+  /* ── Hero (eyebrow only — the chapter title lives in the lead card) ── */
+  .ch-hero {
+    padding: 120px 24px 20px;
+    text-align: left;
+  }
+  @media (min-width: 768px) {
+    .ch-hero {
+      padding: 168px 40px 24px;
+    }
+  }
+
+  .ch-hero-inner {
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+
+  .ch-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .ch-eyebrow-rule {
+    display: block;
+    width: 36px;
+    height: 1px;
+    background: var(--c-accent);
+  }
+
+  /* ── Deck ───────────────────────────────────────────────────────────── */
+  .ch-deck-wrap {
+    padding: 24px 24px 140px;
+  }
+  @media (min-width: 768px) {
+    .ch-deck-wrap {
+      padding: 28px 40px 160px;
+    }
+  }
+
+  .ch-deck {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  @media (min-width: 768px) {
+    .ch-deck {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .ch-deck-item:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .ch-deck-item {
+    margin: 0;
+  }
+
+  .ch-card {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    min-height: 220px;
+    border-radius: 18px;
+    border: 1px solid var(--c-border);
+    background:
+      radial-gradient(
+        at 85% 18%,
+        rgb(var(--c-accent-rgb) / 0.10) 0%,
+        transparent 55%
+      ),
+      linear-gradient(
+        150deg,
+        rgb(255 255 255 / 0.022) 0%,
+        rgb(255 255 255 / 0.004) 100%
+      );
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform 500ms var(--ease),
+      border-color 500ms var(--ease),
+      box-shadow 600ms var(--ease);
+  }
+  @media (min-width: 768px) {
+    .ch-card {
+      min-height: 260px;
+    }
+  }
+  .ch-card-lead {
+    min-height: 360px;
+    background:
+      radial-gradient(
+        at 80% 14%,
+        rgb(var(--c-accent-rgb) / 0.18) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        at 10% 90%,
+        rgb(var(--c-nebula-rgb) / 0.10) 0%,
+        transparent 55%
+      ),
+      linear-gradient(
+        150deg,
+        rgb(255 255 255 / 0.035) 0%,
+        rgb(255 255 255 / 0.006) 100%
+      );
+    border-color: rgb(var(--c-accent-rgb) / 0.22);
+  }
+  @media (min-width: 768px) {
+    .ch-card-lead {
+      min-height: 460px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .ch-card-lead {
+      min-height: 520px;
+    }
+  }
+
+  .ch-card:hover,
+  .ch-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: rgb(var(--c-accent-rgb) / 0.55);
+    box-shadow:
+      0 24px 60px -20px rgb(var(--c-accent-rgb) / 0.32),
+      0 0 90px -30px rgb(var(--c-accent-rgb) / 0.20);
+  }
+  .ch-card:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 4px;
+  }
+
+  .ch-card-ghost {
+    position: absolute;
+    top: -8%;
+    right: -3%;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(7rem, 18vw, 14rem);
+    line-height: 0.95;
+    color: rgb(var(--c-text-rgb) / 0.04);
+    letter-spacing: -0.06em;
+    user-select: none;
+    pointer-events: none;
+    transition:
+      color 600ms var(--ease),
+      transform 700ms var(--ease);
+  }
+  .ch-card-lead .ch-card-ghost {
+    font-size: clamp(11rem, 32vw, 30rem);
+    top: -14%;
+    right: -3%;
+    color: rgb(var(--c-text-rgb) / 0.06);
+  }
+  .ch-card:hover .ch-card-ghost,
+  .ch-card:focus-visible .ch-card-ghost {
+    color: rgb(var(--c-accent-rgb) / 0.10);
+    transform: scale(1.06);
+  }
+
+  .ch-card-body {
+    position: relative;
+    z-index: 1;
+    padding: 28px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-self: flex-end;
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .ch-card-body {
+      padding: 36px 40px;
+      gap: 22px;
+    }
+  }
+  .ch-card-lead .ch-card-body {
+    padding: 40px 36px;
+    gap: 26px;
+  }
+  @media (min-width: 768px) {
+    .ch-card-lead .ch-card-body {
+      padding: 64px 72px;
+      gap: 36px;
+    }
+  }
+
+  .ch-card-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--c-text-faint);
+  }
+
+  .ch-card-title {
+    display: block;
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+    line-height: 1.12;
+    color: var(--c-text-strong);
+    letter-spacing: -0.01em;
+    max-width: 24ch;
+  }
+  .ch-card-lead .ch-card-title {
+    font-size: clamp(2.8rem, 6.6vw, 5.2rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    max-width: 18ch;
+  }
+  .ch-card-lead:not(.ch-card-soon) .ch-card-title {
+    background: linear-gradient(
+      135deg,
+      var(--title-0) 0%,
+      var(--title-1) 50%,
+      var(--title-2) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ch-card-lead .ch-card-tag {
+    font-size: 11px;
+  }
+  .ch-card-lead .ch-card-cue {
+    font-size: 11px;
+  }
+
+  .ch-card-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .ch-card-cue-arrow {
+    display: inline-block;
+    transition: transform 400ms var(--ease);
+  }
+  .ch-card:hover .ch-card-cue-arrow,
+  .ch-card:focus-visible .ch-card-cue-arrow {
+    transform: translateX(6px);
+  }
+
+  .ch-card-soon {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .ch-card-soon:hover,
+  .ch-card-soon:focus-visible {
+    transform: none;
+    border-color: var(--c-border);
+    box-shadow: none;
+  }
+  .ch-card-soon .ch-card-title {
+    color: var(--c-text-soft);
+  }
+  .ch-card-soon .ch-card-cue {
+    color: var(--c-text-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ch-card,
+    .ch-card-ghost,
+    .ch-card-cue-arrow {
+      transition: none;
+    }
+    .ch-card:hover,
+    .ch-card:focus-visible {
+      transform: none;
+    }
+    .ch-card:hover .ch-card-ghost,
+    .ch-card:focus-visible .ch-card-ghost {
+      transform: none;
+    }
+  }
+</style>

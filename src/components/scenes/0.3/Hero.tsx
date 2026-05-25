@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview card. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -60,11 +63,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/75"
         >
-          A finite speed of light, a finite age, and a horizon we can never
-          see past. Everything you have ever seen is a delayed signal — and
-          everyone everywhere sits at the centre of their own bubble.
+          {tease}
         </p>
 
         <div

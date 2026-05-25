@@ -1,0 +1,86 @@
+<!DOCTYPE html><html><head><title>tester</title>
+<style>body { font-family: monospace; padding: 16px; color:#fff; background:#000; white-space:pre-wrap; }
+iframe { border: 1px solid #444; }</style>
+</head><body>
+<div id="out">loading...</div>
+<iframe id="ifr" src="/courses/ast100/chapter/0/0.3" style="width: 1400px; height: 900px; margin-top:24px;"></iframe>
+<script>
+const ifr = document.getElementById('ifr');
+const out = document.getElementById('out');
+
+const consoleErrors = [];
+window.addEventListener('error', e => consoleErrors.push('ERROR: ' + e.message + ' @ ' + e.filename + ':' + e.lineno));
+window.addEventListener('unhandledrejection', e => consoleErrors.push('REJECTION: ' + (e.reason && e.reason.stack || e.reason)));
+
+function dumpState(label) {
+  try {
+    const w = ifr.contentWindow;
+    const d = ifr.contentDocument;
+    const lines = [];
+    lines.push('=== ' + label + ' ===');
+    lines.push('scrollY=' + w.scrollY + ' innerHeight=' + w.innerHeight + ' docHeight=' + d.documentElement.scrollHeight);
+    lines.push('');
+    lines.push('=== console errors ===');
+    lines.push(consoleErrors.length === 0 ? '(none)' : consoleErrors.join('\n'));
+    lines.push('');
+    lines.push('=== figure-frames ===');
+    const frames = d.querySelectorAll('.figure-frame');
+    lines.push('count=' + frames.length);
+    frames.forEach((f, i) => {
+      const sty = w.getComputedStyle(f);
+      const rect = f.getBoundingClientRect();
+      const canvas = f.querySelector('canvas');
+      const svg = f.querySelector('svg');
+      const figureStub = f.querySelector('.figure-stub');
+      const figureStubStyle = figureStub ? w.getComputedStyle(figureStub) : null;
+      const island = f.querySelector('astro-island');
+      lines.push('-- frame[' + i + '] --');
+      lines.push('aria-label=' + f.getAttribute('aria-label'));
+      lines.push('classList=' + f.className);
+      lines.push('is-in?  ' + f.classList.contains('is-in') + ' opacity=' + sty.opacity);
+      lines.push('rect.height=' + rect.height + ' rect.top=' + rect.top);
+      lines.push('canvas? ' + (canvas ? ('w=' + canvas.getBoundingClientRect().width + ' h=' + canvas.getBoundingClientRect().height) : 'none'));
+      lines.push('svg? ' + (svg ? ('w=' + svg.getBoundingClientRect().width + ' h=' + svg.getBoundingClientRect().height) : 'none'));
+      lines.push('figure-stub is-in=' + (figureStub ? figureStub.classList.contains('is-in') : 'N/A') + ' opacity=' + (figureStubStyle ? figureStubStyle.opacity : 'N/A'));
+      lines.push('astro-island await-children? ' + (island ? island.outerHTML.includes('await-children') : 'N/A'));
+    });
+    out.innerText = (out.innerText || '') + '\n\n' + lines.join('\n');
+  } catch (e) {
+    out.innerText = (out.innerText || '') + '\n\nERROR: ' + e.message + '\n' + e.stack;
+  }
+}
+
+ifr.onload = () => {
+  // Hijack iframe's console.error
+  try {
+    const oldErr = ifr.contentWindow.console.error;
+    ifr.contentWindow.console.error = function(...args) {
+      consoleErrors.push('CHILD ERROR: ' + args.map(a => {
+        try { return typeof a === 'object' ? JSON.stringify(a).slice(0,300) : String(a); } catch { return String(a); }
+      }).join(' '));
+      return oldErr.apply(this, args);
+    };
+    ifr.contentWindow.addEventListener('error', e => consoleErrors.push('CHILD ERROR EVT: ' + e.message + ' @ ' + e.filename + ':' + e.lineno));
+    ifr.contentWindow.addEventListener('unhandledrejection', e => consoleErrors.push('CHILD REJECTION: ' + (e.reason && e.reason.stack || e.reason)));
+  } catch(e) {
+    consoleErrors.push('console hijack failed: ' + e.message);
+  }
+
+  // 1st pass: at top
+  setTimeout(() => {
+    out.innerText = '';
+    dumpState('PASS 1 (no scroll)');
+    // Now scroll to figure 1
+    const f0 = ifr.contentDocument.querySelectorAll('.figure-frame')[0];
+    if (f0) f0.scrollIntoView({block: 'center'});
+    setTimeout(() => {
+      dumpState('PASS 2 (scrolled to fig 0)');
+      const f1 = ifr.contentDocument.querySelectorAll('.figure-frame')[1];
+      if (f1) f1.scrollIntoView({block: 'center'});
+      setTimeout(() => {
+        dumpState('PASS 3 (scrolled to fig 1)');
+      }, 3000);
+    }, 3000);
+  }, 4000);
+};
+</script></body></html>

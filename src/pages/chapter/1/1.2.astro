@@ -1,12 +1,12 @@
 ---
 import ChapterLayout from "../../../layouts/ChapterLayout.astro";
 import Hero from "../../../components/scenes/1.2/Hero";
+import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import {
   StandardModelPanel,
   AntiparticleAnnihilationPanel,
 } from "../../../components/scenes/1.2/figures";
-import FigureFrame from "../../../components/shared/FigureFrame.astro";
-import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
 ---
 
 <ChapterLayout
@@ -16,174 +16,58 @@ import PrevNext from "../../../components/scenes/1.2/PrevNext.astro";
   chapter={1}
   current="/chapter/1/1.2"
 >
-  <Hero client:load />
+  <Hero
+    tease="The Standard Model is the cosmic inventory: seventeen elementary particles that build everything you have ever touched. Quarks and leptons are the bricks of matter; gauge bosons — photon, gluon, W, Z — are the mortar of energy that binds them; the Higgs is the field that grants mass. Mix in pair production, annihilation, threshold freeze-outs, and the one-in-a-billion matter–antimatter rounding error that left a Universe of stuff behind."
+    client:load
+  />
 
-  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
-    <div class="max-w-[68ch] mx-auto prose-cosmic">
-      {/* ── §1 Standard Model ─────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="standard-model">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part one
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">1.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">The Standard Model</span>
-        </h2>
-      </header>
-
-      <p data-fade class="dropcap">
-        The Standard Model of Particle Physics is a cosmic inventory that
-        organizes the Universe into <strong>bricks</strong> (elementary particles
-        of matter) and the <strong>mortar</strong> (elementary particles of
-        energy) that binds them. At the very center lies the{" "}
-        <strong>Higgs boson</strong>, the particle associated with a field that
-        permeates the vacuum of space. By interacting with this field, other
-        particles gain mass, effectively transitioning from manifestations of
-        pure energy into the building blocks of a tangible world. Without
-        this mechanism, the fundamental bricks would zip through the Universe
-        at the speed of light, unable to clump together to form atoms, stars,
-        or the complex structures of life.
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="standard-model">The Standard Model</h2>
+      <p>
+        The Standard Model of Particle Physics is a cosmic inventory that organizes the Universe into <strong>bricks</strong> (elementary particles of matter) and the <strong>mortar</strong> (elementary particles of energy) that binds them. At the very center lies the <strong>Higgs boson</strong>, the particle associated with a field that permeates the vacuum of space. By interacting with this field, other particles gain mass, effectively transitioning from manifestations of pure energy into the building blocks of a tangible world. Without this mechanism, the fundamental bricks would zip through the Universe at the speed of light, unable to clump together to form atoms, stars, or the complex structures of life.
       </p>
 
       <FigureFrame label="Standard Model">
         <StandardModelPanel client:visible />
       </FigureFrame>
 
-      {/* ── §2 Bosons ────────────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="mortar">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part two
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">2.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Mortar — the Bosons</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        The orange ring of the Standard Model identifies the{" "}
-        <strong>bosons</strong>, which can be thought of as the
-        &ldquo;mortar&rdquo; or force carriers of the Universe. Rather than
-        solid matter, these particles are essentially discrete packets of
-        energy — quanta — that mediate interactions. The photon (γ) carries
-        electromagnetic energy, the gluon (g) manages the strong-force glue
-        that keeps atomic nuclei together, and the heavy W and Z bosons
-        facilitate the weak nuclear force responsible for radioactive decay.
-        Forces are not mysterious actions at a distance but the result of
-        these energy-carrying particles being exchanged between matter, much
-        like a ball tossed between two players to keep them connected.
+      <h2 id="mortar">Mortar — the Bosons</h2>
+      <p>
+        The orange ring of the Standard Model identifies the <strong>bosons</strong>, which can be thought of as the "mortar" or force carriers of the Universe. Rather than solid matter, these particles are essentially discrete packets of energy — quanta — that mediate interactions. The photon (γ) carries electromagnetic energy, the gluon (g) manages the strong-force glue that keeps atomic nuclei together, and the heavy W and Z bosons facilitate the weak nuclear force responsible for radioactive decay. Forces are not mysterious actions at a distance but the result of these energy-carrying particles being exchanged between matter, much like a ball tossed between two players to keep them connected.
       </p>
 
-      {/* ── §3 Fermions ──────────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="bricks">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part three
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">3.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Bricks — the Fermions</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        The outermost rings contain the <strong>fermions</strong>, the bricks
-        that constitute all material structures. These split into{" "}
-        <strong>quarks</strong>, which combine to form protons and neutrons,
-        and <strong>leptons</strong>, such as the electron and the ghostly,
-        nearly massless neutrino.
+      <h2 id="bricks">Bricks — the Fermions</h2>
+      <p>
+        The outermost rings contain the <strong>fermions</strong>, the bricks that constitute all material structures. These split into <strong>quarks</strong>, which combine to form protons and neutrons, and <strong>leptons</strong>, such as the electron and the ghostly, nearly massless neutrino.
       </p>
 
-      {/* ── §4 Antimatter & annihilation ─────────────────────────── */}
-      <header class="mt-24 mb-10" id="antimatter">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part four
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">4.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Antimatter Mirror</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        To maintain cosmic symmetry, every one of these particles has a
-        mirror-image antiparticle, such as the <strong>positron</strong> (the
-        antimatter version of the electron). While matter and energy are
-        often viewed as distinct, they are fundamentally linked; for
-        instance, if an electron meets a positron, they undergo
-        <em> annihilation</em>, instantly canceling each other out to release
-        a flash of pure energy in the form of gamma-ray (extremely
-        high-energy or high-frequency) photons.
+      <h2 id="antimatter">Antimatter Mirror</h2>
+      <p>
+        To maintain cosmic symmetry, every one of these particles has a mirror-image antiparticle, such as the <strong>positron</strong> (the antimatter version of the electron). While matter and energy are often viewed as distinct, they are fundamentally linked; for instance, if an electron meets a positron, they undergo <em>annihilation</em>, instantly canceling each other out to release a flash of pure energy in the form of gamma-ray (extremely high-energy or high-frequency) photons.
       </p>
 
       <FigureFrame label="Antiparticle annihilation">
         <AntiparticleAnnihilationPanel client:visible />
       </FigureFrame>
 
-      {/* ── §5 Origin ────────────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="origin">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part five
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">5.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Origin of the Particles</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        The genesis of the material Universe was a process governed by the
-        dynamic equivalence of matter and energy, formulated by Einstein's
-        celebrated principle, $E = mc^&#123;2&#125;$. In the
-        intensely energetic environment of the infant Universe, subatomic
-        particles did not exist as stable entities; instead, they
-        &ldquo;materialized&rdquo; from radiant energy through{" "}
-        <strong>pair production</strong> — a mechanism in which high-energy
-        bosons collided to generate a particle and its corresponding
-        antiparticle. This creative flux was balanced by immediate
-        annihilation, wherein particle pairs reverted to pure energy upon
-        contact.
+      <h2 id="origin">Origin of the Particles</h2>
+      <p>
+        The genesis of the material Universe was a process governed by the dynamic equivalence of matter and energy, formulated by Einstein's celebrated principle, E = mc². In the intensely energetic environment of the infant Universe, subatomic particles did not exist as stable entities; instead, they "materialized" from radiant energy through <strong>pair production</strong> — a mechanism in which high-energy bosons collided to generate a particle and its corresponding antiparticle. This creative flux was balanced by immediate annihilation, wherein particle pairs reverted to pure energy upon contact.
+      </p>
+      <p>
+        However, as the Universe expanded and cooled, the energy density dropped below the specific <strong>threshold temperatures</strong> required to sustain the production of massive particles. Various types of particles "froze out" of the radiation field, becoming permanent features of the Universe. This is why the bosons emerged in a specific order: the hypothetical graviton first (Planck epoch), then gluons at the GUT epoch around 10⁻³⁵ seconds, and finally the photons and W/Z bosons at 10⁻¹² seconds.
+      </p>
+      <p>
+        Fermions followed, stabilising in order of mass. Within the first microsecond, the Universe was a <strong>quark-gluon plasma</strong>. As the temperature fell below 10¹³ Kelvin (≈1 microsecond), quarks bound permanently into hadrons — protons and neutrons. By 1 second, neutrinos decoupled and began their journey as leftover radiation. By 1 minute and 10⁹ Kelvin, electrons froze out, ending the primary matter-creation phase.
+      </p>
+      <p>
+        The persistence of this material world is attributed to a subtle yet critical imbalance between matter and antimatter. For every billion particles of antimatter, a billion-and-one particles of ordinary matter were produced. As the cosmos cooled, matter and antimatter annihilated in a near-total erasure, transforming their mass back into the radiant energy that permeates the modern sky as the Cosmic Microwave Background. The entire observable Universe — every galaxy, star, and human being — is constructed from the minuscule <strong>one-in-a-billion</strong> residue of survivors.
       </p>
 
-      <p data-fade>
-        However, as the Universe expanded and cooled, the energy density
-        dropped below the specific <strong>threshold temperatures</strong>{" "}
-        required to sustain the production of massive particles. Various
-        types of particles &ldquo;froze out&rdquo; of the radiation field,
-        becoming permanent features of the Universe. This is why the
-        bosons emerged in a specific order: the hypothetical graviton first
-        (Planck epoch), then gluons at the GUT epoch around $10^&#123;-35&#125;$ seconds,
-        and finally the photons and W/Z bosons at $10^&#123;-12&#125;$ seconds.
-      </p>
+      <hr />
 
-      <p data-fade>
-        Fermions followed, stabilising in order of mass. Within the first
-        microsecond, the Universe was a <strong>quark-gluon plasma</strong>.
-        As the temperature fell below $10^&#123;13&#125;$ Kelvin (≈1 microsecond), quarks
-        bound permanently into hadrons — protons and neutrons. By 1 second,
-        neutrinos decoupled and began their journey as leftover radiation.
-        By 1 minute and $10^&#123;9&#125;$ Kelvin, electrons froze out, ending the primary
-        matter-creation phase.
-      </p>
-
-      <p data-fade>
-        The persistence of this material world is attributed to a subtle yet
-        critical imbalance between matter and antimatter. For every billion
-        particles of antimatter, a billion-and-one particles of ordinary
-        matter were produced. As the cosmos cooled, matter and antimatter
-        annihilated in a near-total erasure, transforming their mass back
-        into the radiant energy that permeates the modern sky as the Cosmic
-        Microwave Background. The entire observable Universe — every galaxy,
-        star, and human being — is constructed from the minuscule{" "}
-        <strong>one-in-a-billion</strong> residue of survivors.
-      </p>
-
-      <div data-fade class="my-16 rule"></div>
-
-      <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
-        Seventeen particles, three generations, one Higgs field — and a
-        rounding error from cosmic accounting that lets a Universe of
-        matter exist at all.
-      </p>
+      <p><em>Seventeen particles, three generations, one Higgs field — and a rounding error from cosmic accounting that lets a Universe of matter exist at all.</em></p>
     </div>
   </article>
 

@@ -29,7 +29,7 @@ const EVENTS: Event[] = [
     shortLabel: "Planck / Gravity",
     phase: "Superforce → Three forces",
     blurb:
-      "All four forces unified in a single Superforce. The Universe is $10^{-35}$ m across — the Planck length. At $10^{-43}$ seconds gravity becomes the first force to separate, leaving the strong, weak, and electromagnetic forces still combined.",
+      "All four forces unified in a single Superforce. The Universe is 10⁻³⁵ m across — the Planck length. At 10⁻⁴³ seconds gravity becomes the first force to separate, leaving the strong, weak, and electromagnetic forces still combined.",
     hue: "#a78bfa",
   },
   {
@@ -40,7 +40,7 @@ const EVENTS: Event[] = [
     shortLabel: "Inflation",
     phase: "Exponential Growth",
     blurb:
-      "Strong nuclear force splits off. The release of energy drives a sudden exponential expansion — space itself grows by $\\geq 10^{26}$ in a fraction of a second.",
+      "Strong nuclear force splits off. The release of energy drives a sudden exponential expansion — space itself grows by ≥ 10²⁶ in a fraction of a second.",
     hue: "#22d3ee",
   },
   {
@@ -161,19 +161,9 @@ export default function PrimordialTimeline() {
     : EVENTS.find((e) => e.id === selId)!;
 
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure 1.0.1 · The First 380,000 Years
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">
-            interactive
-          </div>
-        </div>
-
-        <div className="relative w-full overflow-hidden rounded-md">
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
           <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
             {/* Axis */}
             <line
@@ -350,9 +340,9 @@ export default function PrimordialTimeline() {
           </div>
         </div>
       </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. 1.0.1</span>
-        <span className="mx-2 text-white/35">/</span>
+      <figcaption>
+        <span className="figure-tag">Fig. 1.0.a</span>
+        <span className="figure-title"> — The First 380,000 Years.</span>{" "}
         The Particle Age is a fifteen-orders-of-magnitude story compressed into 380,000 years.
         Click any event to read what's happening; or drag the scrubber to feel the Universe cool.
       </figcaption>

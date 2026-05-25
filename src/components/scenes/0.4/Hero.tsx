@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview card. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -60,12 +63,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/75"
         >
-          Light is a wave, a particle, and a messenger across deep time.
-          Telescopes are the tuned ears that catch its different voices —
-          from the lowest radio rumble of the Big Bang to the gamma scream of
-          a dying star.
+          {tease}
         </p>
 
         <div

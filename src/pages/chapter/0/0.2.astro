@@ -1,13 +1,13 @@
 ---
 import ChapterLayout from "../../../layouts/ChapterLayout.astro";
 import Hero from "../../../components/scenes/0.2/Hero";
+import PrevNext from "../../../components/scenes/0.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import {
   TugOfWarPanel,
   EntropyIslandPanel,
   EnergyRateDensityPanel,
 } from "../../../components/scenes/0.2/figures";
-import FigureFrame from "../../../components/shared/FigureFrame.astro";
-import PrevNext from "../../../components/scenes/0.2/PrevNext.astro";
 ---
 
 <ChapterLayout
@@ -16,236 +16,68 @@ import PrevNext from "../../../components/scenes/0.2/PrevNext.astro";
   activeId="0.2"
   current="/chapter/0/0.2"
 >
-  <Hero client:load />
+  <Hero
+    tease="How does anything complex get built in a universe that only cools and expands? Cosmic evolution gives the answer: a long tug-of-war between expansion and gravity, with islands of local order forming inside an overall growth of entropy. Inflation, recombination, gravitational clumping, stellar nucleosynthesis, biological complexity — each step adds new structure. Walk a nine-point complexity ladder calibrated in erg per gram per second, from Big Bang to human brain."
+    client:load
+  />
 
-  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
-    <div class="max-w-[68ch] mx-auto prose-cosmic">
-      {/* ── §1 Big Bang & Inflation ─────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="big-bang">
-        <div
-          data-fade
-          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-        >
-          <span class="block w-6 h-px bg-plasma/50"></span> part one
-        </div>
-        <h2
-          data-fade
-          style="--delay: 80ms"
-          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
-        >
-          <span
-            class="font-mono text-plasma/55 mr-4 align-baseline"
-            style="font-size: 0.42em; letter-spacing: 0.16em;"
-            >1.</span
-          >
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
-            >The First Instant</span
-          >
-        </h2>
-      </header>
-
-      <p data-fade class="dropcap">
-        The epic narrative of the cosmos began approximately 14 billion years
-        ago with the <strong>Big Bang</strong>, a singularity where all space,
-        time, energy and matter (STEM) were compressed into a point of infinite
-        density. This event was not an explosion of matter into pre-existing
-        empty space, but rather a rapid expansion of space itself, carrying
-        matter and energy along with it. In the first fraction of a second,
-        the Universe underwent <em>inflation</em>, expanding exponentially
-        faster than the speed of light, which smoothed out primordial
-        irregularities and established the vast scale of the cosmos.
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="big-bang">The First Instant</h2>
+      <p>
+        The epic narrative of the cosmos began approximately 14 billion years ago with the <strong>Big Bang</strong>, a singularity where all space, time, energy and matter (STEM) were compressed into a point of infinite density. This event was not an explosion of matter into pre-existing empty space, but rather a rapid expansion of space itself, carrying matter and energy along with it. In the first fraction of a second, the Universe underwent <em>inflation</em>, expanding exponentially faster than the speed of light, which smoothed out primordial irregularities and established the vast scale of the cosmos.
+      </p>
+      <p>
+        As the Universe expanded and cooled, it transitioned from a chaotic <strong>Radiation Era</strong>, where intense energy prevented structure, to a <strong>Matter Era</strong> about 50,000 years later, finally allowing the first atomic nuclei to capture electrons and form neutral atoms.
       </p>
 
-      <p data-fade>
-        As the Universe expanded and cooled, it transitioned from a chaotic
-        <strong>Radiation Era</strong>, where intense energy prevented
-        structure, to a <strong>Matter Era</strong> about 50,000 years later,
-        finally allowing the first atomic nuclei to capture electrons and form
-        neutral atoms.
+      <h2 id="tug-of-war">Expansion vs Gravity</h2>
+      <p>
+        As this primordial fog cleared, the mechanics of the Universe became defined by a cosmic tug-of-war. The ongoing expansion, described by <strong>Hubble's Law</strong>, drives galaxies apart at speeds proportional to their distances, stretching the very fabric of space. Simultaneously, gravity works locally to pull matter together, acting on slight variations in the density of the early Universe.
       </p>
-
-      {/* ── §2 Cosmic Tug-of-War ────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="tug-of-war">
-        <div
-          data-fade
-          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-        >
-          <span class="block w-6 h-px bg-plasma/50"></span> part two
-        </div>
-        <h2
-          data-fade
-          style="--delay: 80ms"
-          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
-        >
-          <span
-            class="font-mono text-plasma/55 mr-4 align-baseline"
-            style="font-size: 0.42em; letter-spacing: 0.16em;"
-            >2.</span
-          >
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
-            >Expansion <span class="italic font-light text-white/70">vs</span> Gravity</span
-          >
-        </h2>
-      </header>
-
-      <p data-fade>
-        As this primordial fog cleared, the mechanics of the Universe became
-        defined by a cosmic tug-of-war. The ongoing expansion, described by
-        <strong>Hubble's Law</strong>, drives galaxies apart at speeds
-        proportional to their distances, stretching the very fabric of space.
-        Simultaneously, gravity works locally to pull matter together, acting
-        on slight variations in the density of the early Universe.
-      </p>
-
-      <p data-fade>
-        Gravity magnified these tiny &ldquo;wrinkles&rdquo; into massive clouds
-        of hydrogen and helium, which eventually collapsed under their own
-        weight to ignite the first stars and galaxies. This competition between
-        the expansive energy of the Big Bang and the attractive force of mass
-        set the stage for the structure of the <strong>observable Universe</strong>.
+      <p>
+        Gravity magnified these tiny "wrinkles" into massive clouds of hydrogen and helium, which eventually collapsed under their own weight to ignite the first stars and galaxies. This competition between the expansive energy of the Big Bang and the attractive force of mass set the stage for the structure of the <strong>observable Universe</strong>.
       </p>
 
       <FigureFrame label="Gravity vs expansion tug of war">
         <TugOfWarPanel client:visible />
       </FigureFrame>
 
-      {/* ── §3 Entropy paradox ─────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="entropy">
-        <div
-          data-fade
-          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-        >
-          <span class="block w-6 h-px bg-plasma/50"></span> part three
-        </div>
-        <h2
-          data-fade
-          style="--delay: 80ms"
-          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
-        >
-          <span
-            class="font-mono text-plasma/55 mr-4 align-baseline"
-            style="font-size: 0.42em; letter-spacing: 0.16em;"
-            >3.</span
-          >
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
-            >Islands of Order</span
-          >
-        </h2>
-      </header>
-
-      <p data-fade>
-        The evolution of these structures is strictly governed by the laws of
-        thermodynamics — particularly the Second Law, which dictates that
-        <strong>entropy</strong>, or disorder, must inevitably increase. This
-        creates a profound paradox: how can complex, ordered structures like
-        stars, planets, and life emerge in a Universe destined for disorder?
+      <h2 id="entropy">Islands of Order</h2>
+      <p>
+        The evolution of these structures is strictly governed by the laws of thermodynamics — particularly the Second Law, which dictates that <strong>entropy</strong>, or disorder, must inevitably increase. This creates a profound paradox: how can complex, ordered structures like stars, planets, and life emerge in a Universe destined for disorder?
       </p>
-
-      <p data-fade>
-        The answer lies in the fact that gravity and energy flows allow for the
-        creation of local &ldquo;islands of structure&rdquo; at the expense of
-        greater disorder in the surrounding environment. The expanding Universe
-        effectively acts as a <em>trash can</em> for entropy, allowing local
-        complexity to rise while the total entropy of the cosmos increases
-        globally.
+      <p>
+        The answer lies in the fact that gravity and energy flows allow for the creation of local "islands of structure" at the expense of greater disorder in the surrounding environment. The expanding Universe effectively acts as a <em>trash can</em> for entropy, allowing local complexity to rise while the total entropy of the cosmos increases globally.
       </p>
 
       <FigureFrame label="Entropy island">
         <EntropyIslandPanel client:visible />
       </FigureFrame>
 
-      {/* ── §4 Energy Rate Density ─────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="complexity">
-        <div
-          data-fade
-          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-        >
-          <span class="block w-6 h-px bg-plasma/50"></span> part four
-        </div>
-        <h2
-          data-fade
-          style="--delay: 80ms"
-          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
-        >
-          <span
-            class="font-mono text-plasma/55 mr-4 align-baseline"
-            style="font-size: 0.42em; letter-spacing: 0.16em;"
-            >4.</span
-          >
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
-            >The Complexity Ladder</span
-          >
-        </h2>
-      </header>
-
-      <p data-fade>
-        This localized order allows complexity to arise through the flow of
-        energy, a process quantified by &ldquo;<strong>energy rate density</strong>&rdquo;
-        — the amount of energy passing through a system per unit of mass over
-        time. As the Universe evolved through the Galactic, Stellar, and
-        Biological Ages, the density of energy flow in complex systems
-        increased dramatically.
+      <h2 id="complexity">The Complexity Ladder</h2>
+      <p>
+        This localized order allows complexity to arise through the flow of energy, a process quantified by "<strong>energy rate density</strong>" — the amount of energy passing through a system per unit of mass over time. As the Universe evolved through the Galactic, Stellar, and Biological Ages, the density of energy flow in complex systems increased dramatically.
       </p>
-
-      <p data-fade>
-        Surprisingly, while stars possess immense total energy, their energy
-        density is lower than that of living organisms, and modern human
-        society generates the highest energy rate density of all known
-        systems. This rise in complexity is not guaranteed; it occurs only
-        within &ldquo;<strong>Goldilocks circumstances</strong>,&rdquo; where energy
-        flows and environmental conditions are perfectly balanced to sustain
-        intricate structures against the relentless tide of entropy.
+      <p>
+        Surprisingly, while stars possess immense total energy, their energy density is lower than that of living organisms, and modern human society generates the highest energy rate density of all known systems. This rise in complexity is not guaranteed; it occurs only within "<strong>Goldilocks circumstances</strong>," where energy flows and environmental conditions are perfectly balanced to sustain intricate structures against the relentless tide of entropy.
       </p>
 
       <FigureFrame label="Energy rate density">
         <EnergyRateDensityPanel client:visible />
       </FigureFrame>
 
-      {/* ── §5 Big Freeze ──────────────────────────────────────────── */}
-      <header class="mt-24 mb-10" id="freeze">
-        <div
-          data-fade
-          class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-        >
-          <span class="block w-6 h-px bg-plasma/50"></span> part five
-        </div>
-        <h2
-          data-fade
-          style="--delay: 80ms"
-          class="font-serif font-medium text-white tracking-tight leading-[1.05]"
-        >
-          <span
-            class="font-mono text-plasma/55 mr-4 align-baseline"
-            style="font-size: 0.42em; letter-spacing: 0.16em;"
-            >5.</span
-          >
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);"
-            >The Long Cold</span
-          >
-        </h2>
-      </header>
-
-      <p data-fade>
-        Despite this rise in complexity, current observations suggest the
-        Universe will likely expand forever rather than recollapse. The
-        discovery of <strong>dark energy</strong>, a mysterious repulsive force
-        that constitutes the majority of the Universe's energy density,
-        indicates that cosmic expansion is accelerating.
+      <h2 id="freeze">The Long Cold</h2>
+      <p>
+        Despite this rise in complexity, current observations suggest the Universe will likely expand forever rather than recollapse. The discovery of <strong>dark energy</strong>, a mysterious repulsive force that constitutes the majority of the Universe's energy density, indicates that cosmic expansion is accelerating.
+      </p>
+      <p>
+        As galaxies drift farther apart and stars eventually exhaust their nuclear fuel, the Universe is expected to become cold, dark, and simple, eventually reaching a state of maximum entropy. In this probable future, known as the "<strong>Big Freeze</strong>," energy gradients will flatten out, rendering the formation of any further complexity impossible, bringing the grand narrative to a silent, frozen conclusion.
       </p>
 
-      <p data-fade>
-        As galaxies drift farther apart and stars eventually exhaust their
-        nuclear fuel, the Universe is expected to become cold, dark, and
-        simple, eventually reaching a state of maximum entropy. In this
-        probable future, known as the &ldquo;<strong>Big Freeze</strong>,&rdquo;
-        energy gradients will flatten out, rendering the formation of any
-        further complexity impossible, bringing the grand narrative to a
-        silent, frozen conclusion.
-      </p>
+      <div class="my-16 rule"></div>
 
-      <div data-fade class="my-16 rule"></div>
-
-      <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
+      <p class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
         The Universe is not a closed book of disorder. It is a story with a
         clear arrow — from heat to cold, from simple to elaborate, from a hot
         moment of being to a long, dim afterglow. We live in its sharpest

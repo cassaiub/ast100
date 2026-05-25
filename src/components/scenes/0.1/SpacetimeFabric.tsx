@@ -203,7 +203,7 @@ export default function SpacetimeFabric() {
   }
 
   return (
-    <div className="relative rounded-xl overflow-hidden border border-white/[0.06] bg-black/40">
+    <div className="fig-viz relative rounded-xl overflow-hidden border border-white/[0.06] bg-black/40">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}

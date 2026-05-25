@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 
 /* Hero for 0.2 Cosmic Evolution — ghost "0.2" + a slow expanding ring
-   suggesting cosmic expansion. */
-export default function Hero() {
+   suggesting cosmic expansion. The `tease` paragraph below the H1 is
+   the single source-of-truth lesson description, passed in from the
+   page and mirrored on the chapter overview card. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -59,11 +61,9 @@ export default function Hero() {
         <p
           data-fade
           style={{ ["--delay" as string]: "420ms" }}
-          className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]"
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/75"
         >
-          A Universe that begins as a singular instant of heat and pressure, then
-          spends fourteen billion years cooling, expanding, and quietly building
-          islands of order out of an ocean of disorder.
+          {tease}
         </p>
 
         <div

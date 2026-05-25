@@ -1,0 +1,16 @@
+<!DOCTYPE html><html><head><title>scroll tester</title>
+<style>html,body { margin:0; padding:0; height:100%; background:#000; }
+iframe { border:0; width:100vw; height:100vh; display:block; }</style>
+</head><body>
+<iframe id="ifr" src="/courses/ast100/chapter/0/0.3"></iframe>
+<script>
+const ifr = document.getElementById('ifr');
+const target = parseInt(new URL(location.href).searchParams.get('scroll') || '0', 10);
+ifr.onload = () => {
+  setTimeout(() => {
+    if (target > 0) {
+      ifr.contentWindow.scrollTo({top: target, behavior: 'auto'});
+    }
+  }, 200);
+};
+</script></body></html>

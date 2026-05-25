@@ -1,12 +1,12 @@
 ---
 import ChapterLayout from "../../../layouts/ChapterLayout.astro";
 import Hero from "../../../components/scenes/1.3/Hero";
+import PrevNext from "../../../components/scenes/1.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import {
   NucleosynthesisTimelinePanel,
   PrimordialAbundancePanel,
 } from "../../../components/scenes/1.3/figures";
-import FigureFrame from "../../../components/shared/FigureFrame.astro";
-import PrevNext from "../../../components/scenes/1.3/PrevNext.astro";
 ---
 
 <ChapterLayout
@@ -16,132 +16,54 @@ import PrevNext from "../../../components/scenes/1.3/PrevNext.astro";
   chapter={1}
   current="/chapter/1/1.3"
 >
-  <Hero client:load />
+  <Hero
+    tease="Fifteen minutes of cosmic alchemy. Microseconds after the Big Bang, quarks confined into protons and neutrons; for several long minutes radiation shattered every deuterium nucleus that tried to form. Once temperatures fell below a billion kelvin the bottleneck broke open, and a furious chain of fusion locked almost every available neutron into helium-4. The Universe then expanded too fast to fuse anything heavier — freezing the recipe forever at roughly 75% hydrogen, 25% helium, plus traces of deuterium and lithium."
+    client:load
+  />
 
-  <article class="relative max-w-[1100px] mx-auto px-6 md:px-10 pb-28">
-    <div class="max-w-[68ch] mx-auto prose-cosmic">
-      <header class="mt-24 mb-10" id="quark-soup">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part one
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">1.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Quark Soup</span>
-        </h2>
-      </header>
-
-      <p data-fade class="dropcap">
-        Immediately after the Big Bang, the Universe was a blazing furnace
-        of energy where temperatures were too extreme for even simple atoms
-        to survive. Within microseconds, the cosmos cooled enough for
-        fundamental quarks to combine into <strong>protons</strong> (made
-        of two &ldquo;up&rdquo; and one &ldquo;down&rdquo; quark) and{" "}
-        <strong>neutrons</strong> (one up and two downs).
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="quark-soup">Quark Soup</h2>
+      <p>
+        Immediately after the Big Bang, the Universe was a blazing furnace of energy where temperatures were too extreme for even simple atoms to survive. Within microseconds, the cosmos cooled enough for fundamental quarks to combine into <strong>protons</strong> (made of two "up" and one "down" quark) and <strong>neutrons</strong> (one up and two downs).
       </p>
 
-      <header class="mt-24 mb-10" id="bottleneck">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part two
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">2.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">The Deuterium Bottleneck</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        The path to building heavier elements was blocked by the{" "}
-        <strong>&ldquo;deuterium bottleneck&rdquo;</strong>. For several
-        minutes, intense radiation acted like a cosmic hammer, instantly
-        shattering deuterium — a &ldquo;heavy&rdquo; hydrogen isotope made
-        of one proton and one neutron — as soon as it formed. This fragile
-        stepping stone was vital for cosmic evolution but could not endure
-        the heat until the temperature fell below <strong>1 billion
-        Kelvin</strong>. Roughly two minutes after the start of time, the
-        radiation finally eased, allowing deuterium to survive and
-        triggering the next stage of creation.
+      <h2 id="bottleneck">The Deuterium Bottleneck</h2>
+      <p>
+        The path to building heavier elements was blocked by the <strong>"deuterium bottleneck"</strong>. For several minutes, intense radiation acted like a cosmic hammer, instantly shattering deuterium — a "heavy" hydrogen isotope made of one proton and one neutron — as soon as it formed. This fragile stepping stone was vital for cosmic evolution but could not endure the heat until the temperature fell below <strong>1 billion Kelvin</strong>. Roughly two minutes after the start of time, the radiation finally eased, allowing deuterium to survive and triggering the next stage of creation.
       </p>
 
       <FigureFrame label="Nucleosynthesis timeline">
         <NucleosynthesisTimelinePanel client:visible />
       </FigureFrame>
 
-      <header class="mt-24 mb-10" id="alchemy">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part three
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">3.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Cosmic Alchemy</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        Once this bottleneck was passed, a rapid and spectacular chain of
-        primordial nucleosynthesis began, driven by a delicate tug-of-war
-        between the fundamental forces. Initially, the electromagnetic force
-        acted as a barrier, using its positive charge to repel protons from
-        one another. However, the immense thermal energy of the early
-        Universe provided these particles with enough speed to crash through
-        that resistance and enter the tiny, powerful reach of the strong
-        nuclear force, which acts like cosmic glue.
+      <h2 id="alchemy">Cosmic Alchemy</h2>
+      <p>
+        Once this bottleneck was passed, a rapid and spectacular chain of primordial nucleosynthesis began, driven by a delicate tug-of-war between the fundamental forces. Initially, the electromagnetic force acted as a barrier, using its positive charge to repel protons from one another. However, the immense thermal energy of the early Universe provided these particles with enough speed to crash through that resistance and enter the tiny, powerful reach of the strong nuclear force, which acts like cosmic glue.
+      </p>
+      <p>
+        Deuterium nuclei quickly captured available protons to transform into <strong>Helium-3</strong> (two protons, one neutron). These then swept up free neutrons — which were otherwise unstable and decaying due to the weak nuclear force — to create the incredibly stable <strong>Helium-4</strong> nucleus, also known as an alpha particle. This burst of cosmic alchemy was so efficient that it locked almost all available neutrons into these sturdy helium structures before they had a chance to disappear.
       </p>
 
-      <p data-fade>
-        Deuterium nuclei quickly captured available protons to transform
-        into <strong>Helium-3</strong> (two protons, one neutron). These then
-        swept up free neutrons — which were otherwise unstable and decaying
-        due to the weak nuclear force — to create the incredibly stable{" "}
-        <strong>Helium-4</strong> nucleus, also known as an alpha particle.
-        This burst of cosmic alchemy was so efficient that it locked almost
-        all available neutrons into these sturdy helium structures before
-        they had a chance to disappear.
+      <h2 id="abundance">Locked at 75% & 25%</h2>
+      <p>
+        This grand assembly line was extraordinarily brief, lasting only until the Universe was about <strong>15 minutes old</strong>. As the cosmos expanded at a staggering rate, its density and temperature plummeted below the levels required to fuse helium into more complex elements like carbon or oxygen. This rapid expansion effectively froze the chemical makeup of the early Universe, leaving it with a simple but vital composition: roughly <strong>75% hydrogen</strong> and <strong>25% helium</strong>.
+      </p>
+      <p>
+        If the expansion had been any slower, the Universe might have fused all its material into iron — the most stable but inert element — resulting in a stagnant and lifeless cosmos. Instead, by stopping when it did, the Universe preserved the vast reserves of hydrogen fuel that would eventually ignite the very first stars. Today, the fact that we still observe this precise 25% helium abundance and the presence of deuterium stands as one of the most powerful and undeniable pillars of evidence for the Big Bang.
       </p>
 
-      <header class="mt-24 mb-10" id="abundance">
-        <div data-fade class="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3">
-          <span class="block w-6 h-px bg-plasma/50"></span> part four
-        </div>
-        <h2 data-fade style="--delay: 80ms" class="font-serif font-medium text-white tracking-tight leading-[1.05]">
-          <span class="font-mono text-plasma/55 mr-4 align-baseline" style="font-size: 0.42em; letter-spacing: 0.16em;">4.</span>
-          <span style="font-size: clamp(2rem, 4.4vw, 3.6rem);">Locked at 75% &amp; 25%</span>
-        </h2>
-      </header>
-
-      <p data-fade>
-        This grand assembly line was extraordinarily brief, lasting only
-        until the Universe was about <strong>15 minutes old</strong>. As the
-        cosmos expanded at a staggering rate, its density and temperature
-        plummeted below the levels required to fuse helium into more complex
-        elements like carbon or oxygen. This rapid expansion effectively
-        froze the chemical makeup of the early Universe, leaving it with a
-        simple but vital composition: roughly <strong>75% hydrogen</strong>{" "}
-        and <strong>25% helium</strong>.
-      </p>
-
-      <p data-fade>
-        If the expansion had been any slower, the Universe might have fused
-        all its material into iron — the most stable but inert element —
-        resulting in a stagnant and lifeless cosmos. Instead, by stopping
-        when it did, the Universe preserved the vast reserves of hydrogen
-        fuel that would eventually ignite the very first stars. Today, the
-        fact that we still observe this precise 25% helium abundance and the
-        presence of deuterium stands as one of the most powerful and
-        undeniable pillars of evidence for the Big Bang.
-      </p>
-
-      <FigureFrame label="Primordial abundance">
+      <FigureFrame label="Primordial abundance" variant="narrow">
         <PrimordialAbundancePanel client:visible />
       </FigureFrame>
 
-      <div data-fade class="my-16 rule"></div>
+      <hr />
 
-      <p data-fade class="text-[16px] text-white/65 italic leading-[1.7] max-w-[60ch]">
-        Fifteen minutes of work, fourteen billion years of consequence. Every
-        atom heavier than helium that exists in your body was made later —
-        inside stars — out of the fuel reserved by this brief, perfect
-        window of cosmic alchemy.
-      </p>
+      <blockquote>
+        <p>
+          Fifteen minutes of work, fourteen billion years of consequence. Every atom heavier than helium that exists in your body was made later — inside stars — out of the fuel reserved by this brief, perfect window of cosmic alchemy.
+        </p>
+      </blockquote>
     </div>
   </article>
 

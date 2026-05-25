@@ -2,20 +2,11 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: string; caption: ReactNode; children: ReactNode }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">interactive</div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
@@ -86,11 +77,11 @@ export function StandardModelPanel() {
   const cur = PARTICLES.find((p) => p.id === sel)!;
   return (
     <FigurePanel
-      idx="1.2.1"
+      idx="1.2.a"
       kicker="The Standard Model · Bricks & Mortar"
       caption="Seventeen particles that build the entire physical Universe. Click any one to inspect its mass, charge, and role. Quarks and leptons are the 'bricks'; gauge bosons are the 'mortar' that holds them together; the Higgs is what gives the bricks their weight."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Column headers — generation labels */}
           {[0, 1, 2].map((c) => (
@@ -146,13 +137,24 @@ export function StandardModelPanel() {
             LEPTONS
           </text>
 
-          {/* Particle cells */}
-          {PARTICLES.map((p) => {
+          {/* Particle cells. Each cell carries `data-shortcut="N"` so the
+             FigureFrame global navigator treats this as a pill set —
+             ←/→ walks through the 17 particles in document order, and
+             `aria-pressed` flags the selected one. */}
+          {PARTICLES.map((p, i) => {
             const x = gridOriginX + p.col * cellW;
             const y = gridOriginY + p.row * cellH;
             const isSel = p.id === sel;
             return (
-              <g key={p.id} onClick={() => setSel(p.id)} style={{ cursor: "pointer" }}>
+              <g
+                key={p.id}
+                onClick={() => setSel(p.id)}
+                style={{ cursor: "pointer" }}
+                data-shortcut={String(i + 1)}
+                aria-pressed={isSel}
+                role="button"
+                aria-label={`Inspect ${p.name}`}
+              >
                 <rect
                   x={x}
                   y={y}
@@ -210,7 +212,7 @@ export function StandardModelPanel() {
           <div className="font-mono text-[10px] mt-3 text-white/70">m = {cur.mass}</div>
           <div className="font-mono text-[10px] text-white/70">q = {cur.charge}</div>
         </div>
-        <div className="text-[13px] text-white/85 leading-[1.6] font-sans">
+        <div className="text-[13px] text-white/85 leading-[1.6] font-sans min-h-[6.8em]">
           <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-plasma mb-2">{cur.name.toUpperCase()}</div>
           {cur.role}
         </div>
@@ -258,11 +260,11 @@ export function AntiparticleAnnihilationPanel() {
 
   return (
     <FigurePanel
-      idx="1.2.2"
+      idx="1.2.b"
       kicker="Annihilation · One in a Billion Survived"
       caption="Matter and antimatter annihilate on contact — particle plus antiparticle = pure energy. Play the animation to watch an electron meet a positron and become two gamma photons. Then look at the cosmic asymmetry: a billion-and-one to a billion. The Universe you live in is built from the leftover survivors."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Centre marker */}
           <circle
@@ -339,8 +341,33 @@ export function AntiparticleAnnihilationPanel() {
         </button>
         <div className="text-[12px] text-white/65 font-sans">
           <span className="font-mono text-plasma tracking-[0.14em]">e⁻ + e⁺ → γ + γ</span>{" "}
-          · mass converted directly into two gamma photons of equal energy.
+          · mass converted directly into two gamma photons of equal energy.{" "}
+          <span className="font-mono text-white/45">← / → replays</span>
         </div>
+        {/* Hidden keyboard hooks: ←/→ keys (and wheel in fullscreen)
+           replay the annihilation. FigureFrame's global navigator
+           routes ArrowLeft/ArrowRight to elements carrying these
+           data-shortcuts before falling back to sliders or pills. */}
+        <button
+          type="button"
+          aria-hidden="true"
+          tabIndex={-1}
+          data-shortcut="ArrowLeft"
+          onClick={() => { setPhase(1); setPlayKey((k) => k + 1); }}
+          style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0 }}
+        >
+          replay
+        </button>
+        <button
+          type="button"
+          aria-hidden="true"
+          tabIndex={-1}
+          data-shortcut="ArrowRight"
+          onClick={() => { setPhase(1); setPlayKey((k) => k + 1); }}
+          style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0 }}
+        >
+          replay
+        </button>
       </div>
 
       <div

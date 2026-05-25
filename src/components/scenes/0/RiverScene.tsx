@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useState } from "react";
 import {
   RIVER_SEGMENTS,
   RIVER_WAYPOINTS,
@@ -90,17 +86,19 @@ function RiverMap({
   /* Region label sizing — readable at both inline and fullscreen sizes. */
   const labelSize = { lg: 15, md: 12, sm: 10 };
 
+  /* NOTE: this used to carry the `fig-viz` class, but the wrapper around
+     this component (RiverFigure) now owns that role so the figure-stub
+     has exactly one `.fig-viz` child for the FigureFrame fullscreen layout. */
   return (
     <div
-      className="relative w-full overflow-hidden rounded-md"
+      className="relative w-full h-full overflow-hidden rounded-md"
       style={{
-        aspectRatio: `${MAP_W} / ${MAP_H}`,
         border: "1px solid rgb(var(--c-text-rgb) / 0.1)",
         background: "rgb(var(--c-bg-rgb) / 0.5)",
       }}
       aria-label="Brahmaputra river system mapped to the seven cosmic ages — click any numbered node to jump to that age"
     >
-      <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} className="block w-full h-auto">
+      <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} className="block w-full h-full" preserveAspectRatio="xMidYMid meet">
         <defs>
           {/* Land gradient — slightly warmer/yellow tint to suggest dry plains */}
           <linearGradient id="land-grad" x1="0" y1="0" x2="0" y2="1">
@@ -477,44 +475,6 @@ function RiverMap({
   );
 }
 
-function RiverChip({
-  seg,
-  onOpen,
-}: {
-  seg: RiverSegment;
-  onOpen: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="river-chip items-center gap-2.5 pointer-events-auto pl-3 pr-3.5 py-2 rounded-full border border-plasma/35 bg-[rgb(var(--c-bg-rgb)/0.78)] backdrop-blur shadow-[0_8px_24px_-12px_rgb(var(--c-accent-rgb)/0.4)] active:scale-[0.98] transition-transform"
-      aria-label={`Open fullscreen river map. Now flowing: ${seg.name}, ${seg.age}.`}
-    >
-      <span className="relative flex w-2 h-2">
-        <span
-          className="absolute inset-0 rounded-full bg-plasma/60 animate-ping"
-          style={{ animationDuration: "2.4s" }}
-        />
-        <span className="relative w-2 h-2 rounded-full bg-plasma shadow-[0_0_8px_#22d3ee]" />
-      </span>
-      <span className="flex flex-col items-start leading-tight text-left">
-        <span className="font-mono text-[8.5px] tracking-[0.28em] uppercase text-plasma/85">
-          now flowing
-        </span>
-        <span className="font-sans text-[11px] text-white/85">
-          <span className="text-white">{seg.name}</span>
-          <span className="text-white/35 mx-1.5">·</span>
-          <span className="text-white/55">{seg.age}</span>
-        </span>
-      </span>
-      <span className="ml-1 font-mono text-[9px] tracking-[0.22em] uppercase text-plasma/70">
-        ⛶ map
-      </span>
-    </button>
-  );
-}
-
 function AgeDescription({
   seg,
   idx,
@@ -531,36 +491,37 @@ function AgeDescription({
   const atStart = idx === 0;
   const atEnd = idx === RIVER_SEGMENTS.length - 1;
   return (
-    <div className="figure-stub rounded-md p-5 md:p-7">
-      <div className="font-mono text-[10px] tracking-[0.28em] uppercase text-plasma/80 mb-4 flex items-center gap-2">
+    <div className="age-description rounded-md p-4 md:p-5 border border-plasma/25 bg-[rgb(var(--c-bg-rgb)/0.86)] backdrop-blur shadow-[0_18px_48px_-22px_rgb(0_0_0_/_0.6)]">
+      <div className="font-mono text-[10px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-2">
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-plasma shadow-[0_0_8px_#22d3ee]" />
         now flowing · {String(idx + 1).padStart(2, "0")} of 07
       </div>
       <div className="flex items-baseline gap-3 flex-wrap mb-1.5">
         <div
           className="font-serif text-white/95 leading-tight"
-          style={{ fontSize: "clamp(1.8rem, 3vw, 2.2rem)" }}
+          style={{ fontSize: "clamp(1.4rem, 2.4vw, 1.8rem)" }}
         >
           {seg.name}
         </div>
-        <div className="font-sans text-[14px] text-white/70">{seg.age}</div>
+        <div className="font-sans text-[13px] text-white/70">{seg.age}</div>
       </div>
-      <div className="flex items-center gap-3 flex-wrap font-mono text-[10px] tracking-[0.2em] uppercase text-white/45 pb-4 border-b border-white/[0.08]">
+      <div className="flex items-center gap-3 flex-wrap font-mono text-[10px] tracking-[0.2em] uppercase text-white/45 pb-3 border-b border-white/[0.08]">
         <span>{seg.country}</span>
         <span className="text-white/25">·</span>
         <span className="text-plasma/85 tracking-[0.14em] normal-case">{seg.range}</span>
       </div>
       <p
         key={idx}
-        className="mt-5 text-white/80 leading-[1.7] text-[15.5px] font-sans age-fade"
+        className="mt-4 text-white/80 leading-[1.65] text-[14px] font-sans age-fade"
       >
         {description}
       </p>
-      <div className="mt-6 flex items-center justify-between gap-3">
+      <div className="mt-5 flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onPrev}
           disabled={atStart}
+          data-shortcut="ArrowLeft"
           className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/85 hover:text-plasma disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous age"
         >
@@ -573,6 +534,7 @@ function AgeDescription({
           type="button"
           onClick={onNext}
           disabled={atEnd}
+          data-shortcut="ArrowRight"
           className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/85 hover:text-plasma disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           aria-label="Next age"
         >
@@ -583,57 +545,18 @@ function AgeDescription({
   );
 }
 
-/* Aspect ratio of the map viewBox, captured once so fullscreen sizing
-   can preserve it via CSS min/calc without recomputing per render. */
-const MAP_ASPECT = MAP_W / MAP_H;
+/* The figure-shaped React export. Renders:
+     <figure.figure-stub>
+       <div.fig-viz>              ← the map + overlaid AgeDescription
+       <figcaption>               ← Fig. 0.0.a — A river of time. …
 
-function FullscreenButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="absolute top-3 right-3 z-10 pointer-events-auto flex items-center gap-2 rounded-full pl-3 pr-3.5 py-1.5 font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/85 hover:text-plasma transition-colors bg-[rgb(var(--c-bg-rgb)/0.78)] backdrop-blur border border-plasma/30 active:scale-[0.97]"
-      aria-label="Open river map in fullscreen"
-    >
-      <span aria-hidden="true">⛶</span>
-      <span>Fullscreen</span>
-    </button>
-  );
-}
-
-export default function RiverScene() {
+   The surrounding page (0.0.astro) wraps this in <FigureFrame variant="wide">,
+   which provides the unified ⛶/ESC fullscreen + scoped arrow-key shortcuts. */
+export default function RiverFigure() {
   const [activeIdx, setActiveIdx] = useState(0);
-  const [fullscreen, setFullscreen] = useState(false);
 
   const activeSeg = RIVER_SEGMENTS[activeIdx];
   const progress = (activeIdx + 1) / RIVER_SEGMENTS.length;
-
-  const openFullscreen = useCallback(() => setFullscreen(true), []);
-  const closeFullscreen = useCallback(() => setFullscreen(false), []);
-
-  /* ESC closes fullscreen; ← / → step the active age. Body scroll is
-     locked while the overlay is open. */
-  useEffect(() => {
-    if (!fullscreen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setFullscreen(false);
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-        e.preventDefault();
-        setActiveIdx((i) => Math.max(0, i - 1));
-      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-        e.preventDefault();
-        setActiveIdx((i) => Math.min(RIVER_SEGMENTS.length - 1, i + 1));
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    const prev = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.documentElement.style.overflow = prev;
-    };
-  }, [fullscreen]);
 
   const onNodeClick = useCallback((i: number) => {
     setActiveIdx(i);
@@ -649,167 +572,43 @@ export default function RiverScene() {
   );
 
   return (
-    <section className="relative" data-screen-label="02 River">
-      <div className="lg:hidden sticky top-16 z-20 px-4 md:px-6 flex justify-end pointer-events-none mb-[-44px]">
-        <RiverChip seg={activeSeg} onOpen={openFullscreen} />
-      </div>
+    <figure
+      data-fade
+      className="figure-stub fig-river-figure my-12 rounded-md p-3 md:p-4 relative overflow-hidden"
+    >
+      <div
+        className="fig-viz relative w-full"
+        style={{ aspectRatio: `${MAP_W} / ${MAP_H}` }}
+      >
+        <RiverMap activeIdx={activeIdx} progress={progress} onNodeClick={onNodeClick} />
 
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-        <header className="pt-24 md:pt-32 mb-10">
-          <div
-            data-fade
-            className="font-mono text-[11px] tracking-[0.28em] uppercase text-plasma/80 mb-3 flex items-center gap-3"
-          >
-            <span className="block w-6 h-px bg-plasma/50" /> Section One · Background
-          </div>
-          <h2
-            data-fade
-            style={{ ["--delay" as string]: "80ms" }}
-            className="font-serif font-medium text-white tracking-tight leading-[1.05]"
-          >
-            <span
-              className="font-mono text-plasma/55 mr-4 align-baseline"
-              style={{ fontSize: "0.42em", letterSpacing: "0.16em" }}
-            >
-              1.
-            </span>
-            <span style={{ fontSize: "clamp(2rem, 4.4vw, 3.6rem)" }}>A river of time</span>
-          </h2>
-        </header>
-
-        <div className="prose-cosmic max-w-[78ch] mb-14">
-          <p data-fade className="dropcap">
-            The history of the Universe is organized into seven ages, ordered by rising
-            complexity. The first three are cosmic in scope: the <strong>Particle age</strong>{" "}
-            (0 — 1 Myr) cooks fundamental particles into the first hydrogen and helium atoms;
-            the <strong>Galactic age</strong> (1 Myr — 4 Gyr) assembles those atoms into the
-            first stars, galaxies, and the great cosmic web; the <strong>Stellar age</strong>{" "}
-            (4 — 9 Gyr) forges every element heavier than helium inside stellar cores and
-            seeds them across the galaxy through supernovae. From there the story zooms in.
-            The <strong>Planetary age</strong> (9 — 11 Gyr) follows just one star system —
-            ours — as the Sun, Earth, Moon, and the first oceans take shape. The{" "}
-            <strong>Chemical age</strong> (11 — 13 Gyr) is the chemistry of one young planet:
-            organic molecules in Earth&rsquo;s oceans, the origin of life. The{" "}
-            <strong>Biological age</strong> (last ~1 Gyr) is a billion years of life
-            diversifying — single cells to forests, fish, dinosaurs, mammals. The{" "}
-            <strong>Cultural age</strong> (last ~1 Myr) is one hominid lineage learning fire,
-            language, agriculture, and finally science.
-          </p>
-
-          <p data-fade>
-            To make this enormous arc walkable, we map the seven ages onto the seven named
-            segments of the international Brahmaputra river. The river is born as the{" "}
-            <strong>Angsi</strong> glacier near Mt Kailash in Tibet, runs east across the
-            plateau as the <strong>Tsangpo</strong>, plunges through the Himalayas as the{" "}
-            <strong>Siang</strong>, settles into the Assam plains as the{" "}
-            <strong>Brahmaputra</strong>, gathers silt in Bangladesh as the{" "}
-            <strong>Jamuna</strong>, joins the Ganges to become the <strong>Padma</strong>,
-            and finally pours into the Bay of Bengal as the <strong>Meghna</strong>. Each
-            segment matches its cosmic age in scale and energy: a narrow, intense source for
-            the hot first instants; a long patient plateau for the slow cosmic assembly; a
-            roaring high-energy gorge for the age of stars; a wide stable channel for the age
-            of planets; a richening current for the chemistry that becomes life; a fertile
-            delta for biological diversification; and a final reach dissolving into open
-            water for the human present.
-          </p>
-
-          <p data-fade>
-            The metaphor cuts in both directions. A river only flows downstream — and
-            history, like the river, gains complexity and volume but cannot reverse. The
-            Universe at 14 billion years contains far more structure, chemistry, and meaning
-            than the Universe at one second. Yet a river also ends. As the Brahmaputra meets
-            the Bay of Bengal, that single carved channel dissolves into a horizon of open
-            water — many possible futures, none yet written. Where you sit on this page is
-            the very edge of the delta. Click any segment on the map below to step into its
-            age.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,640px)] gap-10 lg:gap-12 items-start">
-          <div data-fade className="min-w-0">
-            <AgeDescription
-              seg={activeSeg}
-              idx={activeIdx}
-              description={AGE_DESCRIPTIONS[activeIdx]}
-              onPrev={onPrev}
-              onNext={onNext}
-            />
-          </div>
-
-          <aside data-fade className="relative hidden lg:block">
-            <div className="sticky top-24">
-              <div className="relative">
-                <RiverMap activeIdx={activeIdx} progress={progress} onNodeClick={onNodeClick} />
-                <FullscreenButton onClick={openFullscreen} />
-              </div>
-            </div>
-          </aside>
-        </div>
-
-        <aside data-fade className="my-24 pullquote relative">
-          <div className="rule mb-10" />
-          <div className="max-w-[64ch] mx-auto text-center">
-            <div className="font-mono text-[10px] tracking-[0.28em] uppercase text-plasma/70 mb-6">
-              river-as-time
-            </div>
-            <blockquote
-              className="font-serif italic text-white leading-[1.2] tracking-tight"
-              style={{ fontSize: "clamp(1.6rem, 3.2vw, 2.6rem)" }}
-            >
-              <span className="text-solar/90 mr-1">&ldquo;</span>
-              The ocean represents the many possibilities of the future; while the past is a
-              singular track we can look back upon, the future is an expansive, unwritten
-              space where all paths merge.
-              <span className="text-solar/90 ml-1">&rdquo;</span>
-            </blockquote>
-          </div>
-          <div className="rule mt-10" />
-        </aside>
-      </div>
-
-      {fullscreen && (
+        {/* AgeDescription overlay — lower-left of the map, present in both
+            normal view and FigureFrame fullscreen (same DOM). */}
         <div
-          className="fixed inset-0 z-[60] bg-[rgb(var(--c-bg-rgb))] flex items-center justify-center"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Brahmaputra river map · fullscreen"
+          className="absolute left-3 bottom-3 md:left-5 md:bottom-5 pointer-events-auto"
+          style={{
+            width: "min(420px, calc(100% - 24px))",
+            maxHeight: "min(60%, 480px)",
+            overflow: "auto",
+          }}
         >
-          <div
-            className="relative"
-            style={{
-              width: `min(100vw, calc(100vh * ${MAP_ASPECT.toFixed(5)}))`,
-              height: `min(100vh, calc(100vw / ${MAP_ASPECT.toFixed(5)}))`,
-            }}
-          >
-            <RiverMap activeIdx={activeIdx} progress={progress} onNodeClick={onNodeClick} />
-
-            {/* Description overlay in the lower-left of the map */}
-            <div
-              className="absolute left-3 bottom-3 md:left-6 md:bottom-6 pointer-events-auto"
-              style={{ width: "min(440px, calc(100% - 24px))", maxHeight: "min(56vh, 480px)", overflowY: "auto" }}
-            >
-              <AgeDescription
-                seg={activeSeg}
-                idx={activeIdx}
-                description={AGE_DESCRIPTIONS[activeIdx]}
-                onPrev={onPrev}
-                onNext={onNext}
-              />
-            </div>
-
-            {/* Exit button — top-right of the map */}
-            <button
-              type="button"
-              onClick={closeFullscreen}
-              className="absolute top-3 right-3 md:top-5 md:right-5 z-10 flex items-center gap-2 rounded-full pl-3 pr-3.5 py-1.5 font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/90 hover:text-plasma transition-colors bg-[rgb(var(--c-bg-rgb)/0.85)] backdrop-blur border border-plasma/35 active:scale-[0.97]"
-              aria-label="Exit fullscreen"
-            >
-              <span aria-hidden="true">✕</span>
-              <span>Exit · ESC</span>
-            </button>
-          </div>
+          <AgeDescription
+            seg={activeSeg}
+            idx={activeIdx}
+            description={AGE_DESCRIPTIONS[activeIdx]}
+            onPrev={onPrev}
+            onNext={onNext}
+          />
         </div>
-      )}
-    </section>
+      </div>
+      <figcaption>
+        <span className="figure-tag">Fig. 0.0.a</span>
+        <span className="figure-title"> — A river of time.</span>{" "}
+        The seven named segments of the international Brahmaputra map one-to-one
+        onto the seven cosmic ages — from the Angsi glacier of the first quark
+        soup to the Meghna delta dissolving into the open ocean of unwritten
+        history. Click any numbered node to step into that age&rsquo;s story.
+      </figcaption>
+    </figure>
   );
 }

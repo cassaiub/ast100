@@ -1,377 +1,441 @@
-import { useState, type ReactNode } from "react";
+import { useState, type JSX, type ReactNode } from "react";
 
 function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: string; caption: ReactNode; children: ReactNode }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">interactive</div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
   );
 }
 
-/* ── ForceSeparation: cosmic-tree of force decoupling ─────────────────
-   A branching diagram showing one Superforce at the left, branching to
-   four distinct forces at the right as the Universe cools. The user's
-   slider sweeps a "current time" cursor through three phase transitions;
-   active branches glow. */
-type Stage = { t: number; T: number; label: string; phase: string };
-const STAGES: Stage[] = [
-  { t: 0, T: Infinity, label: "Big Bang", phase: "Singularity" },
-  { t: 1e-43, T: 1e32, label: "Planck Epoch", phase: "All forces unified" },
-  { t: 1e-35, T: 1e28, label: "Inflation", phase: "Strong separates" },
-  { t: 1e-12, T: 1e15, label: "Electroweak Split", phase: "EM + Weak separate" },
-  { t: 1, T: 1e10, label: "Now (lepton era)", phase: "Four distinct forces" },
+/* ── FourForcesPanel — Sankey-style force tree, 10⁻⁴³ s → 10⁻¹² s ───
+   Based on the canonical "force tree" image in
+   knowledgebase/2026-spring/media/forces.jpg. The diagram spans only
+   from the Planck epoch (10⁻⁴³ s) to the electroweak symmetry break
+   (10⁻¹² s, "1 picosecond") — by 1 ps all four fundamental forces
+   exist as separate entities, so there is nothing more to show.
+
+   Layout: the time axis lives on the LEFT half of the viewBox; the
+   four bands terminate around x≈540 and the RIGHT half is a label
+   panel with [name | strength bar | value | carrier] per force.
+   Selecting a force (click a band or label, or press 1–4) highlights
+   it and reveals an info box below the SVG, directly above the
+   figcaption. */
+
+type Force = {
+  id: "strong" | "em" | "weak" | "gravity";
+  name: string;
+  /** Relative-strength label, as written on the image. */
+  rel: string;
+  /** Numeric log10 of relative strength — used to size the bar. */
+  relLog: number;
+  carrier: string;
+  /** Tailwind-safe hex (matches the image's palette). */
+  color: string;
+  /** Final y on the SVG (in viewBox units). */
+  yFinal: number;
+  /** x position at which this force's band begins to diverge. */
+  xBranch: number;
+  how: string;
+  discovered: string;
+  examples: string;
+};
+
+/* viewBox 0..1000 × 0..360.
+   Time region: x = 60..480 (10⁻⁴³ s → 10⁻¹² s).
+   Bands end at x = 540 (X_BAND_END), then labels live in 560..980. */
+const X_LEFT = 60;
+const X_TIME_RIGHT = 480;
+const X_BAND_END = 540;
+const X_NAME = 560;
+const X_BAR_START = 760;
+const X_BAR_END = 920;
+const X_VALUE = 935;
+const LOG_T_LEFT = -43;
+const LOG_T_RIGHT = -12;
+function xForLogT(logT: number): number {
+  const t = (logT - LOG_T_LEFT) / (LOG_T_RIGHT - LOG_T_LEFT);
+  return X_LEFT + t * (X_TIME_RIGHT - X_LEFT);
+}
+const X_PLANCK = xForLogT(-43);
+const X_GUT = xForLogT(-35);
+const X_INFL_END = xForLogT(-32);
+const X_EW = xForLogT(-12);
+
+const Y_TRUNK = 180;
+const Y_STRONG = 80;
+const Y_EM = 160;
+const Y_WEAK = 220;
+const Y_GRAVITY = 300;
+
+const FORCES: Force[] = [
+  {
+    id: "strong",
+    name: "Strong Nuclear",
+    rel: "1",
+    relLog: 0,
+    carrier: "gluon",
+    color: "#2dd4bf",
+    yFinal: Y_STRONG,
+    xBranch: X_GUT,
+    how: "Binds quarks into protons and neutrons via gluons; a residual force then binds protons and neutrons into atomic nuclei.",
+    discovered: "1935, Hideki Yukawa (meson exchange theory); confirmed experimentally 1947.",
+    examples: "Stable atomic nuclei, hydrogen-to-helium fusion that powers stars.",
+  },
+  {
+    id: "em",
+    name: "Electromagnetic",
+    rel: "10⁻²",
+    relLog: -2,
+    carrier: "photon",
+    color: "#a78bda",
+    yFinal: Y_EM,
+    xBranch: X_EW,
+    how: "Force between electrically charged particles, carried by photons; binds electrons to nuclei and underlies all chemistry.",
+    discovered: "Unified 1864 by James Clerk Maxwell; built on Ørsted's 1820 observation of magnetic deflection.",
+    examples: "Light, chemical bonds, magnetism, every signal in your nervous system.",
+  },
+  {
+    id: "weak",
+    name: "Weak Nuclear",
+    rel: "10⁻⁶",
+    relLog: -6,
+    carrier: "W, Z boson",
+    color: "#e5536b",
+    yFinal: Y_WEAK,
+    xBranch: X_EW,
+    how: "Changes the flavor of quarks and leptons via massive W⁺, W⁻, and Z bosons; only acts over ~10⁻¹⁸ m.",
+    discovered: "1934, Enrico Fermi (theory of beta decay).",
+    examples: "Beta decay, radioactive isotopes, the first step of stellar fusion (proton → neutron).",
+  },
+  {
+    id: "gravity",
+    name: "Gravitational",
+    rel: "10⁻³⁹",
+    relLog: -39,
+    carrier: "graviton",
+    color: "#7fb682",
+    yFinal: Y_GRAVITY,
+    xBranch: X_PLANCK,
+    how: "Massive objects attract each other proportional to 1/r²; general relativity recasts this as the curvature of spacetime.",
+    discovered: "1687, Isaac Newton (Principia); reformulated 1915 by Einstein.",
+    examples: "Planetary orbits, ocean tides, black holes, the structure of galaxies.",
+  },
 ];
-const SEP_GRAVITY = Math.log10(1e-43);
-const SEP_STRONG = Math.log10(1e-35);
-const SEP_EW = Math.log10(1e-12);
 
-export function ForceSeparationPanel() {
-  const [logT, setLogT] = useState(-30); // somewhere mid-inflation by default
-  const W = 720;
-  const H = 320;
-  const PAD = 60;
+/* Bezier curl from (xBranch, Y_TRUNK) to (xBranch + curl, yFinal),
+   then straight to X_BAND_END. */
+function bandPath(xBranch: number, yFinal: number): string {
+  const curlEnd = xBranch + 80;
+  return `M ${xBranch} ${Y_TRUNK} C ${xBranch + 55} ${Y_TRUNK}, ${xBranch + 25} ${yFinal}, ${curlEnd} ${yFinal} L ${X_BAND_END} ${yFinal}`;
+}
 
-  /* Branch line endpoints */
-  const xMin = PAD;
-  const xMax = W - PAD;
-  const cyMid = H / 2;
-  /* Phase transition x positions on a log scale −44 → 1 */
-  const lMin = -44;
-  const lMax = 1;
-  function xOf(l: number) {
-    return xMin + ((l - lMin) / (lMax - lMin)) * (xMax - xMin);
-  }
-  const xGravity = xOf(SEP_GRAVITY);
-  const xStrong = xOf(SEP_STRONG);
-  const xEw = xOf(SEP_EW);
-  const xCur = xOf(logT);
+const BAND_WIDTH = 26;
 
-  /* Four force y positions at the right */
-  const yGravity = 40;
-  const yStrong = 120;
-  const yEm = 200;
-  const yWeak = 280;
+/* Strength bar: log scale across about 8 orders of magnitude, with
+   a floor of 6% so gravity is still visible as a sliver.
+   strong (10⁰)  → 100%
+   EM    (10⁻²) → 75%
+   weak  (10⁻⁶) → 25%
+   gravity(10⁻³⁹) → 6%   (clamped) */
+function barWidthPct(relLog: number): number {
+  const LOG_MIN = -8;
+  const v = (relLog - LOG_MIN) / (0 - LOG_MIN);
+  return Math.max(0.06, v) * 100;
+}
 
-  const sep = {
-    gravity: logT > SEP_GRAVITY,
-    strong: logT > SEP_STRONG,
-    ew: logT > SEP_EW,
-  };
-
-  function branchPath(yEnd: number, splitX: number, active: boolean) {
-    /* Curved branch from splitX/cyMid to xMax/yEnd */
-    return `M ${splitX} ${cyMid} C ${splitX + 60} ${cyMid}, ${xMax - 100} ${yEnd}, ${xMax} ${yEnd}`;
-  }
+export function FourForcesPanel(): JSX.Element {
+  const [selId, setSelId] = useState<Force["id"]>("strong");
+  const sel = FORCES.find((f) => f.id === selId)!;
 
   return (
     <FigurePanel
-      idx="1.1.1"
-      kicker="Force Separation · One Becomes Four"
-      caption="Slide the cursor through cosmic time. Three phase transitions split the original Superforce: gravity decouples at the Planck epoch, the strong force at the inflation epoch, and electromagnetism + the weak force part ways at one trillionth of a second."
+      idx="1.1.a"
+      kicker="From one Superforce to four"
+      caption="A Sankey-style tree of the four fundamental forces between the Planck epoch (10⁻⁴³ s) and one picosecond (10⁻¹² s). Each band shows when that force decoupled from the unified Superforce, with relative strength (log scale) and carrier particle. Click a band — or press 1–4 — to read how that force works, when we discovered it, and what it does."
     >
-      <div className="relative w-full overflow-hidden rounded-md">
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Trunk: Superforce */}
-          <path
-            d={`M ${xMin} ${cyMid} L ${xGravity} ${cyMid}`}
-            stroke={logT < SEP_GRAVITY ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.35)"}
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-          />
+      {/* SVG-only wrapper — keep `.fig-viz` containing JUST the SVG so
+          the fullscreen CSS (which makes `.fig-viz` a centered flex
+          container claiming all remaining height) doesn't swallow the
+          detail box. The detail box + hidden a11y buttons are siblings
+          BELOW this `.fig-viz`. */}
+      <div
+        className="fig-viz relative w-full"
+        style={{ background: "rgb(var(--c-text-rgb) / 0.02)", borderRadius: 8, padding: "12px 10px 14px", border: "1px solid rgb(var(--c-text-rgb) / 0.06)" }}
+      >
+        <svg
+          viewBox="0 0 1000 360"
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          aria-label="Tree of the four fundamental forces from the Planck epoch to one picosecond"
+          style={{ width: "100%", height: "auto", display: "block" }}
+        >
+          {/* ── Inflation gradient ──────────────────────────────── */}
+          <defs>
+            <linearGradient id="inflation" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="rgb(255 255 255 / 0)" />
+              <stop offset="35%" stopColor="rgb(255 255 255 / 0.16)" />
+              <stop offset="100%" stopColor="rgb(255 255 255 / 0)" />
+            </linearGradient>
+          </defs>
+          <rect x={X_GUT - 20} y={26} width={X_INFL_END - X_GUT + 50} height={310} fill="url(#inflation)" />
+
+          {/* ── Axes labels ─────────────────────────────────────── */}
+          <g fontFamily="JetBrains Mono, monospace" fontSize="11" fill="rgb(var(--c-text-rgb) / 0.55)">
+            <text x={X_LEFT - 18} y={20} textAnchor="end">Temp (K)</text>
+            <text x={xForLogT(-43)} y={20} textAnchor="middle">10³²</text>
+            <text x={xForLogT(-35)} y={20} textAnchor="middle">10²⁸</text>
+            <text x={xForLogT(-12)} y={20} textAnchor="middle">10¹⁵</text>
+          </g>
+          <g fontFamily="JetBrains Mono, monospace" fontSize="11" fill="rgb(var(--c-text-rgb) / 0.55)">
+            <text x={X_LEFT - 18} y={344} textAnchor="end">Time (s)</text>
+            <text x={xForLogT(-43)} y={344} textAnchor="middle">10⁻⁴³</text>
+            <text x={xForLogT(-35)} y={344} textAnchor="middle">10⁻³⁵</text>
+            <text x={xForLogT(-12)} y={344} textAnchor="middle">10⁻¹²</text>
+            <text x={xForLogT(-12)} y={356} textAnchor="middle" fontSize="9" fill="rgb(var(--c-text-rgb) / 0.4)">
+              picosecond
+            </text>
+          </g>
+          {/* Vertical ticks */}
+          <g stroke="rgb(var(--c-text-rgb) / 0.10)" strokeDasharray="2 4">
+            <line x1={xForLogT(-43)} y1={26} x2={xForLogT(-43)} y2={332} />
+            <line x1={xForLogT(-35)} y1={26} x2={xForLogT(-35)} y2={332} />
+            <line x1={xForLogT(-12)} y1={26} x2={xForLogT(-12)} y2={332} />
+          </g>
+          {/* Inflation label */}
           <text
-            x={xMin + 8}
-            y={cyMid - 12}
-            fontSize="11"
-            letterSpacing="2"
-            fontFamily="var(--font-mono)"
-            fill={logT < SEP_GRAVITY ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.55)"}
-          >
-            SUPERFORCE
-          </text>
-
-          {/* Gravity branch up */}
-          <path
-            d={branchPath(yGravity, xGravity, sep.gravity)}
-            stroke={sep.gravity ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.18)"}
-            strokeWidth={sep.gravity ? 2.2 : 1.2}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={sep.gravity ? "0" : "2 4"}
-            style={{
-              filter: sep.gravity ? "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.5))" : "none",
-            }}
-          />
-          {/* Remaining trunk (strong+ew) from xGravity onward */}
-          <path
-            d={`M ${xGravity} ${cyMid + 60} L ${xStrong} ${cyMid + 60}`}
-            stroke={sep.gravity && !sep.strong ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.35)"}
-            strokeWidth="2.4"
-            fill="none"
-            strokeLinecap="round"
-          />
-          {/* Connector from main trunk down to remaining trunk */}
-          <path
-            d={`M ${xGravity} ${cyMid} L ${xGravity} ${cyMid + 60}`}
-            stroke="rgb(var(--c-text-rgb) / 0.25)"
-            strokeWidth="0.8"
-            fill="none"
-          />
-          {/* Strong branch */}
-          <path
-            d={branchPath(yStrong, xStrong, sep.strong)}
-            stroke={sep.strong ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.18)"}
-            strokeWidth={sep.strong ? 2.2 : 1.2}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={sep.strong ? "0" : "2 4"}
-            style={{
-              filter: sep.strong ? "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.5))" : "none",
-            }}
-          />
-          {/* Electroweak trunk */}
-          <path
-            d={`M ${xStrong} ${cyMid + 100} L ${xEw} ${cyMid + 100}`}
-            stroke={sep.strong && !sep.ew ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.35)"}
-            strokeWidth="2.2"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d={`M ${xStrong} ${cyMid + 60} L ${xStrong} ${cyMid + 100}`}
-            stroke="rgb(var(--c-text-rgb) / 0.25)"
-            strokeWidth="0.8"
-            fill="none"
-          />
-          {/* EM + Weak branches */}
-          <path
-            d={branchPath(yEm, xEw, sep.ew)}
-            stroke={sep.ew ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.18)"}
-            strokeWidth={sep.ew ? 2.2 : 1.2}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={sep.ew ? "0" : "2 4"}
-            style={{
-              filter: sep.ew ? "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.5))" : "none",
-            }}
-          />
-          <path
-            d={branchPath(yWeak, xEw, sep.ew)}
-            stroke={sep.ew ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.18)"}
-            strokeWidth={sep.ew ? 2.2 : 1.2}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={sep.ew ? "0" : "2 4"}
-            style={{
-              filter: sep.ew ? "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.5))" : "none",
-            }}
-          />
-
-          {/* Phase-transition tick markers */}
-          {[
-            { x: xGravity, label: "10⁻⁴³ s" },
-            { x: xStrong, label: "10⁻³⁵ s" },
-            { x: xEw, label: "10⁻¹² s" },
-          ].map((m, i) => (
-            <g key={i}>
-              <line x1={m.x} y1={H - 36} x2={m.x} y2={H - 28} stroke="rgb(var(--c-text-rgb) / 0.3)" />
-              <text
-                x={m.x}
-                y={H - 16}
-                textAnchor="middle"
-                fontSize="9"
-                fontFamily="var(--font-mono)"
-                fill="rgb(var(--c-text-rgb) / 0.55)"
-              >
-                {m.label}
-              </text>
-            </g>
-          ))}
-
-          {/* End labels */}
-          {[
-            { y: yGravity, name: "Gravity", lit: sep.gravity },
-            { y: yStrong, name: "Strong", lit: sep.strong },
-            { y: yEm, name: "Electromagnetism", lit: sep.ew },
-            { y: yWeak, name: "Weak", lit: sep.ew },
-          ].map((f, i) => (
-            <g key={i}>
-              <circle
-                cx={xMax}
-                cy={f.y}
-                r={f.lit ? 6 : 4}
-                fill={f.lit ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.4)"}
-                style={{
-                  filter: f.lit ? "drop-shadow(0 0 10px rgb(var(--c-accent-rgb) / 0.7))" : "none",
-                }}
-              />
-              <text
-                x={xMax - 10}
-                y={f.y + 4}
-                textAnchor="end"
-                fontSize="12"
-                fontFamily="var(--font-serif)"
-                fontStyle="italic"
-                fill={f.lit ? "rgb(var(--c-accent-rgb))" : "rgb(var(--c-text-rgb) / 0.6)"}
-              >
-                {f.name}
-              </text>
-            </g>
-          ))}
-
-          {/* Current time cursor */}
-          <line
-            x1={xCur}
-            x2={xCur}
-            y1={20}
-            y2={H - 36}
-            stroke="rgb(var(--c-text-rgb) / 0.85)"
-            strokeWidth="1.4"
-          />
-          <text
-            x={xCur}
-            y={14}
-            textAnchor="middle"
+            x={(X_GUT + X_INFL_END) / 2}
+            y={324}
+            fontFamily="Inter, sans-serif"
             fontSize="10"
-            fontFamily="var(--font-mono)"
-            letterSpacing="2"
-            fill="rgb(var(--c-text-rgb))"
+            textAnchor="middle"
+            fill="rgb(var(--c-text-rgb) / 0.6)"
+            fontStyle="italic"
           >
-            t = 10^{logT.toFixed(0)} s
+            Inflation
           </text>
+
+          {/* ── TOE / GUT / EW trunk ───────────────────────────── */}
+          <line
+            x1={X_LEFT}
+            y1={Y_TRUNK}
+            x2={X_EW}
+            y2={Y_TRUNK}
+            stroke="#3a2a4a"
+            strokeWidth={BAND_WIDTH}
+            strokeLinecap="round"
+            opacity={0.95}
+          />
+          <text
+            x={(X_LEFT + X_GUT) / 2}
+            y={Y_TRUNK + 4}
+            textAnchor="middle"
+            fontFamily="Inter, sans-serif"
+            fontSize="12"
+            fontWeight="600"
+            fill="#ffffff"
+            letterSpacing="0.06em"
+          >
+            TOE
+          </text>
+          <text
+            x={(X_GUT + X_EW) / 2}
+            y={Y_TRUNK + 4}
+            textAnchor="middle"
+            fontFamily="Inter, sans-serif"
+            fontSize="12"
+            fontWeight="600"
+            fill="#ffffff"
+            letterSpacing="0.06em"
+          >
+            GUT &nbsp;→&nbsp; Electroweak
+          </text>
+
+          {/* EW-symmetry-break tag */}
+          <g>
+            <line x1={X_EW} y1={Y_TRUNK - 16} x2={X_EW} y2={Y_TRUNK + 16} stroke="rgb(var(--c-text-rgb) / 0.5)" strokeWidth="1" />
+            <text
+              x={X_EW - 6}
+              y={Y_TRUNK - 24}
+              fontFamily="Inter, sans-serif"
+              fontSize="9.5"
+              fontStyle="italic"
+              fill="rgb(var(--c-text-rgb) / 0.75)"
+              textAnchor="end"
+            >
+              Electroweak
+            </text>
+            <text
+              x={X_EW - 6}
+              y={Y_TRUNK - 12}
+              fontFamily="Inter, sans-serif"
+              fontSize="9.5"
+              fontStyle="italic"
+              fill="rgb(var(--c-text-rgb) / 0.75)"
+              textAnchor="end"
+            >
+              symmetry broken
+            </text>
+          </g>
+
+          {/* ── Four force bands (left half — the tree itself) ───── */}
+          {FORCES.map((f) => {
+            const isSel = selId === f.id;
+            return (
+              <path
+                key={`band-${f.id}`}
+                d={bandPath(f.xBranch, f.yFinal)}
+                stroke={f.color}
+                strokeWidth={BAND_WIDTH}
+                fill="none"
+                strokeLinecap="round"
+                opacity={isSel ? 1 : 0.6}
+                style={{ transition: "opacity 220ms var(--ease)", cursor: "pointer" }}
+                onClick={() => setSelId(f.id)}
+              />
+            );
+          })}
+
+          {/* ── Right-half label panel: per-force row ──────────────
+             Each row shows: connector line from band end → name,
+             then a strength bar, then the strength value, then the
+             carrier on a second line. Clicking the row also selects. */}
+          {FORCES.map((f, i) => {
+            const isSel = selId === f.id;
+            return (
+              <g
+                key={`label-${f.id}`}
+                style={{ cursor: "pointer" }}
+                onClick={() => setSelId(f.id)}
+                opacity={isSel ? 1 : 0.7}
+              >
+                {/* Selection background block — full row, very subtle */}
+                {isSel && (
+                  <rect
+                    x={X_NAME - 8}
+                    y={f.yFinal - 28}
+                    width={1000 - X_NAME - 4}
+                    height={56}
+                    rx={6}
+                    fill={`${f.color}1f`}
+                    stroke={`${f.color}66`}
+                    strokeWidth={1}
+                  />
+                )}
+                {/* Tiny connector dot */}
+                <circle cx={X_BAND_END + 6} cy={f.yFinal} r={4} fill={f.color} />
+                {/* Force name (above bar) */}
+                <text
+                  x={X_NAME}
+                  y={f.yFinal - 6}
+                  fontFamily="Inter, sans-serif"
+                  fontSize="13"
+                  fontWeight="600"
+                  fill={isSel ? f.color : "rgb(var(--c-text-rgb) / 0.88)"}
+                  letterSpacing="0.05em"
+                  style={{ textTransform: "uppercase", transition: "fill 220ms var(--ease)" }}
+                >
+                  {f.name.toUpperCase()} {isSel ? "▸" : ""}
+                </text>
+                {/* Carrier (below bar) */}
+                <text
+                  x={X_NAME}
+                  y={f.yFinal + 22}
+                  fontFamily="Inter, sans-serif"
+                  fontSize="10"
+                  fontStyle="italic"
+                  fill="rgb(var(--c-text-rgb) / 0.6)"
+                >
+                  carrier: {f.carrier}
+                </text>
+                {/* Strength bar — track */}
+                <rect
+                  x={X_BAR_START}
+                  y={f.yFinal - 2}
+                  width={X_BAR_END - X_BAR_START}
+                  height={10}
+                  rx={5}
+                  fill="rgb(var(--c-text-rgb) / 0.08)"
+                />
+                {/* Strength bar — fill */}
+                <rect
+                  x={X_BAR_START}
+                  y={f.yFinal - 2}
+                  width={(barWidthPct(f.relLog) / 100) * (X_BAR_END - X_BAR_START)}
+                  height={10}
+                  rx={5}
+                  fill={f.color}
+                  opacity={isSel ? 1 : 0.7}
+                  style={{ transition: "opacity 220ms var(--ease)" }}
+                />
+                {/* Strength value */}
+                <text
+                  x={X_VALUE}
+                  y={f.yFinal + 7}
+                  fontFamily="JetBrains Mono, monospace"
+                  fontSize="11"
+                  fontWeight="500"
+                  fill={isSel ? f.color : "rgb(var(--c-text-rgb) / 0.82)"}
+                  textAnchor="start"
+                >
+                  {f.rel}
+                </text>
+              </g>
+            );
+          })}
         </svg>
       </div>
 
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-1">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">scrub time</label>
-          <span className="font-mono text-[10px] text-plasma">
-            log₁₀(t) = {logT.toFixed(1)}
-          </span>
-        </div>
-        <input
-          type="range"
-          min={-44}
-          max={1}
-          step={0.1}
-          value={logT}
-          onChange={(e) => setLogT(parseFloat(e.target.value))}
-          className="cosmic-slider"
-        />
-        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
-          <span>Planck epoch</span>
-          <span>EW split</span>
-          <span>1 s</span>
-        </div>
-      </div>
-    </FigurePanel>
-  );
-}
-
-/* ── ForceStrengthLadder ─────────────────────────────────────────────
-   Four forces ranked by relative strength on a log scale. Click each
-   to see its carrier particle, range, and what it does. */
-type Force = {
-  id: string;
-  name: string;
-  rel: number; // relative strength
-  carrier: string;
-  range: string;
-  role: string;
-};
-const FORCES: Force[] = [
-  { id: "strong", name: "Strong Nuclear", rel: 1, carrier: "gluon (g) · massless", range: "~10⁻¹⁵ m (atomic nucleus)", role: "Universal glue. Binds quarks into protons/neutrons and holds nuclei intact against electric repulsion. Without it, no element heavier than hydrogen could exist." },
-  { id: "em", name: "Electromagnetism", rel: 1e-2, carrier: "photon (γ) · massless", range: "infinite (1/r² fall-off)", role: "Rules of chemistry. Binds electrons to nuclei, makes atoms and molecules, carries light. Without it, no atoms, no solids, no us." },
-  { id: "weak", name: "Weak Nuclear", rel: 1e-5, carrier: "W⁺, W⁻, Z⁰ · massive bosons", range: "~10⁻¹⁸ m (sub-nucleus)", role: "Force of transmutation. Drives radioactive decay, neutrino interactions, and the proton-proton fusion that powers the Sun." },
-  { id: "gravity", name: "Gravity", rel: 1e-39, carrier: "graviton (hypothetical)", range: "infinite", role: "The feeblest force — and the sculptor of cosmic structure. In Einstein's framework, gravity is the curvature of spacetime by mass-energy." },
-];
-
-export function ForceStrengthLadderPanel() {
-  const [sel, setSel] = useState<string>("strong");
-  const max = FORCES[0].rel;
-  const logMax = Math.log10(max);
-  const logMin = Math.log10(FORCES[3].rel);
-  function widthOf(rel: number) {
-    const v = Math.log10(rel);
-    return Math.max(0.04, (v - logMin) / (logMax - logMin)) * 100;
-  }
-  const cur = FORCES.find((f) => f.id === sel)!;
-  return (
-    <FigurePanel
-      idx="1.1.2"
-      kicker="Hierarchy of Strengths · 39 Orders of Magnitude"
-      caption="The four forces span an absurd range. Strong sets the scale at 1. EM is 100× weaker. Weak is 100,000× weaker than strong. Gravity is a billion-billion-billion-billion times weaker than EM — and yet it built the galaxies."
-    >
-      <ol className="flex flex-col gap-2 my-2">
-        {FORCES.map((f) => {
-          const isSel = sel === f.id;
-          return (
-            <li
-              key={f.id}
-              onClick={() => setSel(f.id)}
-              className="grid grid-cols-[140px_1fr_120px] gap-3 items-center cursor-pointer"
-            >
-              <div
-                className="font-serif text-[14px] leading-tight"
-                style={{ color: isSel ? "var(--c-accent)" : "var(--c-text-strong)", transition: "color 200ms var(--ease)" }}
-              >
-                {f.name}
-              </div>
-              <div className="relative h-6 rounded-full overflow-hidden" style={{ background: "rgb(var(--c-text-rgb) / 0.06)" }}>
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${widthOf(f.rel)}%`,
-                    background: isSel
-                      ? "linear-gradient(90deg, rgb(var(--c-accent-rgb) / 0.85), rgb(var(--c-accent-rgb) / 0.55))"
-                      : "linear-gradient(90deg, rgb(var(--c-accent-rgb) / 0.55), rgb(var(--c-accent-rgb) / 0.3))",
-                    boxShadow: isSel ? "0 0 18px rgb(var(--c-accent-rgb) / 0.4)" : "none",
-                    transition: "width 600ms var(--ease), background 200ms var(--ease)",
-                  }}
-                />
-              </div>
-              <div
-                className="font-mono text-[11px] tracking-[0.1em] text-right"
-                style={{ color: isSel ? "var(--c-accent)" : "rgb(var(--c-text-rgb) / 0.7)" }}
-              >
-                {f.rel === 1 ? "1" : `10^${Math.log10(f.rel).toFixed(0)}`}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+      {/* ── Detail box below SVG, above the figcaption ─────────── */}
       <div
-        className="mt-4 grid md:grid-cols-[160px_1fr] gap-4 p-3 rounded-md"
+        className="mt-3 rounded-md grid gap-3 md:grid-cols-[1fr_1fr_1fr]"
         style={{
-          background: "rgb(var(--c-accent-rgb) / 0.04)",
-          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
+          background: "rgb(var(--c-text-rgb) / 0.03)",
+          border: `1px solid ${sel.color}66`,
+          boxShadow: `inset 0 0 0 1px ${sel.color}22`,
+          padding: "12px 14px",
+          transition: "border-color 220ms var(--ease)",
+          flex: "0 0 auto",
         }}
       >
+        <div className="md:col-span-3 font-mono text-[10px] tracking-[0.22em] uppercase" style={{ color: sel.color }}>
+          {sel.name}
+        </div>
         <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">carrier</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.1rem", color: "var(--c-accent)" }}>
-            {cur.carrier}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.18em] mt-2 text-white/60">range · {cur.range}</div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mb-1">How it works</div>
+          <div className="text-[13px] text-white/85 leading-[1.55] font-sans">{sel.how}</div>
         </div>
-        <div className="text-[13px] text-white/80 leading-[1.6] font-sans">
-          <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-plasma mb-2">{cur.name.toUpperCase()}</div>
-          {cur.role}
+        <div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mb-1">Discovered</div>
+          <div className="text-[13px] text-white/85 leading-[1.55] font-sans">{sel.discovered}</div>
         </div>
+        <div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mb-1">Examples</div>
+          <div className="text-[13px] text-white/85 leading-[1.55] font-sans">{sel.examples}</div>
+        </div>
+      </div>
+
+      {/* Hidden buttons for FigureFrame's keyboard navigator
+         (rule 3 — numeric pill set). ←/→ walks the pills in order;
+         1–4 jumps direct. */}
+      <div className="sr-only" aria-hidden="false">
+        {FORCES.map((f, i) => (
+          <button
+            key={f.id}
+            type="button"
+            onClick={() => setSelId(f.id)}
+            data-shortcut={String(i + 1)}
+            className={selId === f.id ? "is-active" : ""}
+            aria-pressed={selId === f.id}
+          >
+            {f.name}
+          </button>
+        ))}
       </div>
     </FigurePanel>
   );

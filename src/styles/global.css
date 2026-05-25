@@ -159,8 +159,55 @@ body {
 
 body {
   font-family: var(--font-serif);
-  font-size: 18px;
-  line-height: 1.7;
+  font-size: 19.5px;
+  line-height: 1.72;
+}
+
+/* Reading-column rhythm: bump prose paragraphs slightly more for readability. */
+.prose-cosmic > p {
+  font-size: 1.05em;
+  line-height: 1.74;
+}
+
+/* Single in-panel figure caption.
+   Lives INSIDE the figure-stub, at the bottom — caption is the only
+   labelling chrome on a figure (no separate title bar above, no caption
+   below the panel). Leads with "Fig. {idx} — {Title}." then description.
+   The :where() trick keeps specificity low (0,1,0) so per-component
+   utilities like `text-[14px]` no longer collide with this size — the
+   compound selectors below beat it anyway. */
+.figure-stub > figcaption,
+figure.figure-stub > figcaption {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgb(var(--c-text-rgb) / 0.08);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgb(var(--c-text-rgb) / 0.78);
+}
+[data-theme="light"] .figure-stub > figcaption,
+[data-theme="light"] figure.figure-stub > figcaption {
+  border-top-color: rgb(var(--c-text-rgb) / 0.14);
+}
+.figure-stub > figcaption .figure-tag,
+figure.figure-stub > figcaption .figure-tag {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--c-accent);
+  margin-right: 0.15em;
+}
+.figure-stub > figcaption .figure-title,
+figure.figure-stub > figcaption .figure-title {
+  color: var(--c-text-strong);
+  font-weight: 500;
+}
+.figure-stub .figure-stub-note,
+.figure-frame .figure-stub-note {
+  font-size: 14.5px;
+  line-height: 1.62;
 }
 
 ::selection {
@@ -268,10 +315,53 @@ body {
 }
 
 /* ── Reading column rhythm ──────────────────────────────────────────── */
+/* `prose-cosmic` is the single canonical reading column for topic pages.
+   Its width + horizontal centering live here so per-page Tailwind utils
+   (max-w-[68ch] mx-auto) can be dropped — every topic page now inherits
+   the same column geometry, eliminating the 0.0/RiverScene drift. */
+.prose-cosmic {
+  max-width: 68ch;
+  margin-inline: auto;
+}
 .prose-cosmic p { margin: 1.25em 0; }
 .prose-cosmic p strong { color: var(--c-text-strong); font-weight: 600; }
 .prose-cosmic em { color: rgb(var(--c-text-rgb) / 0.96); }
 [data-theme="light"] .prose-cosmic em { color: rgb(var(--c-text-rgb) / 0.84); }
+
+/* ── Topic-page outer wrapper + unified section h2 ──────────────────
+   Every chapter sub-page wraps its content in `.topic-page` and every
+   section heading uses `.section-title`. The inline font-size clamp
+   that used to live on each h2's inner span is now defined once below,
+   so all section titles share identical type without per-page CSS. */
+.topic-page {
+  position: relative;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 0 24px 112px;
+}
+@media (min-width: 768px) {
+  .topic-page { padding-inline: 40px; }
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--c-text-strong);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin: 0;
+}
+.section-title .section-number {
+  font-family: var(--font-mono);
+  font-size: 0.42em;
+  letter-spacing: 0.16em;
+  color: rgb(var(--c-accent-rgb) / 0.55);
+  margin-right: 1rem;
+  vertical-align: baseline;
+}
+.section-title .section-title-text {
+  font-size: clamp(1.45rem, 3vw, 2.4rem);
+}
 
 /* ── Figure stub treatment ──────────────────────────────────────────── */
 .figure-stub {
@@ -285,23 +375,50 @@ body {
    Breaks an inline figure out of its narrow parent (the 68ch prose
    column) into a wider centered band, and adds a fullscreen toggle.
    At lg+ widths the band is shifted right by ~120px so it sits clear
-   of the fixed left Rail sidebar. */
+   of the fixed left Rail sidebar.
+   Three widths: default (1080px cap), .is-narrow (820px) for simple
+   figures, .is-wide (1320px) when a figure genuinely needs more room. */
 .figure-frame {
   position: relative;
   margin-block: 3rem;
-  width: min(1400px, calc(100vw - 48px));
-  margin-left: calc(50% - min(700px, (100vw - 48px) / 2));
+  width: min(1080px, calc(100vw - 48px));
+  margin-left: calc(50% - min(540px, (100vw - 48px) / 2));
+}
+.figure-frame.is-narrow {
+  width: min(820px, calc(100vw - 48px));
+  margin-left: calc(50% - min(410px, (100vw - 48px) / 2));
+}
+.figure-frame.is-wide {
+  width: min(1320px, calc(100vw - 48px));
+  margin-left: calc(50% - min(660px, (100vw - 48px) / 2));
 }
 @media (min-width: 1024px) {
   .figure-frame {
-    width: min(1340px, calc(100vw - 308px));
-    margin-left: calc(50% - min(670px, (100vw - 308px) / 2) + 120px);
+    width: min(1040px, calc(100vw - 308px));
+    margin-left: calc(50% - min(520px, (100vw - 308px) / 2) + 120px);
+  }
+  .figure-frame.is-narrow {
+    width: min(780px, calc(100vw - 308px));
+    margin-left: calc(50% - min(390px, (100vw - 308px) / 2) + 120px);
+  }
+  .figure-frame.is-wide {
+    width: min(1280px, calc(100vw - 308px));
+    margin-left: calc(50% - min(640px, (100vw - 308px) / 2) + 120px);
   }
 }
 
 .figure-frame-inner {
   position: relative;
   border-radius: 10px;
+}
+/* Make the frame keyboard-focusable so scoped shortcuts (see
+   FigureFrame.astro) can fire when the user clicks/tabs to it. The
+   outline stays subtle to avoid distracting from the figure content. */
+.figure-frame:focus { outline: none; }
+.figure-frame:focus-visible {
+  outline: 2px solid rgb(var(--c-accent-rgb) / 0.55);
+  outline-offset: 4px;
+  border-radius: 12px;
 }
 
 .figure-frame-fs-btn,
@@ -344,24 +461,207 @@ body {
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   margin: 0;
   z-index: 60;
   background: rgb(var(--c-bg-rgb));
 }
+/* Fullscreen layout — unified for all figures.
+   ----------------------------------------------------------------------
+   Goals (from the design brief):
+     1. Narrow whitespace on all sides (~14–20 px of padding).
+     2. Figure body fills available viewport area.
+     3. No vertical or horizontal scrollbars anywhere in fullscreen.
+     4. Text doesn't overflow; everything fits.
+     5. Caption stays inside the panel, pinned to the bottom.
+
+   Markup (after the prior refactor):
+     <FigureFrame.is-fs>
+       <.figure-frame-inner>
+         <figure.figure-stub>             ← the panel
+           <div>…figure body…</div>       ← may contain .fig-viz somewhere
+           <figcaption>…</figcaption>     ← pinned to bottom
+         </figure>
+       </.figure-frame-inner>
+     </FigureFrame.is-fs>
+
+   The figure body wrapper contains a `.fig-viz` div (added on each
+   panel's main SVG/Canvas wrapper) that should flex-grow to claim the
+   remaining height. Other children (sliders, buttons, description text)
+   stay at natural height. */
+
 .figure-frame.is-fs .figure-frame-inner {
   width: 100%;
   height: 100%;
-  padding: 32px 24px;
-  overflow: auto;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+}
+/* In fullscreen, the figure-stub IS the panel. Reset its normal-mode
+   padding/margin and make it a flex-column that fills the viewport with
+   narrow padding. `!important` is required to beat the Tailwind
+   utility classes (`my-12 rounded-md p-4 md:p-6`) that FigurePanel
+   applies in normal mode.
+   NOTE: do NOT target `.figure-frame-inner > :first-child` here — when
+   a panel uses `client:visible`, Astro inserts a hydration bootstrap
+   `<script>` tag as the first child of `figure-frame-inner`. Forcing
+   `display: flex` on that script tag overrode the user-agent
+   `display: none` and rendered its JS source as raw text in the left
+   half of the fullscreen viewport (the "gibberish codes" regression). */
+.figure-frame.is-fs .figure-stub {
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0 !important;
+  padding: 14px clamp(14px, 1.5vw, 22px) !important;
+  gap: 8px;
+  overflow: hidden;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+/* Astro client:visible / client:idle / client:media bootstrap scripts
+   live inside `figure-frame-inner` as siblings of the React island.
+   They are display:none by default; this is belt-and-braces against
+   any rule (per-figure or future) accidentally promoting them to a
+   visible display value while in fullscreen. */
+.figure-frame.is-fs script {
+  display: none !important;
+}
+/* `<astro-island>` is a custom element used by `client:*` directives.
+   Without an explicit display value it would render as `inline`, which
+   means it would not stretch to fill the `figure-frame-inner` flex
+   container and the figure-stub inside it (which has `height: 100%`)
+   would collapse. Force it to behave as a flex column so it both takes
+   the available height AND lets its figure-stub child fill. */
+.figure-frame.is-fs astro-island {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+}
+/* In-panel caption — natural height, capped so it can't crowd the figure
+   body on tall captions. Border-top spacing tightened. */
+.figure-frame.is-fs .figure-stub > figcaption {
+  flex: 0 0 auto;
+  margin-top: 0;
+  padding-top: 8px;
+  max-height: 22vh;
+  overflow: hidden;
+}
+/* Figure body wrapper — whatever the panel returns, single child div.
+   Flex-grows to fill remaining height; becomes a flex-column itself so
+   its own children (.fig-viz, controls, text) can be distributed. */
+.figure-frame.is-fs .figure-stub > *:not(figcaption) {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+/* If the body wrapper isn't already a flex/grid container, force it.
+   `:where()` zeros the selector's specificity (0,0,0) so Tailwind utility
+   classes like `.grid` (0,1,0) and `.flex-row` win — grid-based panels
+   (0.1.a, 1.3.2) keep their grid layout in fullscreen instead of being
+   collapsed into a flex-column. */
+:where(.figure-frame.is-fs .figure-stub > div:not(figcaption)) {
+  display: flex;
+  flex-direction: column;
+}
+/* `.fig-viz` is the panel's main visualisation wrapper. It claims the
+   remaining height inside the body wrapper, centers its content, and
+   hides any overflow so SVG/Canvas can shrink without scrollbars. */
+.figure-frame.is-fs .fig-viz {
+  flex: 1 1 auto !important;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.figure-frame.is-fs .figure-frame-inner > :first-child {
+  overflow: hidden;
   width: 100%;
-  max-width: 1600px;
+}
+/* Cap every SVG/Canvas to its parent so figures preserve aspect ratio
+   (no distortion via SVG preserveAspectRatio="xMidYMid meet" default;
+   no cropping because both dimensions are bounded). */
+.figure-frame.is-fs .figure-stub svg,
+.figure-frame.is-fs .figure-stub canvas {
   max-height: 100%;
-  margin: 0;
+  max-width: 100%;
+  height: auto;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+}
+/* Belt-and-braces — every descendant in fullscreen blocks its own
+   overflow so scrollbars never appear. Text is clipped by the figcaption
+   max-height + figure-stub overflow:hidden if a caption is too long; in
+   practice captions are short. */
+.figure-frame.is-fs .figure-stub * {
+  overflow: hidden;
+}
+/* …but allow native range sliders to render their thumb/track. */
+.figure-frame.is-fs .figure-stub input[type="range"] {
+  overflow: visible;
+}
+/* Optional body wrapper — every figure-stub should contain exactly one
+   non-figcaption direct child (a `.figure-body` div) and the figcaption.
+   In normal flow this is transparent; in fullscreen it becomes the flex
+   column that distributes children. The :where()/figure-stub > * rules
+   already give it `flex: 1 1 auto; display:flex; flex-direction:column`. */
+.figure-frame.is-fs .figure-body {
+  width: 100%;
+  /* `safe center` aligns content vertically when there's extra room but
+     does not clip when content exceeds the viewport (modern browsers). */
+  justify-content: safe center;
+}
+/* Mark a non-`.fig-viz` element to flex-grow in fullscreen without forcing
+   display:flex / centering (which would break grid layouts). Use on the
+   main content of grid-based panels — 1.3.a info card, 1.3.b stat grid,
+   1.4.b story grid, 1.4.c swatch grid. Tailwind utilities (.grid, etc.)
+   are preserved because we only set flex sizing, not display. */
+.figure-frame.is-fs .fig-stretch {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+/* When a `.figure-body` has exactly one child (the panel passed a single
+   body wrapper — the gold-standard 0.1 pattern), that child should also
+   flex-grow inside the body so figures fill the viewport. Multi-child
+   bodies (most other panels) keep the default per-child sizing where
+   only `.fig-viz` grows. */
+.figure-frame.is-fs .figure-body > :only-child {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+/* When the only child of `.figure-body` is itself a CSS grid (only 0.1.a
+   today — the 2-col Clocks + Ice/Water/Steam layout), force the row to
+   stretch instead of auto-sizing to content. Without this, the row sits
+   at the top of the body and the rest is empty space. */
+.figure-frame.is-fs .figure-body > .grid:only-child {
+  grid-auto-rows: 1fr;
+  align-content: stretch;
+}
+/* 0.1.a — Clock and ice/water/steam SVGs use small fixed pixel sizes
+   in normal mode (≈130 px clocks pair with a slim slider below). In
+   fullscreen they should grow to a reasonable display size while
+   preserving aspect ratio. `clamp` gives a viewport-relative cap so
+   the two panels balance on different screen heights. */
+.figure-frame.is-fs .figure-stub .clock-svg,
+.figure-frame.is-fs .figure-stub .phase-svg {
+  width: clamp(200px, 32vh, 360px);
+  height: clamp(200px, 32vh, 360px);
+  max-width: 100%;
+  max-height: 100%;
+}
+/* The .fig-viz around `.phase-svg` carries `h-[140px] md:h-[160px]` for
+   the compact normal-mode layout. Override the cap in fullscreen so the
+   ice/water/steam tile can grow to match the clocks on the left. */
+.figure-frame.is-fs .figure-stub .fig-viz:has(> .phase-svg) {
+  height: auto;
+  min-height: clamp(200px, 32vh, 360px);
 }
 .figure-frame.is-fs .figure-frame-fs-btn { display: none; }
 .figure-frame.is-fs .figure-frame-exit-btn {
@@ -1494,4 +1794,104 @@ a.rail-item:hover .rail-dot {
   .live-counter .flash { animation: none !important; }
   .mood-layer { transition: none !important; }
   html, body { transition: none !important; }
+}
+
+/* ============================================================
+   LESSON-PROSE — clean lesson body markup
+   ------------------------------------------------------------
+   `.lesson-prose` sits ON TOP of `.prose-cosmic` (same element) for
+   lesson pages whose body lives as plain HTML/JSX inside the page's
+   .astro file (clean `<h2 id="…">` / `<p>` / `<FigureFrame>` blocks).
+   It:
+     • auto-numbers h2 sections via CSS counter
+       (eyebrow "— part one", "— part two", …)
+     • inherits column width + paragraph typography from .prose-cosmic
+     • paired with chapter-runtime.ts's tagLessonProse(), which adds
+       `data-fade` to every direct child for the fade-up entrance
+       observer, and `.dropcap` to the first <p> after each heading
+       (so the existing `.dropcap::first-letter` rule kicks in).
+   ============================================================ */
+
+@counter-style section-words {
+  system: additive;
+  additive-symbols: 10 ten, 9 nine, 8 eight, 7 seven, 6 six, 5 five,
+                    4 four, 3 three, 2 two, 1 one;
+  fallback: decimal;
+}
+
+.lesson-prose {
+  counter-reset: section;
+}
+
+.lesson-prose h2 {
+  counter-increment: section;
+  margin-top: 6rem;
+  margin-bottom: 2.5rem;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--c-text-strong);
+  letter-spacing: -0.01em;
+  line-height: 1.06;
+  font-size: clamp(1.45rem, 3vw, 2.4rem);
+  scroll-margin-top: 100px;
+}
+
+.lesson-prose h2::before {
+  content: "— part " counter(section, section-words);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgb(var(--c-accent-rgb) / 0.85);
+  margin-bottom: 0.75rem;
+  font-weight: normal;
+}
+
+.lesson-prose h3 {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: var(--c-text-strong);
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.2;
+  scroll-margin-top: 100px;
+}
+
+.lesson-prose blockquote {
+  margin: 2.25rem 0;
+  padding: 0.5rem 0 0.5rem 1.4rem;
+  border-left: 2px solid rgb(var(--c-accent-rgb) / 0.55);
+  font-style: italic;
+  color: var(--c-text-soft);
+}
+
+.lesson-prose blockquote p {
+  margin: 0.4em 0;
+}
+
+.lesson-prose hr {
+  margin: 4rem 0;
+  border: 0;
+  height: 1px;
+  background: rgb(var(--c-text-rgb) / 0.08);
+}
+
+.lesson-prose ul,
+.lesson-prose ol {
+  margin: 1.25em 0;
+  padding-left: 1.6em;
+}
+
+.lesson-prose li {
+  margin: 0.4em 0;
+}
+
+.lesson-prose img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+  display: block;
+  border-radius: 8px;
 }

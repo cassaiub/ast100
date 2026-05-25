@@ -1,0 +1,92 @@
+<!DOCTYPE html><html><head><title>balloon tester</title>
+<style>html,body { margin:0; padding:0; background:#000; color:#fff; font-family:monospace; }
+#out { position:fixed; top:0; left:0; z-index:99999; background:#000; color:#0f0; padding:8px; max-width:600px; white-space:pre-wrap; font-size:11px; max-height:100vh; overflow:auto; }
+iframe { border:0; width:100vw; height:100vh; display:block; }</style>
+</head><body>
+<iframe id="ifr" src="/courses/ast100/chapter/0/0.3"></iframe>
+<div id="out">loading...</div>
+<script>
+const ifr = document.getElementById('ifr');
+const out = document.getElementById('out');
+const errors = [];
+
+ifr.onload = () => {
+  try {
+    const w = ifr.contentWindow;
+    w.addEventListener('error', e => errors.push('ERR ' + e.message + ' @ ' + e.filename + ':' + e.lineno));
+    w.addEventListener('unhandledrejection', e => errors.push('REJ ' + (e.reason && e.reason.stack || e.reason)));
+    const oe = w.console.error;
+    w.console.error = function(...a) { errors.push('CE ' + a.map(x => { try { return String(x).slice(0,300); } catch { return ''; }}).join(' ')); return oe.apply(this, a); };
+    const ow = w.console.warn;
+    w.console.warn = function(...a) { errors.push('CW ' + a.map(x => { try { return String(x).slice(0,300); } catch { return ''; }}).join(' ')); return ow.apply(this, a); };
+  } catch(e) { errors.push('hijack: ' + e.message); }
+
+  // Step 1: scroll BalloonAnalogy fully into view so client:visible triggers
+  setTimeout(() => {
+    const d = ifr.contentDocument;
+    const w = ifr.contentWindow;
+    const balloons = d.querySelectorAll('.figure-frame');
+    if (balloons.length < 2) {
+      out.innerText = 'NO balloon frame found';
+      return;
+    }
+    const balloonFrame = balloons[1];
+    balloonFrame.scrollIntoView({block: 'center'});
+
+    setTimeout(() => {
+      const lines = [];
+      lines.push('=== POST-SCROLL ===');
+      lines.push('scrollY=' + w.scrollY);
+      lines.push('');
+      lines.push('=== errors ===');
+      lines.push(errors.length === 0 ? '(none)' : errors.slice(0, 20).join('\n'));
+      lines.push('');
+      lines.push('=== balloon frame ===');
+      const r = balloonFrame.getBoundingClientRect();
+      lines.push('frame rect: top=' + r.top + ' h=' + r.height);
+      lines.push('frame opacity=' + w.getComputedStyle(balloonFrame).opacity);
+      lines.push('frame is-in=' + balloonFrame.classList.contains('is-in'));
+      const island = balloonFrame.querySelector('astro-island');
+      lines.push('astro-island: ssr=' + (island ? island.hasAttribute('ssr') : 'none') + ' awaiting=' + (island ? island.hasAttribute('await-children') : 'none'));
+      const figStub = balloonFrame.querySelector('.figure-stub');
+      lines.push('figure-stub opacity=' + (figStub ? w.getComputedStyle(figStub).opacity : 'N/A'));
+      lines.push('figure-stub is-in=' + (figStub ? figStub.classList.contains('is-in') : 'N/A'));
+      // Look at the canvas wrapper (fig-viz inside balloon)
+      const figViz = balloonFrame.querySelector('.fig-viz');
+      if (figViz) {
+        const vRect = figViz.getBoundingClientRect();
+        lines.push('fig-viz: w=' + vRect.width + ' h=' + vRect.height + ' opacity=' + w.getComputedStyle(figViz).opacity);
+      }
+      // The canvas
+      const canvas = balloonFrame.querySelector('canvas');
+      if (canvas) {
+        const cRect = canvas.getBoundingClientRect();
+        lines.push('canvas: w=' + cRect.width + ' h=' + cRect.height);
+        lines.push('canvas attrs: width=' + canvas.width + ' height=' + canvas.height);
+        const cs = w.getComputedStyle(canvas);
+        lines.push('canvas computed: display=' + cs.display + ' position=' + cs.position + ' w=' + cs.width + ' h=' + cs.height);
+        // Check WebGL context
+        try {
+          const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+          lines.push('webgl ctx: ' + (gl ? 'yes (' + gl.getParameter(gl.VERSION) + ')' : 'NO'));
+        } catch(e) { lines.push('webgl err: ' + e.message); }
+      } else {
+        lines.push('NO CANVAS');
+      }
+      // Check for the slider
+      const slider = balloonFrame.querySelector('input[type=range].cosmic-slider');
+      lines.push('slider: ' + (slider ? 'found, value=' + slider.value : 'NOT FOUND'));
+
+      // What about the FIRST figure (cosmic scale) - confirm it's working
+      lines.push('');
+      lines.push('=== cosmic frame (top) ===');
+      const cs2 = w.getComputedStyle(balloons[0]);
+      lines.push('opacity=' + cs2.opacity + ' is-in=' + balloons[0].classList.contains('is-in'));
+      const csIsland = balloons[0].querySelector('astro-island');
+      lines.push('cosmic island awaiting=' + (csIsland ? csIsland.hasAttribute('await-children') : '?'));
+
+      out.innerText = lines.join('\n');
+    }, 4000);
+  }, 1500);
+};
+</script></body></html>

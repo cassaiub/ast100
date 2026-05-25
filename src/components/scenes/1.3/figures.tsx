@@ -2,20 +2,11 @@ import { useState, type ReactNode } from "react";
 
 function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: string; caption: ReactNode; children: ReactNode }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">interactive</div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
@@ -42,7 +33,7 @@ export function NucleosynthesisTimelinePanel() {
   const cur = STAGES[sel];
   return (
     <FigurePanel
-      idx="1.3.1"
+      idx="1.3.a"
       kicker="Nucleosynthesis · Fifteen Minutes That Built the Recipe"
       caption="Click through the eight stages of primordial nucleosynthesis. Watch quarks condense into protons, hit the deuterium bottleneck, then race through a brief window to lock in the 75% H / 25% He cosmic recipe forever."
     >
@@ -52,6 +43,7 @@ export function NucleosynthesisTimelinePanel() {
             key={i}
             type="button"
             onClick={() => setSel(i)}
+            data-shortcut={i < 9 ? String(i + 1) : undefined}
             className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${sel === i ? "is-active" : ""}`}
           >
             {s.t}
@@ -60,7 +52,7 @@ export function NucleosynthesisTimelinePanel() {
       </ol>
 
       <div
-        className="grid md:grid-cols-[200px_1fr] gap-4 p-4 rounded-md"
+        className="fig-stretch grid md:grid-cols-[200px_1fr] gap-4 p-4 rounded-md"
         style={{
           background: "rgb(var(--c-accent-rgb) / 0.05)",
           border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
@@ -93,7 +85,7 @@ export function NucleosynthesisTimelinePanel() {
               </span>
             ))}
           </div>
-          <div className="text-[13px] text-white/85 leading-[1.6] font-sans">
+          <div className="text-[13px] text-white/85 leading-[1.6] font-sans min-h-[5em]">
             {cur.note}
           </div>
         </div>
@@ -147,12 +139,12 @@ export function PrimordialAbundancePanel() {
 
   return (
     <FigurePanel
-      idx="1.3.2"
+      idx="1.3.b"
       kicker="The 75/25 Recipe · A Cosmic Lucky Number"
       caption="The Universe expanded at just the right rate. Slower, and almost all hydrogen would have fused into iron — stagnant, lifeless. Faster, and no helium would have formed at all. Slide to see why our specific expansion is one of the most consequential numbers in physics."
     >
-      <div className="grid md:grid-cols-[1fr_1.4fr] gap-6 items-center">
-        <div className="relative">
+      <div className="fig-stretch grid md:grid-cols-[1fr_1.4fr] gap-6 items-center">
+        <div className="fig-viz relative">
           <svg viewBox={`0 0 ${W} ${H2}`} className="block w-full h-auto">
             <path d={arcPath(0, H_pct)} fill="rgb(var(--c-accent-rgb))" opacity="0.85" />
             <path d={arcPath(H_pct, H_pct + He_pct)} fill="rgb(var(--c-solar-rgb))" opacity="0.85" />

@@ -3,20 +3,11 @@ import { mulberry32 } from "../../../data/chapter-0-events";
 
 function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: string; caption: ReactNode; children: ReactNode }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">interactive</div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
@@ -90,12 +81,12 @@ export function RecombinationRedshiftPanel() {
 
   return (
     <FigurePanel
-      idx="1.4.1"
+      idx="1.4.a"
       kicker="Recombination · The Fog Lifts, Photons Stretch"
       caption="At 380,000 years, the Universe cooled enough for electrons to bind to nuclei. Light decoupled from matter and streamed free. As space has expanded by a factor of 1100 since, those primordial photons have stretched from visible/IR light into microwaves — the CMB we see today at 2.73 K."
     >
       {/* Plasma → clear panel */}
-      <div className="relative w-full overflow-hidden rounded-md mb-3" style={{ background: "rgb(var(--c-bg-rgb) / 0.5)" }}>
+      <div className="fig-viz relative w-full overflow-hidden rounded-md mb-3" style={{ background: "rgb(var(--c-bg-rgb) / 0.5)" }}>
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* free electron dots — fade out as scale grows past 1 */}
           {motes.map((m, i) => (
@@ -132,7 +123,7 @@ export function RecombinationRedshiftPanel() {
 
       {/* Wave stretching panel — taller so the wave breathes and a
          reference wave at scale=1 sits behind for comparison */}
-      <div className="relative w-full overflow-hidden rounded-md" style={{ background: "rgb(var(--c-bg-rgb) / 0.45)" }}>
+      <div className="fig-viz relative w-full overflow-hidden rounded-md" style={{ background: "rgb(var(--c-bg-rgb) / 0.45)" }}>
         <svg viewBox={`0 0 ${W} 170`} className="block w-full h-auto">
           {/* Centre axis */}
           <line x1={40} x2={W - 40} y1={80} y2={80} stroke="rgb(var(--c-text-rgb) / 0.15)" strokeWidth="0.6" strokeDasharray="2 4" />
@@ -389,7 +380,7 @@ export function PenziasWilsonStoryPanel() {
   const cur = BEATS[sel];
   return (
     <FigurePanel
-      idx="1.4.2"
+      idx="1.4.b"
       kicker="The 1964 Accident · Penzias & Wilson"
       caption="The Cosmic Microwave Background was discovered by two engineers who were trying to do something else entirely. Walk through the six steps of the most accidental Nobel Prize in cosmology."
     >
@@ -399,6 +390,7 @@ export function PenziasWilsonStoryPanel() {
             key={b.id}
             type="button"
             onClick={() => setSel(i)}
+            data-shortcut={i < 9 ? String(i + 1) : undefined}
             className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${sel === i ? "is-active" : ""}`}
           >
             {String(i + 1).padStart(2, "0")} · {b.year}
@@ -407,14 +399,14 @@ export function PenziasWilsonStoryPanel() {
       </ol>
 
       <div
-        className="grid md:grid-cols-[240px_1fr] gap-5 p-4 rounded-md items-start"
+        className="fig-stretch grid md:grid-cols-[240px_1fr] gap-5 p-4 rounded-md items-start"
         style={{
           background: "rgb(var(--c-accent-rgb) / 0.05)",
           border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
         }}
       >
         <div
-          className="rounded-md p-3"
+          className="fig-viz rounded-md p-3"
           style={{
             background: "rgb(var(--c-bg-rgb) / 0.45)",
             border: "1px solid rgb(var(--c-text-rgb) / 0.08)",
@@ -422,14 +414,14 @@ export function PenziasWilsonStoryPanel() {
         >
           <BeatIcon icon={cur.icon} color="rgb(var(--c-accent-rgb))" />
         </div>
-        <div>
+        <div className="min-h-[12em]">
           <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mb-1">
             step {sel + 1} · {cur.year}
           </div>
           <div className="font-serif font-medium leading-tight" style={{ fontSize: "1.5rem", color: "var(--c-accent)" }}>
             {cur.title}
           </div>
-          <p className="mt-3 text-[14px] text-white/85 leading-[1.65] font-sans">{cur.body}</p>
+          <p className="mt-3 text-[14px] text-white/85 leading-[1.65] font-sans min-h-[6.6em]">{cur.body}</p>
         </div>
       </div>
     </FigurePanel>
@@ -532,15 +524,17 @@ export function CmbSatellitesPanel() {
 
   return (
     <FigurePanel
-      idx="1.4.3"
+      idx="1.4.c"
       kicker="Maps of the Baby Universe · COBE → WMAP → Planck"
       caption="The same patch of CMB, sampled at three telescope resolutions across three decades. Each colder (blue) or hotter (red) speck is a primordial density fluctuation — a future galaxy cluster or void, seen at the age of 380,000 years."
     >
-      <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {samples.map(({ mission, grid }) => (
+      <ol className="fig-stretch grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        {samples.map(({ mission, grid }, i) => (
           <li
             key={mission.id}
             onClick={() => setSel(mission.id)}
+            data-shortcut={String(i + 1)}
+            aria-selected={sel === mission.id}
             className="cursor-pointer"
           >
             <Swatch data={grid} gridN={mission.grid} active={sel === mission.id} />
@@ -560,7 +554,7 @@ export function CmbSatellitesPanel() {
         ))}
       </ol>
       <div
-        className="p-3 rounded-md text-[13px] text-white/85 leading-[1.6] font-sans"
+        className="p-3 rounded-md text-[13px] text-white/85 leading-[1.6] font-sans min-h-[5.5em]"
         style={{
           background: "rgb(var(--c-accent-rgb) / 0.04)",
           border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",

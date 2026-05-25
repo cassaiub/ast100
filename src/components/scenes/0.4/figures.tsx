@@ -17,22 +17,11 @@ function FigurePanel({
   children: ReactNode;
 }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">
-            interactive
-          </div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      <div className="figure-body">{children}</div>
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
@@ -434,11 +423,11 @@ function EmWaveScene() {
 export function EmWaveOscillatorPanel() {
   return (
     <FigurePanel
-      idx="0.4.1"
+      idx="0.4.a"
       kicker="Electromagnetic Wave · E and B in Step"
       caption="Light is what an accelerating charge radiates. +q bobs up and down along y; the radiated electric field E parallels its motion, the magnetic field B is perpendicular (along x), and the whole pattern races down z at c. The wavelength λ — bracketed above the wave — is the distance from one peak to the next, i.e. the length of one full wiggle frozen in space. The frequency f is how many of those wiggles the source pumps out per second; watch the white pulse at the left blink in time with +q to feel it. Drag to orbit, scroll to zoom, right-click drag (or two-finger drag) to pan."
     >
-      <div className="w-full" style={{ height: 380 }}>
+      <div className="fig-viz w-full" style={{ height: 380 }}>
         <Canvas
           dpr={[1, 1.75]}
           camera={{ position: [3.4, 1.6, 3.4], fov: 50, near: 0.05, far: 100 }}
@@ -594,7 +583,7 @@ export function EmSpectrumScrubberPanel() {
 
   return (
     <FigurePanel
-      idx="0.4.2"
+      idx="0.4.b"
       kicker="The Electromagnetic Spectrum · One Strip, Seven Voices"
       caption={
         <>
@@ -618,7 +607,7 @@ export function EmSpectrumScrubberPanel() {
           provides rounded chrome and padding. The slider thumb position
           maps directly to xOf(logLam) only when the SVG occupies the
           full container width with no extra padding, which we preserve. */}
-      <div className="relative w-full">
+      <div className="fig-viz relative w-full">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           <defs>
             <linearGradient id="visibleSpectrumGrad" x1="0" y1="0" x2="1" y2="0">
@@ -1015,12 +1004,12 @@ export function TelescopeBestiaryPanel() {
   }
   return (
     <FigurePanel
-      idx="0.4.3"
+      idx="0.4.c"
       kicker="Telescope Bestiary · One Instrument per Wavelength"
       caption="The real telescopes astronomers use, mapped onto the EM band each was tuned for. Hover any card to see where it sits on the spectrum strip — open the official site to dive deeper."
     >
       {/* Mini spectrum strip with marker */}
-      <div className="relative w-full overflow-hidden rounded-md mb-5">
+      <div className="fig-viz relative w-full overflow-hidden rounded-md mb-5">
         <svg viewBox={`0 0 ${W} 50`} className="block w-full h-auto">
           {BANDS.map((b) => (
             <rect
@@ -1225,7 +1214,7 @@ export function TelescopeAnatomyPanel() {
 
   return (
     <FigurePanel
-      idx="0.4.4"
+      idx="0.4.d"
       kicker="Telescope Anatomy · Cassegrain Reflector"
       caption={
         <>
@@ -1281,7 +1270,7 @@ export function TelescopeAnatomyPanel() {
         </div>
       </div>
 
-      <div className="relative w-full">
+      <div className="fig-viz relative w-full">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           <defs>
             <marker
@@ -1699,7 +1688,7 @@ export function TelescopeAnatomyPanel() {
 
       {/* Stage description */}
       <div
-        className="mt-4 px-4 py-2.5 rounded-md text-[14px] leading-snug text-white/85"
+        className="mt-4 px-4 py-2.5 rounded-md text-[14px] leading-snug text-white/85 min-h-[5.5em]"
         style={{
           background: "rgb(var(--c-accent-rgb) / 0.05)",
           border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",

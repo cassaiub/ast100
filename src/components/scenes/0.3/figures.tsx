@@ -1,4 +1,7 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Billboard, OrbitControls, Text } from "@react-three/drei";
+import * as THREE from "three";
 
 /* ── Shared figure frame (same pattern as 0.2/figures.tsx) ────────── */
 function FigurePanel({
@@ -13,114 +16,120 @@ function FigurePanel({
   children: ReactNode;
 }) {
   return (
-    <figure data-fade className="my-12">
-      <div className="figure-stub rounded-md p-4 md:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma/70">
-            <span className="inline-block w-2 h-2 rounded-full bg-plasma/70 shadow-[0_0_8px_var(--c-accent)] mr-2 align-middle"></span>
-            figure {idx} · {kicker}
-          </div>
-          <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/60">
-            interactive
-          </div>
-        </div>
-        {children}
-      </div>
-      <figcaption className="mt-3 text-[14px] text-white/75 font-sans leading-[1.55]">
-        <span className="text-plasma font-mono tracking-[0.14em]">Fig. {idx}</span>
-        <span className="mx-2 text-white/35">/</span>
+    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+      {children}
+      <figcaption>
+        <span className="figure-tag">Fig. {idx}</span>
+        <span className="figure-title"> — {kicker}.</span>{" "}
         {caption}
       </figcaption>
     </figure>
   );
 }
 
-/* ── Cosmic Scale: log-scale ladder of distances ─────────────────────
-   Each celestial object is positioned on a logarithmic horizontal axis
-   spanning 1 second to ~14 billion years of light-travel time. Click
-   any object to see how long ago its light left for us. */
+/* ── Cosmic Scale: 27-object distance ladder ─────────────────────────
+   Objects from knowledgebase/claudemds/cosmic_distances.md, sorted by
+   light-travel time, from the Moon (1.28 s) to the Cosmic Microwave
+   Background (13.8 Gyr).
+
+   The axis uses RANK position (i / (N-1)) rather than log10(time).
+   Reason: lookback saturates near the age of the universe, so a pure
+   log10 axis crushes every z > 6 object (TON 618 → CMB, ~12.1–13.8
+   Gyr) into the last 1 % of the line — unreadable. Rank spacing
+   gives all 27 objects equal axis room while preserving sort order;
+   the inset always shows the precise distance + light-travel of the
+   selected object, so the underlying metric is never hidden. */
 type ScaleObject = {
   id: string;
+  /** Long-form name shown as the inset header. */
   name: string;
-  /** light-travel time in years */
-  yearsAgo: number;
-  blurb: string;
+  /** Short name shown on the axis (must fit ~12 chars to row-pack). */
+  short: string;
+  /** Compact distance label rendered as the axis tick label. */
+  tick: string;
+  /** Comoving distance, formatted (e.g. "2.54 Mly"). */
+  distance: string;
+  /** Light-travel (lookback) time, formatted (e.g. "2.54 million years"). */
+  lookback: string;
+  /** One-sentence description shown in the inset. */
+  description: string;
 };
 const SCALE_OBJECTS: ScaleObject[] = [
-  { id: "moon",      name: "Moon",            yearsAgo: 1.3 / (365.25 * 24 * 3600),     blurb: "1.3 seconds. The light from the Moon left moments before you looked up." },
-  { id: "sun",       name: "Sun",             yearsAgo: 500 / (365.25 * 24 * 3600),     blurb: "8 minutes, 20 seconds. The Sun could already be gone — we wouldn't know yet." },
-  { id: "jupiter",   name: "Jupiter",         yearsAgo: 2580 / (365.25 * 24 * 3600),    blurb: "≈43 minutes. Voyager 1's photographs are timestamped by light-distance." },
-  { id: "pluto",     name: "Pluto",           yearsAgo: 19800 / (365.25 * 24 * 3600),   blurb: "≈5.5 hours. New Horizons signals from Pluto take a working day to reach Earth." },
-  { id: "alphacen",  name: "α Centauri",      yearsAgo: 4.37,                            blurb: "4.37 years. The nearest star system — you see it as it was when you started a different chapter of life." },
-  { id: "galcentre", name: "Galactic Centre", yearsAgo: 26000,                           blurb: "26,000 years. The supermassive black hole at the heart of our Milky Way — its light left in the Stone Age." },
-  { id: "andromeda", name: "Andromeda",       yearsAgo: 2.5e6,                           blurb: "2.5 million years. The Andromeda Galaxy as it looked before our species existed." },
-  { id: "virgo",     name: "Virgo Cluster",   yearsAgo: 5.4e7,                           blurb: "54 million years. Dinosaurs were still around when this cluster's light set out." },
-  { id: "coma",      name: "Coma Cluster",    yearsAgo: 3.3e8,                           blurb: "330 million years. A thousand galaxies bound by gravity — light that set out while the first reptiles crawled onto land." },
-  { id: "sloan",     name: "Sloan Great Wall", yearsAgo: 1.0e9,                          blurb: "1 billion years. A filament of galaxies 1.4 billion light-years long — one of the largest structures we have mapped in the Universe." },
-  { id: "quasar",    name: "Quasar 3C 273",   yearsAgo: 2.4e9,                           blurb: "2.4 billion years. The first quasar ever identified — a supermassive black hole outshining its entire host galaxy." },
-  { id: "cmb",       name: "CMB",             yearsAgo: 1.378e10,                        blurb: "13.78 billion years. The Cosmic Microwave Background — the wall of light from when the Universe cooled enough to become transparent. We cannot see past this." },
+  { id: "moon",      short: "Moon",        tick: "1.3 ls",  name: "Moon",                                distance: "384,400 km", lookback: "1.28 seconds",        description: "Earth's only natural satellite; the largest and brightest object in the night sky." },
+  { id: "sun",       short: "Sun",         tick: "1 AU",    name: "Sun",                                 distance: "1 AU",       lookback: "8.3 minutes",         description: "Our host star; contains 99.86 % of the solar system's total mass." },
+  { id: "neptune",   short: "Neptune",     tick: "30 AU",   name: "Neptune",                             distance: "30 AU",      lookback: "4.2 hours",           description: "Outermost planet; an ice giant with the fastest winds in the solar system." },
+  { id: "proxima",   short: "Proxima",     tick: "4 ly",    name: "Proxima Centauri",                    distance: "4.24 ly",    lookback: "4.24 years",          description: "Nearest star to the Sun; a dim red dwarf with at least one rocky planet." },
+  { id: "pleiades",  short: "Pleiades",    tick: "444 ly",  name: "Pleiades",                            distance: "444 ly",     lookback: "444 years",           description: "Iconic open star cluster of hot blue stars; visible to the naked eye." },
+  { id: "sgra",      short: "Sgr A*",      tick: "26 kly",  name: "Galactic Center (Sgr A*)",            distance: "26,000 ly",  lookback: "26,000 years",        description: "Core of the Milky Way, home to a 4 million solar-mass black hole." },
+  { id: "lmc",       short: "LMC",         tick: "160 kly", name: "Large Magellanic Cloud",              distance: "160,000 ly", lookback: "160,000 years",       description: "Largest satellite galaxy of the Milky Way; visible from the southern hemisphere." },
+  { id: "andromeda", short: "Andromeda",   tick: "2.5 Mly", name: "Andromeda Galaxy (M31)",              distance: "2.54 Mly",   lookback: "2.54 million years",  description: "Nearest major galaxy; on a collision course with the Milky Way in ~4.5 Gyr." },
+  { id: "cena",      short: "Cen A",       tick: "13 Mly",  name: "Centaurus A",                         distance: "13 Mly",     lookback: "13 million years",    description: "Giant elliptical with a prominent dust lane and an active jet-producing nucleus." },
+  { id: "m87",       short: "M87",         tick: "54 Mly",  name: "M87 (Virgo Cluster)",                 distance: "54 Mly",     lookback: "54 million years",    description: "Massive elliptical whose 6.5-billion-M☉ black hole was the first ever imaged." },
+  { id: "norma",     short: "Norma C.",    tick: "220 Mly", name: "Great Attractor (Norma Cluster)",     distance: "220 Mly",    lookback: "220 million years",   description: "Gravitational anomaly pulling millions of galaxies — including our own — toward it." },
+  { id: "coma",      short: "Coma",        tick: "321 Mly", name: "Coma Cluster",                        distance: "321 Mly",    lookback: "320 million years",   description: "One of the densest known galaxy clusters; historically key to discovering dark matter." },
+  { id: "shapley",   short: "Shapley",     tick: "650 Mly", name: "Shapley Supercluster",                distance: "650 Mly",    lookback: "630 million years",   description: "Largest concentration of galaxies in the nearby universe; about 8,000 galaxies." },
+  { id: "sloan",     short: "Sloan Wall",  tick: "1 Gly",   name: "Sloan Great Wall",                    distance: "~1 Gly",     lookback: "~980 million years",  description: "Vast filament of galaxy clusters stretching ~1.4 billion light-years." },
+  { id: "q3c273",    short: "3C 273",      tick: "2.4 Gly", name: "3C 273 (brightest quasar)",           distance: "2.4 Gly",    lookback: "2.1 billion years",   description: "Brightest quasar in Earth's sky; its jet alone outshines most galaxies." },
+  { id: "bullet",    short: "Bullet",      tick: "3.7 Gly", name: "Bullet Cluster",                      distance: "3.7 Gly",    lookback: "3.3 billion years",   description: "Two colliding galaxy clusters; the strongest direct evidence for dark matter." },
+  { id: "elgordo",   short: "El Gordo",    tick: "7.2 Gly", name: "El Gordo Cluster",                    distance: "7.2 Gly",    lookback: "6.0 billion years",   description: "Largest known galaxy-cluster collision in the observable universe." },
+  { id: "hcbgw",     short: "Hercules W.", tick: "10 Gly",  name: "Hercules–Corona Borealis Great Wall", distance: "~10 Gly",    lookback: "~9.0 billion years",  description: "Largest known structure in the universe; ~10 billion ly across, a gamma-ray-burst hotspot." },
+  { id: "ton618",    short: "TON 618",     tick: "17 Gly",  name: "TON 618",                             distance: "17.1 Gly",   lookback: "10.4 billion years",  description: "One of the most massive black holes known; 66 billion solar masses." },
+  { id: "apm08279",  short: "APM 08279",   tick: "24 Gly",  name: "APM 08279+5255",                      distance: "24.3 Gly",   lookback: "12.1 billion years",  description: "Hyperluminous quasar; one of the most intrinsically bright objects ever observed." },
+  { id: "sdss1030",  short: "SDSS J1030",  tick: "28 Gly",  name: "SDSS J1030+0524",                     distance: "27.8 Gly",   lookback: "12.85 billion years", description: "High-redshift quasar (z = 6.28); seen when the universe was less than 1 Gyr old." },
+  { id: "ulas1120",  short: "ULAS J1120",  tick: "29 Gly",  name: "ULAS J1120+0641",                     distance: "28.8 Gly",   lookback: "12.97 billion years", description: "Quasar (z = 7.09) powered by a 2-billion-M☉ black hole; puzzlingly massive for its age." },
+  { id: "j0313",     short: "J0313",       tick: "29 Gly",  name: "J0313−1806",                          distance: "29.3 Gly",   lookback: "13.03 billion years", description: "Most distant known quasar (z = 7.64); a 1.6-billion-M☉ black hole at 670 Myr after the Big Bang." },
+  { id: "grb090423", short: "GRB 090423",  tick: "30 Gly",  name: "GRB 090423",                          distance: "29.8 Gly",   lookback: "13.1 billion years",  description: "Gamma-ray burst (z = 8.2); one of the most distant individual events ever detected." },
+  { id: "gnz11",     short: "GN-z11",      tick: "32 Gly",  name: "GN-z11",                              distance: "32.1 Gly",   lookback: "13.4 billion years",  description: "Exceptionally luminous galaxy (z = 11.1); seen by Hubble just 430 Myr after the Big Bang." },
+  { id: "jades",     short: "JADES",       tick: "34 Gly",  name: "JADES-GS-z14-0",                      distance: "33.6 Gly",   lookback: "13.5 billion years",  description: "Most distant confirmed galaxy (z = 14.3); seen 290 million years after the Big Bang." },
+  { id: "cmb",       short: "CMB",         tick: "46 Gly",  name: "Cosmic Microwave Background",         distance: "45.7 Gly",   lookback: "13.8 billion years",  description: "Afterglow of the Big Bang; the oldest light we can observe, from 380,000 years after t = 0." },
 ];
 
-/* ── Label row layout ────────────────────────────────────────────────
-   Four staggered rows above/below the axis.  Sorted-by-x greedy fit
-   guarantees no horizontal overlap between any two label boxes. */
+/* ── Label row layout — four staggered rows above/below the axis. The
+   greedy packer (COSMIC_ROW below) picks the lowest-index row with no
+   horizontal overlap. With 27 objects on a 900-px viewBox the long
+   names ("Hercules W.", "SDSS J1030", "APM 08279") still find a row at
+   a comfortable distance from their neighbours. */
 type LabelRow = 0 | 1 | 2 | 3;
 const ROW_LAYOUT: Record<
   LabelRow,
   { labelY: number; dotY: number; lineEnd: number; axisOffset: number }
 > = {
-  0: { labelY: -56, dotY: -32, lineEnd: -12, axisOffset: -6 },
-  1: { labelY: +56, dotY: +32, lineEnd: +12, axisOffset: +6 },
-  2: { labelY: -100, dotY: -66, lineEnd: -36, axisOffset: -6 },
-  3: { labelY: +100, dotY: +66, lineEnd: +36, axisOffset: +6 },
+  0: { labelY: -52, dotY: -32, lineEnd: -12, axisOffset: -6 },
+  1: { labelY: +52, dotY: +32, lineEnd: +12, axisOffset: +6 },
+  2: { labelY: -112, dotY: -74, lineEnd: -40, axisOffset: -6 },
+  3: { labelY: +112, dotY: +74, lineEnd: +40, axisOffset: +6 },
 };
 const ROW_ORDER: LabelRow[] = [0, 1, 2, 3];
 
 function approxLabelWidth(name: string): number {
   /* sans-serif 11px with letter-spacing≈1, ~6.3 px/char + padding */
-  return name.length * 6.3 + 6;
+  return name.length * 6.3 + 8;
 }
 
-function fmtYearsAgo(y: number): string {
-  if (y < 1 / 365.25 / 24) return `${(y * 365.25 * 24 * 3600).toFixed(1)} s`;
-  if (y < 1 / 365.25) return `${(y * 365.25 * 24 * 60).toFixed(1)} min`;
-  if (y < 1) return `${(y * 365.25 * 24).toFixed(1)} hr`;
-  if (y < 1e3) return `${y.toFixed(1)} yr`;
-  if (y < 1e6) return `${(y / 1e3).toFixed(1)} k yr`;
-  if (y < 1e9) return `${(y / 1e6).toFixed(1)} M yr`;
-  return `${(y / 1e9).toFixed(2)} G yr`;
-}
-
-/* ── Cosmic-Scale geometry (module-level so assignRows can precompute) */
-const COSMIC_W = 720;
-const COSMIC_H = 280;
-const COSMIC_PAD = 56;
+/* ── Cosmic-Scale geometry. The axis is rank-based: position(i) =
+   PAD + (i / (N-1)) · (W − 2·PAD); see the SCALE_OBJECTS comment for
+   why we don't use log10(time). Wider viewBox (1100) gives the tick
+   labels and longer main labels room to breathe. */
+const COSMIC_W = 1100;
+const COSMIC_H = 380;
+const COSMIC_PAD = 64;
 const COSMIC_AXIS_Y = COSMIC_H / 2;
-const COSMIC_LOG_MIN = -8;
-const COSMIC_LOG_MAX = 10.5;
-/* Power warp on the log axis: the value is still log₁₀(years), but the
-   normalised position is raised to a power > 1 before being placed on the
-   axis.  This squeezes the sub-second / sub-day end (where every decade
-   still maps to a 10× jump, just to a smaller pixel width) and gives the
-   cosmic end more breathing room. */
-const COSMIC_AXIS_POWER = 1.45;
-function cosmicX(years: number): number {
-  const v = Math.log10(years);
-  const norm = (v - COSMIC_LOG_MIN) / (COSMIC_LOG_MAX - COSMIC_LOG_MIN);
-  const warped = Math.pow(Math.max(0, Math.min(1, norm)), COSMIC_AXIS_POWER);
-  return COSMIC_PAD + warped * (COSMIC_W - 2 * COSMIC_PAD);
+function cosmicX(rank: number): number {
+  const n = SCALE_OBJECTS.length;
+  if (n <= 1) return COSMIC_W / 2;
+  const frac = rank / (n - 1);
+  return COSMIC_PAD + frac * (COSMIC_W - 2 * COSMIC_PAD);
 }
 
-/* Sorted-by-x greedy row assignment: each label picks the lowest-index
-   row in {0,1,2,3} that has no horizontal overlap with anything already
-   placed there.  Guarantees no two label boxes touch. */
+/* Sorted-by-x greedy row assignment. SCALE_OBJECTS is already in
+   distance order, so iterating in index order matches axis order. */
 const COSMIC_ROW: Record<string, LabelRow> = (() => {
   const PAD = 6;
-  const items = SCALE_OBJECTS.map((o) => ({
+  const items = SCALE_OBJECTS.map((o, i) => ({
     id: o.id,
-    x: cosmicX(o.yearsAgo),
-    w: approxLabelWidth(o.name),
-  })).sort((a, b) => a.x - b.x);
+    x: cosmicX(i),
+    w: approxLabelWidth(o.short),
+  }));
   const placed: Record<LabelRow, { x: number; w: number }[]> = {
     0: [],
     1: [],
@@ -146,386 +155,710 @@ const COSMIC_ROW: Record<string, LabelRow> = (() => {
 })();
 
 export function CosmicScalePanel() {
-  const [selected, setSelected] = useState<string>("andromeda");
+  const [selectedIdx, setSelectedIdx] = useState<number>(7); // default: Andromeda
   const W = COSMIC_W;
   const H = COSMIC_H;
   const PAD = COSMIC_PAD;
   const AXIS_Y = COSMIC_AXIS_Y;
-  const logMin = COSMIC_LOG_MIN;
-  const logMax = COSMIC_LOG_MAX;
-  const xOf = cosmicX;
 
-  const sel = SCALE_OBJECTS.find((o) => o.id === selected)!;
+  const sel = SCALE_OBJECTS[selectedIdx];
+  const total = SCALE_OBJECTS.length;
 
   return (
     <FigurePanel
-      idx="0.3.1"
-      kicker="Cosmic Scale · Distance is Time"
-      caption="Click any object to see how long ago its light started its journey to your eyes. The horizontal axis is logarithmic — every tick still marks a 10× jump in light-travel time, but the small-distance end is compressed so the deep cosmos has room to spread out. Nothing you ever see is happening 'now'."
+      idx="0.3.a"
+      kicker="Cosmic Scale · From the Moon to the Horizon"
+      caption={
+        <>
+          27 objects sorted by light-travel time, from the <em>Moon</em>{" "}
+          (1.28 s) to the <em>Cosmic Microwave Background</em> (13.8 Gyr).
+          Click any dot — or use the <strong>← / →</strong> arrow keys
+          (Shift = jump 10) — to see how far the object sits, how long
+          its photons have been on their way, and what makes it
+          remarkable. The axis is sorted but non-linear in time
+          (lookback saturates near the Big Bang), so every object gets
+          readable room; the inset always carries the precise metric.
+          Nothing you ever see is happening &ldquo;now&rdquo;.
+        </>
+      }
     >
-      <div className="relative w-full overflow-hidden rounded-md">
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Base axis line */}
-          <line
-            x1={PAD}
-            x2={W - PAD}
-            y1={AXIS_Y}
-            y2={AXIS_Y}
-            stroke="rgb(var(--c-text-rgb) / 0.18)"
-            strokeWidth="1"
-          />
-          {/* Decade ticks (faint) — placed on the warped axis so each
-             10× step has a visible (but non-uniform) width. */}
-          {Array.from({ length: Math.floor(logMax - logMin) + 1 }, (_, i) => logMin + i).map((v) => {
-            const x = xOf(Math.pow(10, v));
-            return (
-              <line
-                key={v}
-                x1={x}
-                x2={x}
-                y1={AXIS_Y - 3}
-                y2={AXIS_Y + 3}
-                stroke="rgb(var(--c-text-rgb) / 0.15)"
-                strokeWidth="0.6"
-              />
-            );
-          })}
-          {/* "Earth" anchor at far left */}
-          <g>
-            <circle cx={PAD - 8} cy={AXIS_Y} r="3.5" fill="rgb(var(--c-text-rgb) / 0.55)" />
-            <text
-              x={PAD - 8}
-              y={AXIS_Y + 22}
-              textAnchor="middle"
-              fontSize="11"
-              letterSpacing="3"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-text-rgb) / 0.55)"
-            >
-              EARTH
-            </text>
-            <text
-              x={PAD - 8}
-              y={AXIS_Y + 36}
-              textAnchor="middle"
-              fontSize="9"
-              letterSpacing="2"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-text-rgb) / 0.35)"
-            >
-              now
-            </text>
-          </g>
-          {/* Horizon anchor at far right */}
-          <g>
-            <circle
-              cx={W - PAD + 8}
-              cy={AXIS_Y}
-              r="3.5"
-              fill="rgb(var(--c-accent-rgb))"
-              style={{
-                filter: "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.7))",
-              }}
-            />
-            <text
-              x={W - PAD + 8}
-              y={AXIS_Y + 22}
-              textAnchor="middle"
-              fontSize="11"
-              letterSpacing="3"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-accent-rgb))"
-            >
-              HORIZON
-            </text>
-            <text
-              x={W - PAD + 8}
-              y={AXIS_Y + 36}
-              textAnchor="middle"
-              fontSize="9"
-              letterSpacing="2"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-accent-rgb) / 0.7)"
-            >
-              13.8 Gyr
-            </text>
-          </g>
+      {/* Single wrapper so figure-stub has just one non-figcaption
+         child. The global fullscreen CSS gives every direct child
+         `flex: 1 1 auto` — with two children (SVG + inset) they used
+         to split the height 50/50 and the SVG was crushed. With one
+         wrapper this child claims the whole grow and we apportion
+         inside: SVG flex-1, inset flex-none. */}
+      <div className="flex flex-col gap-3">
+        {/* Hidden range input — the keyboard-navigation backbone.
+           FigureFrame's `frameKey` queries `input[type=range]` and
+           nudges it on ←/→ (Shift = ×10). querySelector finds
+           display:none elements, and dispatched input/change events
+           still bubble through React's delegation, so onChange fires
+           even though the input is non-visual. We use display:none
+           (not position:absolute) so it can't perturb the fullscreen
+           layout, which was the most likely cause of the earlier FS
+           bug where things rendered side-by-side. */}
+        <input
+          type="range"
+          min={0}
+          max={total - 1}
+          step={1}
+          value={selectedIdx}
+          onChange={(e) => setSelectedIdx(parseInt(e.target.value, 10))}
+          aria-label={`Select cosmic object: currently ${sel.name}`}
+          style={{ display: "none" }}
+        />
 
-          {/* Objects — each label sits on one of four rows assigned by
-             a greedy collision-free packer (see COSMIC_ROW). */}
-          {SCALE_OBJECTS.map((o) => {
-            const x = xOf(o.yearsAgo);
-            const isSel = o.id === selected;
-            const row = COSMIC_ROW[o.id];
-            const geom = ROW_LAYOUT[row];
-            const labelY = AXIS_Y + geom.labelY;
-            const dotY = AXIS_Y + geom.dotY;
-            const lineEnd = AXIS_Y + geom.lineEnd;
-            return (
-              <g
-                key={o.id}
-                onClick={() => setSelected(o.id)}
-                style={{ cursor: "pointer" }}
-              >
-                {/* Leader line from axis to dot */}
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={AXIS_Y + geom.axisOffset}
-                  y2={lineEnd}
-                  stroke={
-                    isSel
-                      ? "rgb(var(--c-accent-rgb) / 0.7)"
-                      : "rgb(var(--c-text-rgb) / 0.25)"
-                  }
-                  strokeWidth={isSel ? 1.2 : 0.7}
-                  strokeDasharray={isSel ? "0" : "1 2"}
-                />
-                {/* Tick on axis */}
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={AXIS_Y - 6}
-                  y2={AXIS_Y + 6}
-                  stroke={
-                    isSel
-                      ? "rgb(var(--c-accent-rgb))"
-                      : "rgb(var(--c-text-rgb) / 0.4)"
-                  }
-                  strokeWidth={isSel ? 1.6 : 0.8}
-                />
-                {/* Dot */}
-                <circle
-                  cx={x}
-                  cy={dotY}
-                  r={isSel ? 5.5 : 4}
-                  fill={
-                    isSel
-                      ? "rgb(var(--c-accent-rgb))"
-                      : "rgb(var(--c-text-rgb) / 0.55)"
-                  }
-                  style={{
-                    filter: isSel
-                      ? "drop-shadow(0 0 10px rgb(var(--c-accent-rgb) / 0.7))"
-                      : "none",
-                  }}
-                />
-                {/* Label */}
-                <text
-                  x={x}
-                  y={labelY}
-                  textAnchor="middle"
-                  fontSize={isSel ? 13 : 11}
-                  letterSpacing={isSel ? "0.6" : "1"}
-                  fontFamily={isSel ? "var(--font-serif)" : "var(--font-sans)"}
-                  fontStyle={isSel ? "italic" : "normal"}
-                  fontWeight={isSel ? 500 : 400}
-                  fill={
-                    isSel
-                      ? "rgb(var(--c-accent-rgb))"
-                      : "rgb(var(--c-text-rgb) / 0.75)"
-                  }
-                >
-                  {o.name}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      <div
-        className="mt-4 grid grid-cols-[180px_1fr] gap-4 items-start p-3 rounded-md"
-        style={{
-          background: "rgb(var(--c-accent-rgb) / 0.04)",
-          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-        }}
-      >
-        <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
-            lookback
-          </div>
-          <div
-            className="font-serif font-medium"
-            style={{
-              fontSize: "1.6rem",
-              color: "var(--c-accent)",
-              lineHeight: 1.1,
-            }}
+        {/* Visualisation — fixed pixel height in normal flow,
+           flex-grows in fullscreen via the parent wrapper's flex
+           layout. The SVG carries an inline `width:100%; height:100%`
+           so it overrides the global FS rule that sets `width:auto;
+           height:auto` on every figure-stub SVG (that rule was making
+           the SVG fall back to its intrinsic 300×150 default in
+           fullscreen, leaving a small figure floating in a big empty
+           container). */}
+        <div
+          className="fig-viz relative w-full overflow-hidden rounded-md flex-1 min-h-[320px]"
+          style={{ height: 400 }}
+        >
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            preserveAspectRatio="xMidYMid meet"
+            style={{ width: "100%", height: "100%", display: "block" }}
           >
-            {fmtYearsAgo(sel.yearsAgo)}
-          </div>
-          <div className="font-mono text-[10px] text-white/45 mt-1">
-            {sel.name.toUpperCase()}
-          </div>
+            {/* Base axis line */}
+            <line
+              x1={PAD}
+              x2={W - PAD}
+              y1={AXIS_Y}
+              y2={AXIS_Y}
+              stroke="rgb(var(--c-text-rgb) / 0.22)"
+              strokeWidth="1"
+            />
+
+            {/* The 27 cosmic objects. Each group has a transparent
+               hit area, axis tick, leader stub, dot, name label, and
+               a small distance tick label placed OPPOSITE the name
+               (so it never crosses the leader). */}
+            {SCALE_OBJECTS.map((o, i) => {
+              const x = cosmicX(i);
+              const isSel = i === selectedIdx;
+              const row = COSMIC_ROW[o.id];
+              const geom = ROW_LAYOUT[row];
+              const labelY = AXIS_Y + geom.labelY;
+              const dotY = AXIS_Y + geom.dotY;
+              const lineEnd = AXIS_Y + geom.lineEnd;
+              const labelAbove = geom.labelY < 0;
+              const tickLabelY = labelAbove ? AXIS_Y + 18 : AXIS_Y - 12;
+              return (
+                <g
+                  key={o.id}
+                  onClick={() => setSelectedIdx(i)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {/* Generous transparent hit area covering the
+                     axis-tick → leader → dot → label column. Goes
+                     first so it sits beneath the visible glyphs. */}
+                  <rect
+                    x={x - 16}
+                    y={labelAbove ? labelY - 12 : AXIS_Y - 18}
+                    width={32}
+                    height={
+                      labelAbove
+                        ? AXIS_Y - labelY + 30
+                        : labelY - AXIS_Y + 30
+                    }
+                    fill="transparent"
+                  />
+                  {/* Leader from axis to dot region (short stub) */}
+                  <line
+                    x1={x}
+                    x2={x}
+                    y1={AXIS_Y + geom.axisOffset}
+                    y2={lineEnd}
+                    stroke={
+                      isSel
+                        ? "rgb(var(--c-accent-rgb) / 0.7)"
+                        : "rgb(var(--c-text-rgb) / 0.25)"
+                    }
+                    strokeWidth={isSel ? 1.2 : 0.7}
+                    strokeDasharray={isSel ? "0" : "1 2"}
+                  />
+                  {/* Tick on axis */}
+                  <line
+                    x1={x}
+                    x2={x}
+                    y1={AXIS_Y - 5}
+                    y2={AXIS_Y + 5}
+                    stroke={
+                      isSel
+                        ? "rgb(var(--c-accent-rgb))"
+                        : "rgb(var(--c-text-rgb) / 0.4)"
+                    }
+                    strokeWidth={isSel ? 1.6 : 0.8}
+                  />
+                  {/* Distance tick label, placed on the opposite
+                     side of the axis from the main name label. */}
+                  <text
+                    x={x}
+                    y={tickLabelY}
+                    textAnchor="middle"
+                    fontSize={isSel ? 9 : 8}
+                    letterSpacing="0.3"
+                    fontFamily="var(--font-mono)"
+                    fontWeight={isSel ? 500 : 400}
+                    fill={
+                      isSel
+                        ? "rgb(var(--c-accent-rgb))"
+                        : "rgb(var(--c-text-rgb) / 0.5)"
+                    }
+                  >
+                    {o.tick}
+                  </text>
+                  {/* Dot */}
+                  <circle
+                    cx={x}
+                    cy={dotY}
+                    r={isSel ? 5.5 : 4}
+                    fill={
+                      isSel
+                        ? "rgb(var(--c-accent-rgb))"
+                        : "rgb(var(--c-text-rgb) / 0.6)"
+                    }
+                    style={{
+                      filter: isSel
+                        ? "drop-shadow(0 0 10px rgb(var(--c-accent-rgb) / 0.75))"
+                        : "none",
+                    }}
+                  />
+                  {/* Name label */}
+                  <text
+                    x={x}
+                    y={labelY}
+                    textAnchor="middle"
+                    fontSize={isSel ? 13 : 11}
+                    letterSpacing={isSel ? "0.6" : "1"}
+                    fontFamily={
+                      isSel ? "var(--font-serif)" : "var(--font-sans)"
+                    }
+                    fontStyle={isSel ? "italic" : "normal"}
+                    fontWeight={isSel ? 500 : 400}
+                    fill={
+                      isSel
+                        ? "rgb(var(--c-accent-rgb))"
+                        : "rgb(var(--c-text-rgb) / 0.82)"
+                    }
+                  >
+                    {o.short}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
         </div>
-        <div className="text-[13px] text-white/80 leading-[1.55] font-sans">
-          {sel.blurb}
+
+        {/* Selected-object inset — three rows distribute the text
+           evenly: (1) counter + name + prev/next, (2) distance and
+           light-travel as inline stat pairs, (3) description across
+           the full width. No fixed min-heights, so short descriptions
+           don't leave empty vertical gaps. */}
+        <div
+          className="rounded-md p-4 flex-none"
+          style={{
+            background: "rgb(var(--c-accent-rgb) / 0.04)",
+            border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
+          }}
+        >
+          <div className="flex items-baseline justify-between gap-4 mb-2.5 flex-wrap">
+            <div className="flex items-baseline gap-3 min-w-0 flex-1">
+              <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/45 shrink-0">
+                {selectedIdx + 1} / {total}
+              </span>
+              <span
+                className="font-serif font-medium"
+                style={{
+                  fontSize: "1.4rem",
+                  color: "var(--c-accent)",
+                  lineHeight: 1.15,
+                }}
+              >
+                {sel.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setSelectedIdx((i) => Math.max(0, i - 1))}
+                disabled={selectedIdx === 0}
+                className="pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Previous object"
+                title="Previous · ←"
+              >
+                ← prev
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setSelectedIdx((i) => Math.min(total - 1, i + 1))
+                }
+                disabled={selectedIdx === total - 1}
+                className="pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Next object"
+                title="Next · →"
+              >
+                next →
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-x-7 gap-y-1 mb-2.5">
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
+                distance
+              </span>
+              <span
+                className="font-serif text-white/90"
+                style={{ fontSize: "15px" }}
+              >
+                {sel.distance}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
+                light-travel
+              </span>
+              <span
+                className="font-serif text-white/90"
+                style={{ fontSize: "15px" }}
+              >
+                {sel.lookback}
+              </span>
+            </div>
+          </div>
+          <div className="text-[13.5px] text-white/85 leading-[1.6] font-sans">
+            {sel.description}
+          </div>
         </div>
       </div>
     </FigurePanel>
   );
 }
 
-/* ── Balloon Analogy: cosmological principle ─────────────────────────
-   Five "galaxies" sit on a flat 2D plane. The user inflates the field
-   (scale slider) — every galaxy moves apart from every other. Then they
-   can SELECT a galaxy to "be" — that one becomes the centre, and the
-   others recede from it. Same pattern from every observer. */
-const GALAXIES = [
-  { id: "a", base: [0.18, 0.32], name: "α" },
-  { id: "b", base: [0.5, 0.18], name: "β" },
-  { id: "c", base: [0.8, 0.35], name: "γ" },
-  { id: "d", base: [0.32, 0.7], name: "δ" },
-  { id: "e", base: [0.7, 0.72], name: "ε" },
-] as const;
+/* ── Balloon Analogy (3D) ─────────────────────────────────────────────
+   Eddington's expanding-balloon picture, rendered in three.  Galaxies
+   are dots glued to the surface of a sphere; the slider scales the
+   radius (the Friedmann–Lemaître scale factor a(t)).  As the balloon
+   inflates, every surface distance grows in proportion — galaxy meshes
+   keep a constant size while their world positions spread apart.
+
+   Pick any galaxy to be 'you' (accent highlight + great-circle arcs from
+   you to every other galaxy); pick a different one and the picture from
+   that observer is exactly the same.  No centre on the surface — that
+   is the cosmological principle. */
+const BALLOON_BASE_R = 1.0;
+const BALLOON_GALAXY_R = 0.06;
+const BALLOON_OBS_R = 0.095;
+const BALLOON_GALAXY_COUNT = 6;
+const BALLOON_NAMES = ["α", "β", "γ", "δ", "ε", "ζ"] as const;
+const BALLOON_COLOR_OBS = "#f59e0b";
+const BALLOON_COLOR_OTHER = "#e2e8f0";
+const BALLOON_COLOR_SKIN = "#22d3ee";
+const BALLOON_COLOR_ARC = "#f59e0b";
+
+/* Flat-ΛCDM cosmology, Planck 2018 best fit. Used to map slider's a(t)
+   to the age of the universe via the closed-form
+       t(a) = 2/(3·H₀·√Ω_Λ) · arcsinh(√(Ω_Λ/Ω_m) · a^(3/2))
+   which assumes matter + dark energy only (radiation-dominated era
+   is shorter than the slider's resolution, so safe to ignore). */
+const COSMO_OMEGA_M = 0.315;
+const COSMO_OMEGA_L = 0.685;
+const COSMO_HUBBLE_TIME_GYR = 14.51; // 1 / H₀ in Gyr
+function balloonAgeGyr(a: number): number {
+  if (a <= 0) return 0;
+  const arg = Math.sqrt(COSMO_OMEGA_L / COSMO_OMEGA_M) * Math.pow(a, 1.5);
+  return (
+    ((2 / (3 * Math.sqrt(COSMO_OMEGA_L))) * Math.asinh(arg)) *
+    COSMO_HUBBLE_TIME_GYR
+  );
+}
+function balloonFmtAge(gyr: number): string {
+  if (gyr <= 0) return "0";
+  if (gyr < 0.001) return `${Math.round(gyr * 1e6)} kyr`;
+  if (gyr < 1) return `${Math.round(gyr * 1000)} Myr`;
+  return `${gyr.toFixed(1)} Gyr`;
+}
+
+/* Fibonacci-spiral N points on the unit sphere.  Clamped to |y| ≤ 0.78
+   so no galaxy sits exactly at a pole (cleaner labels, no degenerate
+   arcs). */
+function fibonacciSphere(n: number): [number, number, number][] {
+  const pts: [number, number, number][] = [];
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < n; i++) {
+    const y = (1 - (i / Math.max(1, n - 1)) * 2) * 0.78;
+    const r = Math.sqrt(Math.max(0, 1 - y * y));
+    const theta = golden * i;
+    pts.push([Math.cos(theta) * r, y, Math.sin(theta) * r]);
+  }
+  return pts;
+}
+const BALLOON_UNIT = fibonacciSphere(BALLOON_GALAXY_COUNT);
+
+/* Great-circle arc between two unit-sphere points, scaled to radius R.
+   Uses spherical linear interpolation; the buffer is rebuilt whenever
+   observer, target, or scale changes. */
+function BalloonArc({
+  obsIdx,
+  tgtIdx,
+  R,
+  color,
+}: {
+  obsIdx: number;
+  tgtIdx: number;
+  R: number;
+  color: string;
+}) {
+  const SEGMENTS = 32;
+  const positions = useMemo(
+    () => new Float32Array((SEGMENTS + 1) * 3),
+    [],
+  );
+  const geomRef = useRef<THREE.BufferGeometry>(null!);
+
+  useEffect(() => {
+    const p1 = BALLOON_UNIT[obsIdx];
+    const p2 = BALLOON_UNIT[tgtIdx];
+    const v1 = new THREE.Vector3(p1[0], p1[1], p1[2]);
+    const v2 = new THREE.Vector3(p2[0], p2[1], p2[2]);
+    const omega = v1.angleTo(v2);
+    const sinOmega = Math.sin(omega) || 1e-6;
+    for (let i = 0; i <= SEGMENTS; i++) {
+      const t = i / SEGMENTS;
+      const a = Math.sin((1 - t) * omega) / sinOmega;
+      const b = Math.sin(t * omega) / sinOmega;
+      positions[i * 3 + 0] = (v1.x * a + v2.x * b) * R;
+      positions[i * 3 + 1] = (v1.y * a + v2.y * b) * R;
+      positions[i * 3 + 2] = (v1.z * a + v2.z * b) * R;
+    }
+    if (geomRef.current?.attributes?.position) {
+      geomRef.current.attributes.position.needsUpdate = true;
+      geomRef.current.computeBoundingSphere();
+    }
+  }, [obsIdx, tgtIdx, R, positions]);
+
+  return (
+    <line>
+      <bufferGeometry ref={geomRef}>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <lineBasicMaterial color={color} transparent opacity={0.6} />
+    </line>
+  );
+}
+
+function BalloonScene({
+  scale,
+  observer,
+  setObserver,
+  reduced,
+}: {
+  scale: number;
+  observer: number;
+  setObserver: (i: number) => void;
+  reduced: boolean;
+}) {
+  /* Slider value is the true cosmic scale factor a(t) ∈ [0, 20]. The
+     visual radius is √a so a=20 (20× expansion) still fits the fixed
+     camera frame — galaxies (constant world size) become tiny dots on
+     the growing surface, which is the actual pedagogical signal. */
+  const R = BALLOON_BASE_R * Math.sqrt(Math.max(0, scale));
+  return (
+    <>
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[4, 5, 3]} intensity={0.5} />
+      <hemisphereLight args={["#1a1a2e", "#0a0a1a", 0.35]} />
+
+      {/* Semi-translucent balloon skin — front face dims the rear
+         galaxies enough to give a clear depth cue, while still letting
+         them show through faintly. Earlier 0.07 was too clear (far-side
+         dots looked identical to near-side, so rotation looked like
+         galaxies sliding across the surface). */}
+      <mesh>
+        <sphereGeometry args={[R, 64, 48]} />
+        <meshStandardMaterial
+          color={BALLOON_COLOR_SKIN}
+          transparent
+          opacity={0.22}
+          roughness={0.45}
+          metalness={0}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      {/* Wireframe overlay (slightly larger to avoid z-fighting). */}
+      <mesh>
+        <sphereGeometry args={[R * 1.002, 28, 18]} />
+        <meshBasicMaterial
+          color={BALLOON_COLOR_SKIN}
+          wireframe
+          transparent
+          opacity={0.22}
+        />
+      </mesh>
+
+      {/* Great-circle arcs from observer to every other galaxy. */}
+      {BALLOON_UNIT.map((_, i) =>
+        i === observer ? null : (
+          <BalloonArc
+            key={`arc-${i}`}
+            obsIdx={observer}
+            tgtIdx={i}
+            R={R * 1.006}
+            color={BALLOON_COLOR_ARC}
+          />
+        ),
+      )}
+
+      {/* Galaxies — meshes stay a constant world size; only positions
+         scale with R, so as the balloon inflates the dots spread apart.
+         Each galaxy sits at a fixed (lat, lon) on the surface: pos =
+         unit[i] · R. Click any dot to make that galaxy the observer.
+         The label is positioned in the parent group's local frame along
+         the radial direction (unit · labelOff) — that keeps it fixed in
+         world space relative to the galaxy, so rotating the camera no
+         longer makes labels appear to orbit their galaxy. The Billboard
+         only re-orients the text to face the viewer, it does not move
+         the label. */}
+      {BALLOON_UNIT.map((unit, i) => {
+        const isObs = i === observer;
+        const pos: [number, number, number] = [
+          unit[0] * R,
+          unit[1] * R,
+          unit[2] * R,
+        ];
+        const labelOff = isObs ? 0.22 : 0.18;
+        const labelPos: [number, number, number] = [
+          unit[0] * labelOff,
+          unit[1] * labelOff,
+          unit[2] * labelOff,
+        ];
+        return (
+          <group key={`gal-${i}`} position={pos}>
+            <mesh
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                setObserver(i);
+              }}
+              onPointerOver={(e) => {
+                e.stopPropagation();
+                document.body.style.cursor = "pointer";
+              }}
+              onPointerOut={() => {
+                document.body.style.cursor = "";
+              }}
+            >
+              <sphereGeometry
+                args={[isObs ? BALLOON_OBS_R : BALLOON_GALAXY_R, 24, 16]}
+              />
+              <meshStandardMaterial
+                color={isObs ? BALLOON_COLOR_OBS : BALLOON_COLOR_OTHER}
+                emissive={isObs ? BALLOON_COLOR_OBS : "#94a3b8"}
+                emissiveIntensity={isObs ? 0.85 : 0.45}
+                roughness={0.3}
+              />
+            </mesh>
+            <Billboard position={labelPos}>
+              <Text
+                fontSize={isObs ? 0.17 : 0.14}
+                color={isObs ? BALLOON_COLOR_OBS : "#cbd5e1"}
+                anchorX="center"
+                anchorY="middle"
+                fontStyle="italic"
+              >
+                {BALLOON_NAMES[i]}
+              </Text>
+            </Billboard>
+          </group>
+        );
+      })}
+
+      {/* OrbitControls handles rotation only — wheel drives the slider
+         instead of the camera (see the outer wheel listener). */}
+      <OrbitControls
+        makeDefault
+        enableDamping={!reduced}
+        dampingFactor={0.08}
+        enablePan={false}
+        enableZoom={false}
+        target={[0, 0, 0]}
+      />
+    </>
+  );
+}
 
 export function BalloonAnalogyPanel() {
   const [scale, setScale] = useState(1);
-  const [observer, setObserver] = useState<string>("c");
-  const W = 720;
-  const H = 360;
-  /* Field shows the 5 galaxies on a unit square. We pick the observer's
-     base coordinate as the "centre" — render everything relative to it
-     so the observer always appears in the middle. */
-  const obs = GALAXIES.find((g) => g.id === observer)!;
-  const [ox, oy] = obs.base;
+  const [observer, setObserver] = useState(0);
+  const [reduced, setReduced] = useState(false);
+  const canvasWrapRef = useRef<HTMLDivElement | null>(null);
 
-  /* Scaled position relative to observer at the centre of the SVG */
-  function transform(base: readonly [number, number]) {
-    const dx = (base[0] - ox) * scale;
-    const dy = (base[1] - oy) * scale;
-    return [W / 2 + dx * (W * 0.7), H / 2 + dy * (H * 0.7)] as const;
-  }
+  useEffect(() => {
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(m.matches);
+    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
+    m.addEventListener("change", onChange);
+    return () => m.removeEventListener("change", onChange);
+  }, []);
+
+  /* Wheel over the canvas drives the slider instead of the camera dolly.
+     Step is proportional to current a so one wheel-tick feels right at
+     both a≈0.5 and a≈15. Scroll-up (deltaY < 0, the usual "zoom in"
+     direction) → balloon expands → a increases. */
+  useEffect(() => {
+    const el = canvasWrapRef.current;
+    if (!el) return;
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      setScale((prev) => {
+        const base = Math.max(prev, 0.3);
+        const next = prev - e.deltaY * 0.003 * base;
+        return Math.max(0, Math.min(20, next));
+      });
+    }
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const epoch =
+    scale < 0.001
+      ? "big bang"
+      : scale < 0.5
+        ? "early cosmos"
+        : scale < 1.5
+          ? "near today"
+          : scale < 5
+            ? "near future"
+            : scale < 15
+              ? "deep future"
+              : "far future";
+  const ageGyr = balloonAgeGyr(scale);
+  const ageLabel = balloonFmtAge(ageGyr);
 
   return (
     <FigurePanel
-      idx="0.3.3"
+      idx="0.3.b"
       kicker="Balloon Analogy · The Cosmological Principle"
-      caption="Pick any galaxy to be 'you'. Inflate the field — every other galaxy recedes from you, exactly as Hubble's Law predicts. Pick a different galaxy. Same picture. No observer sits at the centre; everyone does."
-    >
-      <div className="flex gap-2 mb-4 flex-wrap">
-        <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55 mr-1 self-center">
-          you are :
-        </span>
-        {GALAXIES.map((g) => {
-          const isObs = g.id === observer;
-          return (
-            <button
-              key={g.id}
-              type="button"
-              onClick={() => setObserver(g.id)}
-              className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${isObs ? "is-active" : ""}`}
-            >
-              galaxy {g.name}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="relative w-full overflow-hidden rounded-md">
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Recession rays from observer to each other galaxy */}
-          {GALAXIES.filter((g) => g.id !== observer).map((g) => {
-            const [x, y] = transform(g.base);
-            return (
-              <line
-                key={`r-${g.id}`}
-                x1={W / 2}
-                y1={H / 2}
-                x2={x}
-                y2={y}
-                stroke="rgb(var(--c-accent-rgb) / 0.18)"
-                strokeWidth="0.8"
-                strokeDasharray="2 4"
-              />
-            );
-          })}
-          {/* Other galaxies */}
-          {GALAXIES.filter((g) => g.id !== observer).map((g) => {
-            const [x, y] = transform(g.base);
-            return (
-              <g key={g.id}>
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="6"
-                  fill="rgb(var(--c-text-rgb) / 0.55)"
-                  style={{ transition: "cx 500ms var(--ease), cy 500ms var(--ease)" }}
-                />
-                <text
-                  x={x}
-                  y={y - 12}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontFamily="var(--font-serif)"
-                  fontStyle="italic"
-                  fill="rgb(var(--c-text-rgb) / 0.7)"
-                  style={{ transition: "x 500ms var(--ease), y 500ms var(--ease)" }}
-                >
-                  {g.name}
-                </text>
-              </g>
-            );
-          })}
-          {/* Observer at centre */}
-          <g>
-            <circle
-              cx={W / 2}
-              cy={H / 2}
-              r="9"
-              fill="rgb(var(--c-accent-rgb))"
-              style={{
-                filter: "drop-shadow(0 0 12px rgb(var(--c-accent-rgb) / 0.8))",
-              }}
-            />
-            <circle
-              cx={W / 2}
-              cy={H / 2}
-              r="22"
-              fill="none"
-              stroke="rgb(var(--c-accent-rgb) / 0.35)"
-              strokeWidth="0.6"
-              strokeDasharray="2 4"
-            />
-            <text
-              x={W / 2}
-              y={H / 2 + 32}
-              textAnchor="middle"
-              fontSize="10"
-              letterSpacing="2"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-accent-rgb))"
-            >
-              {obs.name.toUpperCase()} · YOU
-            </text>
-          </g>
-        </svg>
-      </div>
-
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-2">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-            inflate the Universe
-          </label>
-          <span className="font-mono text-[10px] text-plasma">
-            scale × {scale.toFixed(2)}
+      caption={
+        <>
+          The Universe&apos;s expansion is not motion <em>through</em> space — it
+          is space itself stretching. Picture the cosmos as the surface of a
+          balloon (Eddington 1933): galaxies are dots glued to the rubber. As
+          the radius grows — the scale factor <em>a(t)</em> of the
+          Friedmann–Lemaître metric — every distance on the surface grows in
+          proportion. <strong>Click any galaxy to become it</strong>; the
+          others recede along Hubble–Lemaître lines. Pick a different one —
+          same picture from every observer (Einstein 1917, the cosmological
+          principle).
+          <span className="block mt-1 text-white/45">
+            Drag to rotate · scroll over the balloon to expand the
+            universe · click a galaxy (or press 1–6) to switch observer.
           </span>
+          <span className="block mt-1 text-white/35">
+            Visual radius scales as √a so a=20 still fits the frame; the
+            slider value is the true scale factor and the age <em>t</em>
+            comes from flat-ΛCDM (Planck 2018: Ω<sub>m</sub>=0.315,
+            Ω<sub>Λ</sub>=0.685, 1/H<sub>0</sub>=14.5 Gyr).
+          </span>
+        </>
+      }
+    >
+      <div
+        ref={canvasWrapRef}
+        className="fig-viz relative w-full"
+        style={{ height: 520 }}
+      >
+        {/* Slider inset — floats in the bottom-left corner so the
+           balloon claims the whole panel. The outer div lets pointer
+           events fall through to the canvas everywhere except the
+           inner control box (so dragging the balloon outside the inset
+           and clicking through dots both keep working). */}
+        <div className="absolute bottom-3 left-3 z-10 pointer-events-none w-[240px] max-w-[calc(100%-24px)]">
+          <div
+            className="pointer-events-auto rounded-md px-3 py-2"
+            style={{
+              background: "rgb(var(--c-bg-rgb) / 0.55)",
+              border: "1px solid rgb(255 255 255 / 0.08)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <div className="flex items-baseline justify-between gap-2">
+              <label className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 shrink-0">
+                a(t)
+              </label>
+              <span className="font-mono text-[11px] text-plasma truncate text-right tabular-nums">
+                {scale.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-baseline justify-between gap-2 mb-1.5">
+              <label className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 shrink-0">
+                age
+              </label>
+              <span className="font-mono text-[11px] text-white/85 truncate text-right tabular-nums">
+                {ageLabel} <span className="text-white/45">· {epoch}</span>
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={20}
+              step={0.05}
+              value={scale}
+              onChange={(e) => setScale(parseFloat(e.target.value))}
+              className="cosmic-slider w-full"
+              aria-label={`cosmic scale factor a(t) = ${scale.toFixed(2)}, universe age ${ageLabel}`}
+            />
+            <div className="flex items-center justify-between font-mono text-[8px] tracking-[0.22em] uppercase text-white/40 mt-1">
+              <span>0 · big bang</span>
+              <span>20 · far future</span>
+            </div>
+          </div>
         </div>
-        <input
-          type="range"
-          min={0.5}
-          max={2.5}
-          step={0.01}
-          value={scale}
-          onChange={(e) => setScale(parseFloat(e.target.value))}
-          className="cosmic-slider"
-        />
-        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
-          <span>past · contracted</span>
-          <span>today · 1×</span>
-          <span>future · expanded</span>
-        </div>
+
+        <Canvas
+          dpr={[1, 1.75]}
+          camera={{
+            position: [4.0, 2.8, 4.0],
+            fov: 50,
+            near: 0.05,
+            far: 100,
+          }}
+          style={{ background: "transparent" }}
+        >
+          <BalloonScene
+            scale={scale}
+            observer={observer}
+            setObserver={setObserver}
+            reduced={reduced}
+          />
+        </Canvas>
+      </div>
+
+      {/* Hidden hooks for FigureFrame's data-shortcut handler — the
+         visible galaxy-pill row was removed; users now click dots on the
+         balloon or press 1–6 to switch observer. Placed after the canvas
+         so the inset slider remains FigureFrame.firstFocusable() on
+         fullscreen entry (display:none buttons fail focus silently). */}
+      <div style={{ display: "none" }} aria-hidden="true">
+        {BALLOON_NAMES.map((name, i) => (
+          <button
+            key={`sc-${name}`}
+            type="button"
+            tabIndex={-1}
+            onClick={() => setObserver(i)}
+            data-shortcut={String(i + 1)}
+          >
+            galaxy {name}
+          </button>
+        ))}
       </div>
     </FigurePanel>
   );

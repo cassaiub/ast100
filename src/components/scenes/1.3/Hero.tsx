@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export default function Hero() {
+/* The `tease` paragraph below the H1 is the single source-of-truth lesson
+   description, passed in from the page and mirrored on the chapter
+   overview (`/chapter/1`) card. See `course-nav.ts` sub `tease`. */
+export default function Hero({ tease }: { tease: string }) {
   const numRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -29,10 +32,12 @@ export default function Hero() {
             Synthesis of <span className="italic font-light text-white/70">Elements</span>
           </span>
         </h1>
-        <p data-fade style={{ ["--delay" as string]: "420ms" }} className="mt-10 max-w-[60ch] text-[17px] md:text-[19px] text-white/75 leading-[1.65]">
-          A fifteen-minute window of cosmic alchemy. The Universe forged
-          deuterium, helium, and traces of lithium — then expanded so
-          quickly that the recipe stayed forever: 75% hydrogen, 25% helium.
+        <p
+          data-fade
+          style={{ ["--delay" as string]: "420ms" }}
+          className="mt-10 max-w-[64ch] text-[1.05em] leading-[1.74] text-white/70"
+        >
+          {tease}
         </p>
         <div data-fade style={{ ["--delay" as string]: "620ms" }} className="mt-16 font-mono text-[11px] tracking-[0.24em] uppercase text-white/40 flex items-center gap-3">
           <span className="scroll-cue inline-block">↓</span> scroll to begin
@@ -40,7 +45,7 @@ export default function Hero() {
       </div>
       <div className="hidden lg:flex absolute right-10 bottom-10 flex-col items-end gap-1 font-mono text-[10px] tracking-[0.2em] uppercase text-white/40">
         <div>t = 1 µs &nbsp;◇&nbsp; 15 min</div>
-        <div className="text-plasma/60">{"deuterium bottleneck · $10^{9}$ K"}</div>
+        <div className="text-plasma/60">deuterium bottleneck · 10⁹ K</div>
       </div>
     </section>
   );

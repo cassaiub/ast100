@@ -1,7 +1,33 @@
 /* Page-level runtime for every chapter page:
+   - Lesson-prose post-tagging: auto-add data-fade to every direct child
+     of `.lesson-prose`, and `.dropcap` to the first <p> after each h1/h2.
+     Lesson .astro pages keep their body as clean <h2>/<p>/<FigureFrame>
+     markup; the fade-up + dropcap visual treatments are applied uniformly
+     here. MUST run BEFORE bootFadeUp so the new data-fade nodes are
+     picked up by the IntersectionObserver.
    - Fade-up entrance observer for [data-fade] nodes
    - Reading progress bar (top, 1px) — cheap, always-on
    - Smooth scroll on desktop only, never on touch, never if reduced-motion */
+
+function tagLessonProse() {
+  document.querySelectorAll<HTMLElement>(".lesson-prose").forEach((root) => {
+    let inSection = false;
+    let seenFirstParaInSection = false;
+    for (const child of Array.from(root.children) as HTMLElement[]) {
+      if (!child.hasAttribute("data-fade")) {
+        child.setAttribute("data-fade", "");
+      }
+      const tag = child.tagName.toLowerCase();
+      if (tag === "h1" || tag === "h2") {
+        inSection = true;
+        seenFirstParaInSection = false;
+      } else if (tag === "p" && inSection && !seenFirstParaInSection) {
+        child.classList.add("dropcap");
+        seenFirstParaInSection = true;
+      }
+    }
+  });
+}
 
 function bootFadeUp() {
   const els = document.querySelectorAll<HTMLElement>("[data-fade]");
@@ -82,6 +108,7 @@ function bootSmoothScroll() {
 }
 
 function boot() {
+  tagLessonProse();
   bootFadeUp();
   bootReadingProgress();
   bootSmoothScroll();

@@ -235,17 +235,10 @@ export default function TimelineScene() {
           <h2
             data-fade
             style={{ ["--delay" as string]: "80ms" }}
-            className="font-serif font-medium text-white tracking-tight leading-[1.05]"
+            className="section-title"
           >
-            <span
-              className="font-mono text-plasma/55 mr-4 align-baseline"
-              style={{ fontSize: "0.42em", letterSpacing: "0.16em" }}
-            >
-              2.
-            </span>
-            <span style={{ fontSize: "clamp(2rem, 4.4vw, 3.6rem)" }}>
-              Twenty-five turns of the river
-            </span>
+            <span className="section-number">2.</span>
+            <span className="section-title-text">Twenty-five turns of the river</span>
           </h2>
           <p
             data-fade
