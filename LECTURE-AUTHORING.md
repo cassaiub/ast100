@@ -292,6 +292,17 @@ Use SVG `viewBox` + `preserveAspectRatio`, or canvas with
 `ResizeObserver` to redraw at the new container size. Test all three
 sizes during the build/preview step.
 
+**Fullscreen must FIT — no scrollbars, nothing cropped** (hard rule,
+2026-06-01). Single-viz figures: `.fig-viz` flex-grows to fill, and every
+other control/detail box is a SIBLING of `.fig-viz` inside `.figure-body`
+(never a child — the fullscreen CSS turns `.fig-viz` into a centred flex
+box that swallows children). Content-heavy figures (viz + detail panel +
+a large selector grid, e.g. 0.4.c bestiary) get clipped under the default
+fill-model — pass `fitFs` to the local `FigurePanel` (adds `.is-fs-fit`,
+which caps `.fig-viz` small) and keep selector cards **name-only** so the
+whole figure fits; selecting one drives a single dedicated detail panel. A
+scrollbar in fullscreen is a defect, not an option.
+
 ### C. Keyboard + mouse/trackpad navigation (global, via FigureFrame)
 
 `FigureFrame.astro` ships a **single delegated global navigator** that
@@ -353,6 +364,14 @@ it for both keyboard and wheel.
 6. Prev/next-driven figure → mark the buttons
    `data-shortcut="ArrowLeft"` / `"ArrowRight"`.
 
+**three.js / Canvas figures (OrbitControls, or any per-figure wheel
+listener) — gate zoom/pan/wheel to FULLSCREEN ONLY**, or scroll-wheel zoom
+hijacks the page in normal mode (the 0.4 EM-wave bug). Key off the `.is-fs`
+class on the `[data-figure-frame]` ancestor — either `enableZoom={false}` +
+a `wheel` listener that returns unless the frame is `.is-fs` (0.3 Balloon),
+or a `MutationObserver` on the ancestor feeding `enableZoom={fs}
+enablePan={fs}` (0.4 EM-wave).
+
 **Per-control accessibility still applies on top:**
 
 - **Sliders** — prefer native `<input type="range">` (arrow keys
@@ -393,6 +412,28 @@ assistive-tech users. All three matter and all three are mandatory.
 If a new figure doesn't match any of these patterns, propose two or
 three alternatives to the user before implementing. Visual decisions
 go through approval, not improvisation.
+
+### C½. Light/dark theme & pop-science numbers (added 2026-06-01)
+
+- `text-white/X` is theme-rebound (`--color-white` flips white↔deep-ink in
+  `global.css`), so those utilities read correctly in BOTH themes — NOT a
+  bug. **The real bug:** an ALWAYS-DARK viz panel (`bg-black/40`, a hardcoded
+  dark fill like `#05060c`, a dark three.js scene) whose text/strokes use
+  THEME tokens (`rgb(var(--c-text-rgb)…)` / `text-white`) goes dark-on-dark
+  and vanishes in light mode. **FIX: add `data-theme="dark"`** to that panel
+  wrapper (re-asserts dark tokens in the subtree — the "cosmic porthole"
+  mechanism). Never sweeping-refactor colours; theme-aware panels need no fix.
+- This is a **pop-science course**: energies/frequencies in **m or Hz, never
+  eV**; extreme values as clean powers of ten ("≈ 10²² Hz"), not mantissas.
+  On-figure numbers human-readable (never `toExponential` "1.5e+1"). Gloss
+  every symbol/term on first use including on-figure labels (γ, α,
+  "geodesic", "event horizon" → "edge of a black hole", spectral classes →
+  plain colours, "AGN" → "active galaxies").
+- Each figure FOLLOWS the prose that introduces it (heading → setup prose →
+  figure). Numbering is sequential in reading order — update each panel's
+  `idx` when you reorder. Verify every number against the figure's own
+  formula AND every co-located prose claim (a figure-vs-prose mismatch was
+  the #1 error of the Chapter 0 overhaul).
 
 ### D. Math typography (every formula, every time)
 

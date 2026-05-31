@@ -208,16 +208,21 @@ Every figure must be wired around correct physics:
 
 If a value cannot be sourced, **flag it to the user before guessing.**
 
-### B. Fullscreen-equals-enlarged-normal (HARD INVARIANT)
+### B. Fullscreen must FIT — no scrollbars, nothing cropped (HARD INVARIANT)
 
-Fullscreen mode must look identical to normal mode — same layout,
-same positions, same caption placement — just bigger and covering
-the whole screen. Don't introduce a different layout for fullscreen.
+The whole figure — viz + every control/detail panel + caption — fits in
+the viewport with no scrollbar and nothing cut off. **Scrollbars in
+fullscreen are unacceptable** (user rule, 2026-06-01).
 
-The most common way to break this: putting supplementary UI
-**inside `.fig-viz`**. The global fullscreen CSS rewrites `.fig-viz`
-into a centered flex container that claims all remaining height —
-anything inside it gets swallowed or repositioned in fullscreen.
+- **Single-viz figures** enlarge to fill: `.fig-viz` flex-grows, and any
+  supplementary UI is a SIBLING of `.fig-viz` inside `.figure-body` (never
+  a child — the global fullscreen CSS rewrites `.fig-viz` into a centered
+  flex container that swallows children, the most common way to break this).
+- **Content-heavy figures** (viz + detail panel + a large selector grid,
+  e.g. 0.4.c) get clipped under that fill-model — pass `fitFs` to the local
+  `FigurePanel` (adds `.is-fs-fit`, capping `.fig-viz` small) and keep
+  selector cards **name-only** (selecting one drives a single dedicated
+  detail panel) so everything fits.
 
 **Structure for figures with extra UI (detail boxes, info cards,
 controls beyond the main visualisation):**
@@ -282,6 +287,14 @@ the FourForcesPanel tree), mirror selection state in hidden
 `<button data-shortcut="N" className={isSel ? 'is-active' : ''}>`
 elements inside an `sr-only` wrapper. The navigator finds them; the
 visible SVG just shares the same `onClick`.
+
+**three.js / Canvas figures (OrbitControls, or any per-figure wheel
+listener): gate zoom/pan/wheel to FULLSCREEN ONLY** — else scroll-wheel
+zoom hijacks the page in normal mode (the 0.4 EM-wave bug). Key off the
+`.is-fs` class on the `[data-figure-frame]` ancestor: either
+`enableZoom={false}` + a `wheel` listener that returns unless the frame is
+`.is-fs` (0.3 Balloon), or a `MutationObserver` on the ancestor feeding
+`enableZoom={fs} enablePan={fs}` (0.4 EM-wave).
 
 **The DOM contract every figure must follow** (CSS in `global.css`
 depends on it; breaking the contract causes the fullscreen layout to

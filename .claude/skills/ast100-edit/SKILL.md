@@ -207,11 +207,11 @@ If the edit touches a figure, re-check each rule from
 - [ ] **A. Scientific accuracy** — still uses real units, real
       numbers from the literature, real historical anchors? Did you
       accidentally change a value without sourcing it?
-- [ ] **B. Fullscreen == enlarged normal mode** — fullscreen still
-      shows the SAME layout as normal mode (same control positions,
-      caption at the bottom, any detail boxes just above the caption,
-      nothing swallowed or repositioned)? If you added new UI to a
-      figure, did you make it a SIBLING of `.fig-viz` (not a child)?
+- [ ] **B. Fullscreen FITS — no scrollbar, nothing cropped** — single-viz
+      figures enlarge to fill; new UI is a SIBLING of `.fig-viz` (not a
+      child). Content-heavy panels (viz + detail + big selector grid) use
+      `fitFs` so everything fits. Scrollbars in fullscreen are never OK.
+      (See the **Interactive-figure contract** section — authoritative.)
 - [ ] **C. Keyboard + mouse/trackpad** — ←/→ arrows still work in
       BOTH normal and fullscreen; wheel/pinch still works in
       fullscreen only? Still using FigureFrame's global navigator?
@@ -269,9 +269,9 @@ Walk through, in this order:
 5. Mobile portrait (DevTools responsive view).
 6. `prefers-reduced-motion: reduce` (DevTools rendering panel).
 7. **If you touched a figure, fullscreen it and confirm:**
-   - The fullscreen layout looks IDENTICAL to normal — controls in
-     the same place, caption at the bottom, detail box just above
-     the caption.
+   - The WHOLE figure fits — no scrollbar, no cropped panel (single-viz:
+     viz fills, controls/detail below; content-heavy `fitFs`: viz capped
+     small, detail + selector + caption all visible).
    - No "gibberish text" leak on the left half (Astro hydration
      script source becoming visible).
    - ←/→ arrows scrub the figure in BOTH normal AND fullscreen.
@@ -307,12 +307,14 @@ End. Do not push, do not commit without explicit go-ahead.
 4. **Figure non-negotiables still apply.** Sci accuracy, fullscreen
    equals enlarged normal, keyboard arrows in both modes + mouse/
    trackpad in fullscreen only, math typography, centring.
-5. **Fullscreen mode == enlarged normal mode.** Same layout, same
-   control positions, same caption placement, same detail-box
-   placement. If you add new UI to a figure, make it a SIBLING of
-   `.fig-viz`, NOT a child — the global fullscreen CSS rewrites
-   `.fig-viz` into a centered flex container that swallows children.
-   (Per user instruction, 2026-05-25.)
+5. **Fullscreen must FIT — no scrollbars, no cropped panels, ever**
+   (explicit user rule, 2026-06-01). Single-viz figures enlarge to fill;
+   new UI must be a SIBLING of `.fig-viz`, NOT a child — the global
+   fullscreen CSS rewrites `.fig-viz` into a centered flex container that
+   swallows children. Content-heavy panels (viz + detail + large selector
+   grid) instead pass `fitFs` to `FigurePanel` to cap the viz so everything
+   fits. See the **Interactive-figure contract** section below — it is the
+   authoritative spec for this and all figure rules.
 6. **Every figure must support keyboard arrows in BOTH normal and
    fullscreen, AND mouse/trackpad wheel/pinch in fullscreen.** No
    exceptions. If your edit could break this (e.g. removing a
@@ -364,6 +366,103 @@ End. Do not push, do not commit without explicit go-ahead.
     neighbouring file catches your eye, flag it in the hand-off — do
     not "while I'm here" it.
 
+## Interactive-figure contract (AUTHORITATIVE — verified through the Chapter 0 overhaul, 2026-06-01)
+
+This is the precise, current spec for every interactive figure; it
+supersedes any looser wording above. **Chapter 0 — especially
+`src/components/scenes/0.4/figures.tsx` — is the freshest reference.**
+Chapter 1 predates this pass and is being brought up to it.
+
+### Navigation — FigureFrame is the global navigator; opt in, never reimplement
+- **Normal mode = display only.** The page scrolls *over* the figure.
+  Nothing in the figure may intercept wheel/scroll in normal flow.
+- **Keyboard ←/→ always** (normal + fullscreen), Shift = ×10, ESC exits.
+- **Wheel / trackpad scrub: FULLSCREEN ONLY.**
+- A figure is "driven" only if it exposes ONE of (resolution order):
+  a `data-shortcut="ArrowLeft"/"ArrowRight"` button → the first
+  `<input type="range">` → a numeric `data-shortcut="1","2",…` pill/card
+  set with the active one marked `.is-active` / `aria-pressed` /
+  `aria-selected`. No match → ←/→ do nothing (a real defect to catch).
+- **three.js / Canvas figures (OrbitControls, or ANY per-figure wheel
+  listener): zoom/pan/wheel MUST be gated to fullscreen**, or scroll-wheel
+  zoom hijacks the page in normal mode (the 0.4 EM-wave bug). Two proven
+  patterns, both keyed off the `.is-fs` class on the `[data-figure-frame]`
+  ancestor:
+  - **0.3 Balloon** — `enableZoom={false}` on `<OrbitControls>` + a custom
+    `wheel` listener that early-returns unless
+    `el.closest("[data-figure-frame]")?.classList.contains("is-fs")`.
+  - **0.4 EM-wave** — a `MutationObserver` on the `[data-figure-frame]`
+    ancestor tracks `.is-fs` into an `fs` state →
+    `<OrbitControls enableZoom={fs} enablePan={fs} … />`.
+- Free-form drag-only figures (no discrete steps — e.g. 0.1
+  SpacetimeFabric) are an accepted ←/→ exception, but must still NOT
+  wheel-zoom in normal mode.
+
+### Fullscreen — must FIT: never a scrollbar, never a cropped panel
+- **Scrollbars in fullscreen are unacceptable** (explicit user rule,
+  2026-06-01). The whole figure — viz + every control/detail panel +
+  caption — fits in the viewport with no scrollbar and nothing cut off.
+- **Single-viz figures:** `.fig-viz` flex-grows to fill; every other piece
+  of UI is a SIBLING of `.fig-viz` inside `.figure-body` (never a child —
+  the fullscreen CSS turns `.fig-viz` into a centred flex box that swallows
+  children).
+- **Content-heavy figures** (viz + detail panel + a large selector grid —
+  e.g. the 0.4.c telescope bestiary): the default fill-model clips the
+  bottom. Pass **`fitFs`** to the local `FigurePanel` (adds `.is-fs-fit`,
+  which caps `.fig-viz` small via `flex:0 0 auto; max-height` in
+  `global.css`) so the whole thing fits. Keep selector cards MINIMAL —
+  **name only**; selecting one fills a single dedicated detail panel.
+  Do not repeat a description on every card.
+
+### Light / dark theme
+- `text-white/X` is theme-rebound (`--color-white` flips white↔deep-ink in
+  `global.css`), so those utilities read correctly in BOTH themes — that is
+  NOT a bug; do not "fix" it or sweeping-refactor colours.
+- **The real bug:** an ALWAYS-DARK viz panel (`bg-black/40`, a hardcoded
+  dark fill like `#05060c`, a dark three.js scene) whose text/strokes use
+  THEME tokens (`rgb(var(--c-text-rgb)…)` or `text-white`) → goes
+  dark-on-dark and VANISHES in light mode. **FIX: add `data-theme="dark"`
+  to that panel wrapper** (re-asserts dark tokens inside the subtree — the
+  "cosmic porthole" mechanism documented in `global.css`). Theme-aware
+  panels (transparent viz over the figure-stub bg, using `--c-*` tokens)
+  need no fix.
+
+### Numbers, units, jargon (this is a pop-science course)
+- Energies/frequencies in **m or Hz — never eV** (no keV/MeV/GeV/TeV).
+  Extreme values as clean powers of ten ("≈ 10²² Hz"), not noisy mantissas.
+- On-figure numbers must be human-readable — never machine
+  `toExponential` ("1.5e+1"); use "15", "8,200", "0.00001 W/kg", or
+  KaTeX/Unicode superscripts.
+- Gloss every symbol/term on first use, INCLUDING on-figure labels: γ, α,
+  "geodesic", "event horizon" → "edge of a black hole", spectral classes →
+  plain colours, "AGN" → "active galaxies".
+
+### Placement, numbering, accuracy
+- Each figure FOLLOWS the prose that sets it up (heading → setup prose →
+  figure → continue). Never drop a figure straight after a heading. Give
+  each one an interaction cue ("drag the slider", "tap a card") + a plain
+  reading of what it shows.
+- Numbering is sequential in **reading order** (top-to-bottom) — N.M.a,
+  .b, .c…. If you reorder figures, update each panel's `idx` prop.
+- Verify EVERY number against the figure's own formula AND every co-located
+  prose claim — a figure-vs-prose number mismatch was the #1 error this
+  session (¼ M☉ → 0.4″ not ¼″; recombination ~380,000 yr; Newton predicts
+  HALF the light-bending, not zero; "billions × visible" needs ≳ GeV). Never
+  "fix" a flagged number by matching it to one figure without re-checking
+  `E = hc/λ` and the page's other claims.
+
+### Verify — `npm run build` is NOT enough
+- `astro build` strips types; it will not catch logic/visual/theme bugs.
+  Verify with **screenshots in BOTH themes + fullscreen + mobile +
+  `prefers-reduced-motion`** (headless Chrome works: scroll to the figure
+  to hydrate `client:visible`, force light via
+  `--blink-settings=preferredColorScheme=1` or CDP `setEmulatedMedia`).
+- **Dev-server gotcha:** after long sessions / concurrent edits, Vite throws
+  *"Failed to fetch dynamically imported module"* and islands silently fail
+  to hydrate (figures appear but nothing is interactive). It is NOT a code
+  bug — fix by restarting: `fuser -k 4321/tcp`, `rm -rf node_modules/.vite`,
+  then `npm run dev`.
+
 ## When something is missing or unclear
 
 - If the file/component the user pointed to doesn't exist → ask;
@@ -401,6 +500,11 @@ or lessons, dispatch agents in parallel — the user prefers this.
 | Deep convention doc (reference) | `LECTURE-AUTHORING.md` at the repo root |
 | Sister skill (new lessons) | `.claude/skills/ast100-create/SKILL.md` |
 
-Both chapters 0 and 1 are gold-standard now — pick either as a
-reference. They share the same Hero+tease + auto-numbered-h2 +
-lesson-prose conventions.
+**Chapter 0 (especially `0.4/figures.tsx`) is the freshest reference**
+for the Interactive-figure contract — it had a full overhaul on
+2026-06-01 (prose→figure flow, plain-language, fullscreen-fit, the
+light-theme `data-theme="dark"` fix, m/Hz-not-eV units, shared
+`SpectrumBar`, three.js wheel-gating). Chapter 1 predates that pass and is
+being aligned to it — don't copy chapter 1's figures blindly. For the
+Hero+tease + auto-numbered-h2 + lesson-prose conventions either chapter
+works.
