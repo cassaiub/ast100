@@ -670,6 +670,18 @@ figure.figure-stub > figcaption .figure-title {
   right: 16px;
 }
 
+/* ── Content-heavy fullscreen (opt-in via `.is-fs-fit` on the panel) ──
+   Panels with a stack below the viz — e.g. 0.4.c's telescope bestiary
+   (detail readout + name-only selector grid) — must fit the WHOLE figure
+   in the viewport with no scrollbars and nothing cropped. The fix is to
+   stop the viz from growing to fill and cap it small, so the detail panel,
+   the selector grid and the caption share the remaining height. The
+   default `overflow:hidden` + vertically-centred body then frames it. */
+.figure-frame.is-fs .figure-stub.is-fs-fit .fig-viz {
+  flex: 0 0 auto !important;
+  max-height: 24vh;
+}
+
 /* ── Sticky left rail ───────────────────────────────────────────────── */
 .rail-item .label {
   opacity: 0;

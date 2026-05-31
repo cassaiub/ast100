@@ -256,8 +256,10 @@ function TimeDilation() {
         }}
       />
       <div className="text-[13px] text-white/75 leading-[1.6] max-w-[58ch]">
-        Move very fast through space → time slows down for you compared to someone standing
-        still.
+        Drag the slider to push the rocket toward the speed of light. The faster it travels,
+        the slower its own clock runs compared to the one standing still. The factor{" "}
+        <span className="font-mono text-plasma/90">γ</span> ("gamma") is simply the slow-down:
+        at γ = 2 the moving clock ticks half as fast; at γ = 10, ten times slower.
       </div>
       <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
         At v = 0.999c, 1 year for the rocket equals 22 years on Earth. A round-trip to Alpha
@@ -477,8 +479,9 @@ function IceWaterSteam() {
         </svg>
       </div>
       <div className="text-[13px] text-white/75 leading-[1.6] max-w-[58ch]">
-        Matter and energy are essentially the same thing in different forms — like ice, water,
-        and steam.
+        Tap each state. Ice, water, and steam are all the same water wearing different forms —
+        and in just the same way, matter and energy are one thing in two guises. E = mc² is the
+        exchange rate that turns one into the other.
       </div>
       <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
         1 gram of mass = 9×10¹³ joules ≈ 21 kilotons of TNT — the yield of the Hiroshima bomb.
@@ -590,11 +593,11 @@ function starPalette(m: number) {
 }
 function stellarType(m: number): string {
   if (m < 0.45) return "Red dwarf";
-  if (m < 0.8) return "K-type";
+  if (m < 0.8) return "Orange dwarf";
   if (m <= 1.1) return "Sun-like";
-  if (m < 1.5) return "F-type";
-  if (m < 2.1) return "A-type";
-  return "B-type";
+  if (m < 1.5) return "Yellow-white";
+  if (m < 2.1) return "White star";
+  return "Blue-white";
 }
 
 function LightBending() {
@@ -647,7 +650,7 @@ function LightBending() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="fig-viz relative rounded-md overflow-hidden border border-white/[0.06] bg-black/40">
+      <div data-theme="dark" className="fig-viz relative rounded-md overflow-hidden border border-white/[0.06] bg-black/40">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           <defs>
             <radialGradient id="lb-star-disc" cx="50%" cy="50%" r="55%">
@@ -884,26 +887,28 @@ function LightBending() {
 
       <div className="grid md:grid-cols-2 gap-5 md:gap-7">
         <div className="text-[13px] text-white/75 leading-[1.6]">
-          Light from star{" "}
-          <span className="font-mono text-white/90">A</span> heads toward Earth{" "}
-          <span className="font-mono text-plasma">D</span> in a straight line.
-          Near a massive body{" "}
+          Light leaves the star at{" "}
+          <span className="font-mono text-white/90">A</span> and travels toward
+          Earth at{" "}
+          <span className="font-mono text-plasma">D</span>. Passing close to the
+          heavy body at{" "}
           <span className="font-mono" style={{ color: pal.mid }}>
             C
-          </span>{" "}
-          the ray kinks <em>toward</em> the mass; trace the kinked outgoing
-          segment backward from D and the observer infers the star at the
-          displaced apparent position{" "}
-          <span className="font-mono text-white/90">B</span>. Heavier deflector,
-          bigger bend — α = 4GM/(c²b), linear in M.
+          </span>
+          , the beam bends <em>toward</em> it — so when we trace the light back,
+          the star looks shifted to the ghostly apparent position{" "}
+          <span className="font-mono text-white/90">B</span>. Drag the slider to
+          make C heavier: the heavier the deflector, the bigger the bend. (The
+          angle α is measured in <em>arcseconds</em> — one arcsecond is 1/3600 of
+          a degree, about a coin seen from two miles away.)
         </div>
         <LingerCaption targetRef={lingerRef} revealed={lingerOn}>
-          Arthur Eddington&rsquo;s 1919 solar-eclipse expedition measured the
-          angular separation between A and B for starlight grazing the Sun and
-          found 1.61 arcseconds — within 5% of Einstein&rsquo;s predicted 1.75″
-          for one solar mass. The slider walks the same equation across a
-          stellar cast: at 4 M☉ the bend grows to ≈ 7″; at ¼ M☉, barely
-          ¼ arcsecond.
+          Arthur Eddington&rsquo;s 1919 solar-eclipse expedition measured this
+          very shift for starlight grazing the Sun and found it consistent with
+          Einstein&rsquo;s predicted 1.75″ for one solar mass — the result that
+          made Einstein world-famous overnight. The slider walks the same law
+          across a stellar cast: at 4 M☉ the bend grows to ≈ 7″; at ¼ M☉ it
+          drops to about 0.4″, just under half an arcsecond.
         </LingerCaption>
       </div>
     </div>
@@ -913,7 +918,7 @@ function LightBending() {
 export function GeneralRelativityPanel() {
   return (
     <FigurePanel
-      idx="0.1.b"
+      idx="0.1.d"
       kicker="general relativity · gravity as geometry"
       caption="Mass bends the very paths that light follows. Slide the deflector across a stellar cast: at one solar mass you land on Eddington's 1919 eclipse measurement (≈ 1.75″); double the mass and the bend doubles with it."
     >
@@ -1055,7 +1060,7 @@ function GravitationalTimeDilation() {
             FLAT SPACETIME · NO MASS
           </text>
           <text x={W - 40} y={280} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.45)">
-            EVENT HORIZON ←
+            EDGE OF A BLACK HOLE ←
           </text>
         </svg>
       </div>
@@ -1066,7 +1071,7 @@ function GravitationalTimeDilation() {
             depth into gravity well
           </label>
           <span className="font-mono text-[10px] text-plasma">
-            r<sub>s</sub>/r = {(depth * depth).toFixed(3)} · γ = {dilation.toFixed(3)}
+            clock runs at {dilation.toFixed(3)}× the distant rate
           </span>
         </div>
         <input
@@ -1081,7 +1086,7 @@ function GravitationalTimeDilation() {
         <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
           <span>deep space</span>
           <span>near star</span>
-          <span>at horizon</span>
+          <span>black-hole edge</span>
         </div>
       </div>
 

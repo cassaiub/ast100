@@ -203,7 +203,7 @@ export default function SpacetimeFabric() {
   }
 
   return (
-    <div className="fig-viz relative rounded-xl overflow-hidden border border-white/[0.06] bg-black/40">
+    <div data-theme="dark" className="fig-viz relative rounded-xl overflow-hidden border border-white/[0.06] bg-black/40">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
@@ -311,7 +311,7 @@ export default function SpacetimeFabric() {
       <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between gap-3">
         <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/45 pointer-events-none">
           <span className="inline-block w-2 h-2 rounded-full bg-solar shadow-[0_0_8px_#f59e0b] mr-2 align-middle"></span>
-          test particles follow warped geodesics
+          test particles trace the curved space
         </div>
         <button
           onClick={reset}

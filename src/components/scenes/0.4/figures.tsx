@@ -10,14 +10,21 @@ function FigurePanel({
   kicker,
   caption,
   children,
+  fitFs = false,
 }: {
   idx: string;
   kicker: string;
   caption: ReactNode;
   children: ReactNode;
+  /** content-heavy panels (e.g. the bestiary) shrink the viz in fullscreen
+      so the whole figure fits in the viewport with no scrollbars. */
+  fitFs?: boolean;
 }) {
   return (
-    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+    <figure
+      data-fade
+      className={`figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}`}
+    >
       <div className="figure-body">{children}</div>
       <figcaption>
         <span className="figure-tag">Fig. {idx}</span>
@@ -359,7 +366,7 @@ function PeriodPulse() {
   );
 }
 
-function EmWaveScene() {
+function EmWaveScene({ fs }: { fs: boolean }) {
   return (
     <>
       <ambientLight intensity={0.65} />
@@ -410,8 +417,8 @@ function EmWaveScene() {
         makeDefault
         enableDamping
         dampingFactor={0.08}
-        enablePan
-        enableZoom
+        enablePan={fs}
+        enableZoom={fs}
         target={[W3D_LENGTH / 2, 0, 0]}
         minDistance={2}
         maxDistance={14}
@@ -421,19 +428,44 @@ function EmWaveScene() {
 }
 
 export function EmWaveOscillatorPanel() {
+  /* Gate the 3D camera's wheel-zoom + pan to fullscreen only, matching the
+     FigureFrame contract (and the 0.3 balloon): in normal flow the wheel
+     must scroll the PAGE, not the figure. We watch the enclosing
+     [data-figure-frame] for the `.is-fs` class and only enable zoom/pan then. */
+  const vizRef = useRef<HTMLDivElement>(null);
+  const [fs, setFs] = useState(false);
+  useEffect(() => {
+    const frame = vizRef.current?.closest("[data-figure-frame]");
+    if (!frame) return;
+    const sync = () => setFs(frame.classList.contains("is-fs"));
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(frame, { attributes: true, attributeFilter: ["class"] });
+    return () => mo.disconnect();
+  }, []);
   return (
     <FigurePanel
       idx="0.4.a"
       kicker="Electromagnetic Wave · E and B in Step"
-      caption="Light is what an accelerating charge radiates. +q bobs up and down along y; the radiated electric field E parallels its motion, the magnetic field B is perpendicular (along x), and the whole pattern races down z at c. The wavelength λ — bracketed above the wave — is the distance from one peak to the next, i.e. the length of one full wiggle frozen in space. The frequency f is how many of those wiggles the source pumps out per second; watch the white pulse at the left blink in time with +q to feel it. Drag to orbit, scroll to zoom, right-click drag (or two-finger drag) to pan."
+      caption="Light is what an accelerating charge radiates. +q bobs up and down along y; the radiated electric field E parallels its motion, the magnetic field B is perpendicular (along x), and the whole pattern races down z at c. The wavelength λ — bracketed above the wave — is the distance from one peak to the next, i.e. the length of one full wiggle frozen in space. The frequency f is how many of those wiggles the source pumps out per second; watch the white pulse at the left blink in time with +q to feel it. Drag to spin the view; go fullscreen to scroll-zoom and right-click-drag to pan."
     >
-      <div className="fig-viz w-full" style={{ height: 380 }}>
+      {/* Always-dark 3D scene: the axis labels, λ bracket and field lines
+          are drawn in hard-coded near-white colours, so the panel must
+          keep a dark backdrop in BOTH site themes or they vanish on the
+          light page background. data-theme="dark" pins the dark tokens
+          for any theme-token text inside this subtree. */}
+      <div
+        ref={vizRef}
+        data-theme="dark"
+        className="fig-viz w-full rounded-md overflow-hidden border border-white/[0.06] bg-black/40"
+        style={{ height: 380 }}
+      >
         <Canvas
           dpr={[1, 1.75]}
           camera={{ position: [3.4, 1.6, 3.4], fov: 50, near: 0.05, far: 100 }}
           style={{ background: "transparent" }}
         >
-          <EmWaveScene />
+          <EmWaveScene fs={fs} />
         </Canvas>
       </div>
       <div className="mt-3 flex items-center gap-4 text-[10px] font-mono tracking-[0.22em] uppercase text-white/60">
@@ -479,7 +511,7 @@ type Band = {
    visible on-screen rather than a hair-thin sliver. Real physics:
    visible light is 400–750 nm. */
 const BANDS: Band[] = [
-  { id: "gamma", name: "Gamma",       shortName: "GAMMA", logMin: -14,   logMax: -11,   color: "#e0a02f", use: "Nuclear decay. Highest-energy radiation we know.", astro: "Gamma-ray bursts, neutron-star mergers (Fermi, CTAO)." },
+  { id: "gamma", name: "Gamma",       shortName: "GAMMA", logMin: -21,   logMax: -11,   color: "#e0a02f", use: "Nuclear decay. Highest-energy radiation we know.", astro: "Gamma-ray bursts, neutron-star mergers (Fermi, CTAO)." },
   { id: "xray",  name: "X-ray",       shortName: "X-RAY", logMin: -11,   logMax: -8,    color: "#d97757", use: "Medical imaging — passes through soft tissue.",   astro: "Black-hole accretion disks, supernova remnants (Chandra)." },
   { id: "uv",    name: "Ultraviolet", shortName: "UV",    logMin: -8,    logMax: -6.5,  color: "#8a4dd9", use: "Sunburn. Sterilisation. Black-light posters.",   astro: "Hot young stars and quasars (GALEX, Hubble UV)." },
   { id: "vis",   name: "Visible",     shortName: "VIS",   logMin: -6.5,  logMax: -5.9,  color: "#22d3ee", use: "What our eyes see — drives photosynthesis.",     astro: "Galaxies, stars, planets — the workhorse band (Hubble, Keck, Rubin)." },
@@ -521,7 +553,7 @@ export function EmSpectrumScrubberPanel() {
   const [logLam, setLogLam] = useState(-6.3); // visible
   const W = 720;
   const H = 220;
-  const SP_MIN = -13;
+  const SP_MIN = -21;
   const SP_MAX = 4;
   /* Flipped axis: radio (large λ) lives on the LEFT, gamma (small λ)
      on the RIGHT — matches every textbook EM-spectrum diagram. */
@@ -585,22 +617,7 @@ export function EmSpectrumScrubberPanel() {
     <FigurePanel
       idx="0.4.b"
       kicker="The Electromagnetic Spectrum · One Strip, Seven Voices"
-      caption={
-        <>
-          A single phenomenon spanning seventeen orders of magnitude in
-          wavelength.  Slide (or use ← / → keys) across — each band has both
-          an everyday use and an astronomical superpower.{" "}
-          <span
-            className="font-mono text-plasma"
-            dangerouslySetInnerHTML={{ __html: lamHtml }}
-          />
-          {" · "}
-          <span
-            className="font-mono text-plasma"
-            dangerouslySetInnerHTML={{ __html: freqHtml }}
-          />
-        </>
-      }
+      caption="A single phenomenon spanning seventeen orders of magnitude in wavelength. Slide (or use ← / → keys) across — each band has both an everyday use and an astronomical superpower."
     >
       {/* Drop the inner overflow-hidden + rounded-md wrapper that was
           clipping text near corners; the outer figure-stub already
@@ -690,6 +707,8 @@ export function EmSpectrumScrubberPanel() {
             { l: -6, t: "μm" },
             { l: -9, t: "nm" },
             { l: -12, t: "pm" },
+            { l: -15, t: "fm" },
+            { l: -18, t: "am" },
           ].map(({ l, t }) => (
             <text
               key={`lam-${l}`}
@@ -763,6 +782,8 @@ export function EmSpectrumScrubberPanel() {
             { l: Math.log10(C_LIGHT) - 15, t: "PHz" },
             { l: Math.log10(C_LIGHT) - 18, t: "EHz" },
             { l: Math.log10(C_LIGHT) - 21, t: "ZHz" },
+            { l: Math.log10(C_LIGHT) - 24, t: "YHz" },
+            { l: Math.log10(C_LIGHT) - 27, t: "RHz" },
           ].map(({ l, t }) => (
             <text
               key={`freq-${t}`}
@@ -966,150 +987,475 @@ export function EmSpectrumScrubberPanel() {
   );
 }
 
+/* ── Shared EM-spectrum bar ──────────────────────────────────────────
+   The full strip from 0.4.b — visible-zoom inset, wavelength scale on
+   top, colour bands, frequency scale below, atmospheric-transmission
+   panel — rendered identically here. Pass `cursorLogLam` for a scrubber
+   cursor (0.4.b style) OR `range` to shade a telescope's wavelength
+   coverage (0.4.c). Self-contained so the bar reads the same in both. */
+function SpectrumBar({
+  cursorLogLam,
+  activeBandId,
+  range,
+}: {
+  cursorLogLam?: number;
+  activeBandId?: string;
+  range?: { logMin: number; logMax: number; color: string };
+}) {
+  const W = 720;
+  const H = 220;
+  const SP_MIN = -21;
+  const SP_MAX = 4;
+  const C_LIGHT = 2.998e8;
+  const xOf = (l: number) => ((SP_MAX - l) / (SP_MAX - SP_MIN)) * W;
+  const transAt = (l: number): number => {
+    if (l <= ATMOSPHERE[0].log) return ATMOSPHERE[0].t;
+    if (l >= ATMOSPHERE[ATMOSPHERE.length - 1].log)
+      return ATMOSPHERE[ATMOSPHERE.length - 1].t;
+    for (let i = 1; i < ATMOSPHERE.length; i++) {
+      if (l <= ATMOSPHERE[i].log) {
+        const a = ATMOSPHERE[i - 1], b = ATMOSPHERE[i];
+        const k = (l - a.log) / (b.log - a.log);
+        return a.t + (b.t - a.t) * k;
+      }
+    }
+    return 0;
+  };
+  const bandOpacity = (id: string) =>
+    activeBandId ? (activeBandId === id ? 0.92 : 0.45) : range ? 0.62 : 0.55;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
+      <defs>
+        <linearGradient id="visibleSpectrumGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#ff2030" />
+          <stop offset="18%" stopColor="#ff7a20" />
+          <stop offset="32%" stopColor="#ffd320" />
+          <stop offset="50%" stopColor="#3fc940" />
+          <stop offset="68%" stopColor="#2070ff" />
+          <stop offset="85%" stopColor="#5828d2" />
+          <stop offset="100%" stopColor="#a020f0" />
+        </linearGradient>
+      </defs>
+
+      {/* Visible-light zoom inset */}
+      {(() => {
+        const insetW = 240;
+        const insetH = 24;
+        const visMidX = (xOf(-6.5) + xOf(-5.9)) / 2;
+        const insetLeft = visMidX - insetW / 2;
+        const insetRight = visMidX + insetW / 2;
+        const insetTop = 6;
+        const insetBot = insetTop + insetH;
+        const bandTop = 60;
+        const bandLeft = Math.min(xOf(-6.5), xOf(-5.9));
+        const bandRight = Math.max(xOf(-6.5), xOf(-5.9));
+        return (
+          <g>
+            <polygon
+              points={`${insetLeft},${insetBot} ${insetRight},${insetBot} ${bandRight},${bandTop} ${bandLeft},${bandTop}`}
+              fill="rgb(var(--c-text-rgb) / 0.04)"
+              stroke="rgb(var(--c-text-rgb) / 0.28)"
+              strokeWidth="0.6"
+              strokeDasharray="2 3"
+            />
+            <rect
+              x={insetLeft}
+              y={insetTop}
+              width={insetW}
+              height={insetH}
+              fill="url(#visibleSpectrumGrad)"
+              stroke="rgb(var(--c-text-rgb) / 0.55)"
+              strokeWidth="0.8"
+            />
+            <text
+              x={insetLeft + 6}
+              y={insetTop + insetH / 2 + 3}
+              fontSize="9"
+              letterSpacing="1"
+              fontFamily="var(--font-mono)"
+              fill="#ffffff"
+              style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.6)", strokeWidth: 2 }}
+            >
+              700 nm
+            </text>
+            <text
+              x={insetRight - 6}
+              y={insetTop + insetH / 2 + 3}
+              textAnchor="end"
+              fontSize="9"
+              letterSpacing="1"
+              fontFamily="var(--font-mono)"
+              fill="#ffffff"
+              style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.6)", strokeWidth: 2 }}
+            >
+              400 nm
+            </text>
+          </g>
+        );
+      })()}
+
+      {/* Wavelength tick labels (ABOVE the main bar) */}
+      {[
+        { l: 3, t: "km" },
+        { l: 0, t: "m" },
+        { l: -2, t: "cm" },
+        { l: -3, t: "mm" },
+        { l: -6, t: "μm" },
+        { l: -9, t: "nm" },
+        { l: -12, t: "pm" },
+        { l: -15, t: "fm" },
+        { l: -18, t: "am" },
+      ].map(({ l, t }) => (
+        <text
+          key={`lam-${l}`}
+          x={xOf(l)}
+          y={54}
+          textAnchor="middle"
+          fontSize="11"
+          fontFamily="var(--font-mono)"
+          fill="rgb(var(--c-text-rgb) / 0.8)"
+        >
+          {t}
+        </text>
+      ))}
+
+      {/* Band strips (with short names inside) */}
+      {BANDS.map((b) => {
+        const x1 = Math.min(xOf(b.logMin), xOf(b.logMax));
+        const x2 = Math.max(xOf(b.logMin), xOf(b.logMax));
+        const stripW = x2 - x1;
+        const estLabelW = b.shortName.length * 6.2 + 4;
+        const showLabel = estLabelW < stripW - 2;
+        return (
+          <g key={b.id}>
+            <rect
+              x={x1}
+              y={60}
+              width={stripW}
+              height={28}
+              fill={b.color}
+              opacity={bandOpacity(b.id)}
+              style={{ transition: "opacity 240ms var(--ease)" }}
+            />
+            {showLabel && (
+              <text
+                x={(x1 + x2) / 2}
+                y={77}
+                textAnchor="middle"
+                fontSize="9"
+                letterSpacing="1.5"
+                fontFamily="var(--font-mono)"
+                fill="#ffffff"
+                style={{ paintOrder: "stroke", stroke: "rgba(0,0,0,0.55)", strokeWidth: 2 }}
+              >
+                {b.shortName}
+              </text>
+            )}
+          </g>
+        );
+      })}
+
+      {/* Telescope wavelength-range highlight (0.4.c).  Clamped to the
+          strip; ranges that run past the gamma edge get a → "beyond"
+          arrow (Fermi, CTAO live at shorter λ than this strip shows). */}
+      {range && (() => {
+        const beyondRight = range.logMin < SP_MIN;
+        const hiL = Math.min(range.logMax, SP_MAX); // longer-λ end → left
+        const loL = Math.max(range.logMin, SP_MIN); // shorter-λ end → right
+        let x1 = xOf(hiL);
+        let x2 = xOf(loL);
+        if (range.logMax < SP_MIN) {
+          // entirely past the gamma edge — pin a sliver to the right edge
+          x2 = xOf(SP_MIN);
+          x1 = x2 - 20;
+        } else if (x2 - x1 < 10) {
+          const c = (x1 + x2) / 2;
+          x1 = c - 6;
+          x2 = c + 6;
+        }
+        return (
+          <g style={{ transition: "all 200ms var(--ease)" }}>
+            <rect x={x1} y={57} width={x2 - x1} height={34} fill={range.color} opacity={0.55} />
+            <rect x={x1} y={57} width={x2 - x1} height={34} fill="none" stroke={range.color} strokeWidth={1.6} />
+            <rect x={x1 + 0.8} y={57.8} width={Math.max(0, x2 - x1 - 1.6)} height={32.4} fill="none" stroke="#ffffff" strokeOpacity={0.5} strokeWidth={0.7} />
+            {beyondRight && (
+              <text x={xOf(SP_MIN) + 3} y={78} fontSize="13" fontFamily="var(--font-mono)" fill={range.color}>
+                →
+              </text>
+            )}
+          </g>
+        );
+      })()}
+
+      {/* Decade tick marks below the main bar */}
+      {Array.from({ length: SP_MAX - SP_MIN + 1 }, (_, i) => SP_MIN + i).map((l) => (
+        <line
+          key={`tick-${l}`}
+          x1={xOf(l)}
+          x2={xOf(l)}
+          y1={88}
+          y2={92}
+          stroke="rgb(var(--c-text-rgb) / 0.35)"
+          strokeWidth="0.6"
+        />
+      ))}
+
+      {/* Frequency tick labels (BELOW the main bar) */}
+      {[
+        { l: Math.log10(C_LIGHT) - 6, t: "MHz" },
+        { l: Math.log10(C_LIGHT) - 9, t: "GHz" },
+        { l: Math.log10(C_LIGHT) - 12, t: "THz" },
+        { l: Math.log10(C_LIGHT) - 15, t: "PHz" },
+        { l: Math.log10(C_LIGHT) - 18, t: "EHz" },
+        { l: Math.log10(C_LIGHT) - 21, t: "ZHz" },
+        { l: Math.log10(C_LIGHT) - 24, t: "YHz" },
+        { l: Math.log10(C_LIGHT) - 27, t: "RHz" },
+      ].map(({ l, t }) => (
+        <text
+          key={`freq-${t}`}
+          x={xOf(l)}
+          y={104}
+          textAnchor="middle"
+          fontSize="11"
+          fontFamily="var(--font-mono)"
+          fill="rgb(var(--c-text-rgb) / 0.8)"
+        >
+          {t}
+        </text>
+      ))}
+
+      {/* Atmospheric opacity panel */}
+      {(() => {
+        const yTop = 124;
+        const yBot = 190;
+        const stripH = yBot - yTop;
+        const samples: { x: number; y: number; t: number }[] = [];
+        for (let i = 0; i <= 100; i++) {
+          const l = SP_MIN + (i / 100) * (SP_MAX - SP_MIN);
+          const t = transAt(l);
+          samples.push({ x: xOf(l), y: yBot - t * stripH, t });
+        }
+        const linePts = samples.map((s, i) => `${i === 0 ? "M" : "L"} ${s.x.toFixed(1)} ${s.y.toFixed(1)}`).join(" ");
+        const firstX = samples[0].x;
+        const lastX = samples[samples.length - 1].x;
+        const fillPts = `${linePts} L ${lastX.toFixed(1)} ${yBot} L ${firstX.toFixed(1)} ${yBot} Z`;
+        return (
+          <g>
+            <rect x={0} y={yTop} width={W} height={stripH} fill="rgba(220, 60, 60, 0.18)" />
+            {samples.slice(0, -1).map((s, i) => {
+              const sNext = samples[i + 1];
+              const avg = (s.t + sNext.t) / 2;
+              const r = Math.round(220 - 160 * avg);
+              const g = Math.round(60 + 140 * avg);
+              const b = 60;
+              const xL = Math.min(s.x, sNext.x);
+              const xR = Math.max(s.x, sNext.x);
+              return (
+                <rect
+                  key={i}
+                  x={xL}
+                  y={yTop}
+                  width={xR - xL + 0.5}
+                  height={stripH}
+                  fill={`rgb(${r}, ${g}, ${b})`}
+                  opacity={0.25 + avg * 0.35}
+                />
+              );
+            })}
+            <path d={fillPts} fill="rgb(60, 180, 80)" opacity="0.32" />
+            <path d={linePts} stroke="rgb(120, 220, 130)" strokeWidth="1.6" fill="none" />
+            <rect x={0} y={yTop} width={W} height={stripH} fill="none" stroke="rgb(var(--c-text-rgb) / 0.2)" strokeWidth="0.8" />
+            <text x={10} y={yTop - 6} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.7)">
+              ATMOSPHERIC TRANSMISSION
+            </text>
+            <text x={W - 10} y={yTop - 6} textAnchor="end" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(120, 220, 130)">
+              GREEN = REACHES GROUND
+            </text>
+            <text x={xOf(-6.3)} y={yTop - 2} textAnchor="middle" fontSize="8" letterSpacing="1.5" fontFamily="var(--font-mono)" fill="rgb(120, 220, 130)">
+              ↓ optical
+            </text>
+            <text x={xOf(-1)} y={yTop - 2} textAnchor="middle" fontSize="8" letterSpacing="1.5" fontFamily="var(--font-mono)" fill="rgb(120, 220, 130)">
+              ↓ radio
+            </text>
+            <text x={10} y={yBot - 4} fontSize="8" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.45)">
+              0%
+            </text>
+            <text x={10} y={yTop + 10} fontSize="8" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.45)">
+              100%
+            </text>
+          </g>
+        );
+      })()}
+
+      {/* Scrubber cursor (0.4.b) */}
+      {cursorLogLam !== undefined && (
+        <g>
+          <line
+            x1={xOf(cursorLogLam)}
+            x2={xOf(cursorLogLam)}
+            y1={6}
+            y2={H - 8}
+            stroke="rgb(var(--c-text-rgb) / 0.95)"
+            strokeWidth="1.4"
+          />
+          <polygon
+            points={`${xOf(cursorLogLam) - 5},6 ${xOf(cursorLogLam) + 5},6 ${xOf(cursorLogLam)},14`}
+            fill="rgb(var(--c-text-rgb) / 0.95)"
+          />
+        </g>
+      )}
+    </svg>
+  );
+}
+
 /* ── Telescope Bestiary ─────────────────────────────────────────────
-   Real telescopes mapped onto the EM spectrum. Hover any card to
-   highlight its position on a small spectrum strip; click to open
-   the official site in a new tab. Replaces telescopes.webp. */
+   Real telescopes mapped onto the shared EM-spectrum bar. Hover a card
+   to shade that telescope's wavelength coverage on the bar; click to
+   open an in-figure detail panel (no external navigation). */
 type Telescope = {
   name: string;
   band: string;
   bandColor: string;
-  use: string;
-  href: string;
-  /** approx wavelength log10 m for spectrum marker */
-  logLam: number;
+  /** wavelength coverage, log10(λ/m): logMin = shortest λ, logMax = longest λ */
+  logMin: number;
+  logMax: number;
+  /** human-readable working range */
+  freqs: string;
+  science: string;
+  location: string;
+  owners: string;
+  cost: string;
+  year: string;
 };
 const TELESCOPES: Telescope[] = [
-  { name: "LOFAR", band: "Radio", bandColor: "#5b6da6", use: "Maps interstellar gas and pulsars.", href: "https://www.astron.nl/telescopes/lofar/", logLam: 1 },
-  { name: "FAST", band: "Radio", bandColor: "#5b6da6", use: "World's largest single-dish, 500 m.", href: "https://fast.bao.ac.cn/", logLam: 0 },
-  { name: "SPT-3G", band: "Microwave", bandColor: "#7b5ab8", use: "Maps CMB polarization from the South Pole.", href: "https://pole.uchicago.edu/", logLam: -2.5 },
-  { name: "Planck", band: "Microwave", bandColor: "#7b5ab8", use: "All-sky CMB temperature & polarization.", href: "https://www.cosmos.esa.int/web/planck", logLam: -3 },
-  { name: "JWST", band: "Infrared", bandColor: "#c0596d", use: "Sees through dust to first galaxies + star birth.", href: "https://webb.nasa.gov/", logLam: -5 },
-  { name: "Keck", band: "Visible / IR", bandColor: "#22d3ee", use: "10 m mirrors at Mauna Kea — exoplanets, AGN.", href: "https://www.keckobservatory.org/", logLam: -6.2 },
-  { name: "Hubble", band: "Visible / UV", bandColor: "#22d3ee", use: "Deep fields, planetary atmospheres, supernovae.", href: "https://hubblesite.org/", logLam: -6.3 },
-  { name: "Vera Rubin", band: "Visible", bandColor: "#22d3ee", use: "10-year wide-field sky survey (LSST).", href: "https://www.lsst.org/", logLam: -6.4 },
-  { name: "GALEX", band: "Ultraviolet", bandColor: "#8a4dd9", use: "All-sky UV mapping of young stars.", href: "https://www.jpl.nasa.gov/missions/galaxy-evolution-explorer-galex", logLam: -7.2 },
-  { name: "Chandra", band: "X-ray", bandColor: "#d97757", use: "Black-hole accretion disks, supernova remnants.", href: "https://chandra.harvard.edu/", logLam: -9 },
-  { name: "Fermi", band: "Gamma", bandColor: "#e0a02f", use: "Highest-energy bursts and pulsars.", href: "https://fermi.gsfc.nasa.gov/", logLam: -12 },
-  { name: "CTAO", band: "Gamma", bandColor: "#e0a02f", use: "Ground-array detecting Cherenkov showers.", href: "https://www.ctao.org/", logLam: -13 },
+  { name: "LOFAR", band: "Radio", bandColor: "#5b6da6", logMin: 0.08, logMax: 1.48, freqs: "10–240 MHz", science: "Maps the low-frequency radio sky — primordial hydrogen, cosmic magnetism, pulsars.", location: "Core in the Netherlands; stations across Europe", owners: "ASTRON / LOFAR ERIC (European consortium)", cost: "≈ €150 million (construction, est.)", year: "2010" },
+  { name: "FAST", band: "Radio", bandColor: "#5b6da6", logMin: -1.0, logMax: 0.63, freqs: "70 MHz – 3 GHz", science: "Surveys hydrogen gas, times pulsars, hunts fast radio bursts — the largest filled dish.", location: "Karst valley, Guizhou, China", owners: "National Astronomical Observatories, Chinese Academy of Sciences", cost: "≈ US$180 million (2016)", year: "2016" },
+  { name: "SPT-3G", band: "Microwave", bandColor: "#7b5ab8", logMin: -2.85, logMax: -2.48, freqs: "95–220 GHz", science: "Maps the cosmic microwave background's polarization — inflation and neutrino mass.", location: "Amundsen–Scott South Pole Station, Antarctica", owners: "Univ. of Chicago–led; NSF + US DOE funded", cost: "≈ US$19 million base telescope (2007); 3G camera not publicly disclosed", year: "2017" },
+  { name: "Planck", band: "Microwave", bandColor: "#7b5ab8", logMin: -3.46, logMax: -2.0, freqs: "30–857 GHz", science: "Mapped the whole-sky CMB to fix the Universe's age and composition.", location: "Sun–Earth L2 orbit", owners: "ESA (with NASA/JPL hardware)", cost: "≈ €700 million (total)", year: "2009–2013" },
+  { name: "JWST", band: "Infrared", bandColor: "#c0596d", logMin: -6.22, logMax: -4.55, freqs: "0.6–28 µm", science: "Peers through dust in infrared to the first galaxies, star birth, exoplanet air.", location: "Sun–Earth L2 orbit (~1.5 million km)", owners: "NASA + ESA + CSA", cost: "≈ US$10 billion (total, 2021)", year: "2021" },
+  { name: "Keck", band: "Visible / IR", bandColor: "#22d3ee", logMin: -6.52, logMax: -5.30, freqs: "0.3–5 µm", science: "Twin 10 m mirrors for optical/infrared — galaxies, exoplanets, the Galactic-Centre black hole.", location: "Maunakea, Hawai‘i (~4,200 m)", owners: "Caltech + University of California", cost: "≈ US$140 million (both telescopes, 1990s)", year: "1993" },
+  { name: "Hubble", band: "Visible / UV", bandColor: "#22d3ee", logMin: -6.94, logMax: -5.60, freqs: "115 nm – 2.5 µm", science: "Sharp UV–optical–near-IR imaging and spectroscopy; rewrote the cosmic distance scale.", location: "Low Earth Orbit (~540 km)", owners: "NASA + ESA", cost: "≈ US$11–16 billion (incl. servicing)", year: "1990" },
+  { name: "Vera Rubin", band: "Visible", bandColor: "#22d3ee", logMin: -6.49, logMax: -5.98, freqs: "320–1050 nm", science: "A 10-year wide-and-fast survey of the southern sky — dark energy, transients, Solar-System bodies.", location: "Cerro Pachón, Chile (~2,680 m)", owners: "NSF + US DOE (NOIRLab + SLAC)", cost: "≈ US$680 million (construction)", year: "2025" },
+  { name: "GALEX", band: "Ultraviolet", bandColor: "#8a4dd9", logMin: -6.87, logMax: -6.55, freqs: "135–280 nm", science: "Mapped the ultraviolet sky to trace star formation across cosmic time.", location: "Low Earth Orbit (~690 km)", owners: "NASA (Caltech / JPL)", cost: "≈ US$150 million (life-cycle)", year: "2003–2013" },
+  { name: "Chandra", band: "X-ray", bandColor: "#d97757", logMin: -9.92, logMax: -7.92, freqs: "0.1–12 nm", science: "Resolves the hot, violent X-ray Universe — black-hole disks, supernova remnants, galaxy clusters.", location: "Elliptical Earth orbit (out to ~140,000 km)", owners: "NASA (operated by SAO / MIT)", cost: "≈ US$1.65 billion (construction, 1999)", year: "1999" },
+  { name: "Fermi", band: "Gamma", bandColor: "#e0a02f", logMin: -17.39, logMax: -13.21, freqs: "≈ 10²² – 10²⁶ Hz", science: "Surveys the highest-energy gamma sky — feeding black holes, pulsars, gamma-ray bursts.", location: "Low Earth Orbit (~550 km)", owners: "NASA + US DOE + international partners", cost: "≈ US$690 million (total)", year: "2008" },
+  { name: "CTAO", band: "Gamma", bandColor: "#e0a02f", logMin: -20.39, logMax: -16.21, freqs: "≈ 10²⁵ – 10²⁹ Hz", science: "Ground arrays catching gamma-ray air-flashes — cosmic-ray origins, active galaxies.", location: "La Palma, Spain + Paranal, Chile", owners: "CTAO ERIC (international consortium)", cost: "≈ €300 million (construction, est.)", year: "2018" },
 ];
 
 export function TelescopeBestiaryPanel() {
   const [hover, setHover] = useState<number | null>(null);
-  const W = 720;
-  const SP_MIN = -13;
-  const SP_MAX = 4;
-  function xOf(l: number) {
-    return ((l - SP_MIN) / (SP_MAX - SP_MIN)) * W;
-  }
+  /* `sel` is the keyboard-/arrow-driven selection; `hover` (mouse) wins
+     while the pointer is over a card.  The spectrum marker follows
+     whichever is live, so ← / → keys and the fullscreen wheel scrub the
+     bestiary even with no pointer (FigureFrame drives the numeric
+     data-shortcut pill set on the cards below). */
+  const [sel, setSel] = useState(0);
+  const marked = hover ?? sel;
+  const tel = TELESCOPES[marked];
   return (
     <FigurePanel
       idx="0.4.c"
       kicker="Telescope Bestiary · One Instrument per Wavelength"
-      caption="The real telescopes astronomers use, mapped onto the EM band each was tuned for. Hover any card to see where it sits on the spectrum strip — open the official site to dive deeper."
+      fitFs
+      caption="The real telescopes astronomers use, on the same spectrum bar as above. Hover a card (or step with the ← / → keys) to shade the slice of light that telescope was built to catch; click it for a full rundown — where it sits, what it studies, who built it, and what it cost."
     >
-      {/* Mini spectrum strip with marker */}
-      <div className="fig-viz relative w-full overflow-hidden rounded-md mb-5">
-        <svg viewBox={`0 0 ${W} 50`} className="block w-full h-auto">
-          {BANDS.map((b) => (
-            <rect
-              key={b.id}
-              x={xOf(b.logMin)}
-              y={14}
-              width={xOf(b.logMax) - xOf(b.logMin)}
-              height={20}
-              fill={b.color}
-              opacity={0.55}
-            />
-          ))}
-          {hover !== null && (
-            <g>
-              <line
-                x1={xOf(TELESCOPES[hover].logLam)}
-                x2={xOf(TELESCOPES[hover].logLam)}
-                y1={4}
-                y2={38}
-                stroke="rgb(var(--c-text-rgb) / 0.95)"
-                strokeWidth="1.4"
-              />
-              <text
-                x={xOf(TELESCOPES[hover].logLam)}
-                y={48}
-                textAnchor="middle"
-                fontSize="9"
-                fontFamily="var(--font-mono)"
-                letterSpacing="2"
-                fill="rgb(var(--c-text-rgb))"
-              >
-                {TELESCOPES[hover].name.toUpperCase()}
-              </text>
-            </g>
-          )}
-          <text
-            x={6}
-            y={48}
-            fontSize="8"
-            fontFamily="var(--font-mono)"
-            fill="rgb(var(--c-text-rgb) / 0.45)"
-          >
-            γ
-          </text>
-          <text
-            x={W - 6}
-            y={48}
-            textAnchor="end"
-            fontSize="8"
-            fontFamily="var(--font-mono)"
-            fill="rgb(var(--c-text-rgb) / 0.45)"
-          >
-            radio
-          </text>
-        </svg>
+      {/* The shared 0.4.b spectrum bar; the marked telescope's wavelength
+          coverage is shaded in its band colour. */}
+      <div className="fig-viz relative w-full mb-5">
+        <SpectrumBar
+          range={{ logMin: tel.logMin, logMax: tel.logMax, color: tel.bandColor }}
+        />
       </div>
 
-      <ol className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {TELESCOPES.map((t, i) => (
-          <li key={t.name}>
-            <a
-              href={t.href}
-              target="_blank"
-              rel="noopener"
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover(null)}
-              className="block p-3 rounded-md transition-colors duration-200"
-              style={{
-                background:
-                  hover === i
-                    ? "rgb(var(--c-accent-rgb) / 0.08)"
+      {/* In-figure detail panel for the marked telescope (mirrors the
+          readout box on 0.4.b — no external navigation). */}
+      <div
+        className="mb-5 px-4 py-3 rounded-md"
+        style={{
+          background: "rgb(var(--c-accent-rgb) / 0.04)",
+          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
+        }}
+      >
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span
+            className="font-serif font-medium leading-none"
+            style={{ fontSize: "1.75rem", color: "var(--c-accent)" }}
+          >
+            {tel.name}
+          </span>
+          <span className="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
+            <span className="inline-block w-2 h-2 rounded-full" style={{ background: tel.bandColor }} />
+            {tel.band}
+          </span>
+          <span className="font-mono text-[12px] tracking-[0.06em] text-white/90 tabular-nums">
+            {tel.freqs}
+          </span>
+          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-white/40">
+            first light {tel.year}
+          </span>
+        </div>
+        <div className="mt-2.5 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-[14px] text-white/85 leading-snug font-sans">
+          <div className="sm:col-span-2">
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-solar mr-2">science</span>
+            {tel.science}
+          </div>
+          <div>
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">location</span>
+            {tel.location}
+          </div>
+          <div>
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">built &amp; run by</span>
+            {tel.owners}
+          </div>
+          <div className="sm:col-span-2">
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">cost</span>
+            {tel.cost}
+          </div>
+        </div>
+      </div>
+
+      <ol className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        {TELESCOPES.map((t, i) => {
+          const isActive = marked === i;
+          return (
+            <li key={t.name}>
+              {/* The CARD is both the selector and the detail trigger: it
+                  carries the numeric data-shortcut FigureFrame steps
+                  through, so click / arrow / focus selects it — shading its
+                  range on the bar and filling the detail panel above. No
+                  external navigation. */}
+              <button
+                type="button"
+                data-shortcut={String(i + 1)}
+                aria-pressed={isActive}
+                aria-label={`${t.name} — ${t.band} telescope; show details`}
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(null)}
+                onFocus={() => setSel(i)}
+                onClick={() => setSel(i)}
+                title={`${t.name} — ${t.band}`}
+                className={`flex w-full items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer${isActive ? " is-active" : ""}`}
+                style={{
+                  background: isActive
+                    ? "rgb(var(--c-accent-rgb) / 0.12)"
                     : "rgb(var(--c-bg-rgb) / 0.25)",
-                border: `1px solid ${hover === i ? "rgb(var(--c-accent-rgb) / 0.45)" : "rgb(var(--c-text-rgb) / 0.08)"}`,
-                textDecoration: "none",
-              }}
-            >
-              <div className="flex items-center gap-2 mb-1">
+                  border: `1px solid ${isActive ? "rgb(var(--c-accent-rgb) / 0.5)" : "rgb(var(--c-text-rgb) / 0.08)"}`,
+                }}
+              >
                 <span
-                  className="inline-block w-2 h-2 rounded-full"
+                  className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ background: t.bandColor }}
                 />
-                <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">
-                  {t.band}
+                <span
+                  className="font-serif font-medium truncate"
+                  style={{ fontSize: "1rem", color: "var(--c-text-strong)" }}
+                >
+                  {t.name}
                 </span>
-              </div>
-              <div
-                className="font-serif font-medium"
-                style={{ fontSize: "1.15rem", color: "var(--c-text-strong)" }}
-              >
-                {t.name}
-              </div>
-              <div className="text-[12px] text-white/65 mt-1 leading-[1.45]">
-                {t.use}
-              </div>
-              <div className="mt-2 font-mono text-[9px] tracking-[0.22em] uppercase text-plasma/85">
-                ↗ open ↗
-              </div>
-            </a>
-          </li>
-        ))}
+              </button>
+            </li>
+          );
+        })}
       </ol>
     </FigurePanel>
   );
@@ -1648,7 +1994,7 @@ export function TelescopeAnatomyPanel() {
                     fill="white" opacity="0.9" />
                 ))}
                 <text x={198} y={42} textAnchor="end" fontSize="7"
-                  fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+                  fontFamily="var(--font-mono)" fill="rgba(255,255,255,0.5)">
                   brightness map
                 </text>
               </g>
@@ -1656,7 +2002,7 @@ export function TelescopeAnatomyPanel() {
               <g transform={`translate(${outX + 10}, ${outY + 6})`}>
                 {/* baseline axis */}
                 <line x1="0" y1="32" x2="200" y2="32"
-                  stroke="rgb(var(--c-text-rgb) / 0.4)" strokeWidth="0.6" />
+                  stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
                 {/* continuum */}
                 <line x1="0" y1="22" x2="200" y2="22"
                   stroke="rgb(var(--c-solar-rgb))" strokeWidth="1.2" opacity="0.5" />
@@ -1673,11 +2019,11 @@ export function TelescopeAnatomyPanel() {
                 ))}
                 <text x="0" y="40" fontSize="6"
                   fontFamily="var(--font-mono)"
-                  fill="rgb(var(--c-text-rgb) / 0.5)">
+                  fill="rgba(255,255,255,0.5)">
                   λ →
                 </text>
                 <text x={198} y={42} textAnchor="end" fontSize="7"
-                  fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.5)">
+                  fontFamily="var(--font-mono)" fill="rgba(255,255,255,0.5)">
                   intensity vs λ
                 </text>
               </g>

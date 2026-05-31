@@ -170,15 +170,17 @@ export function CosmicScalePanel() {
       kicker="Cosmic Scale · From the Moon to the Horizon"
       caption={
         <>
-          27 objects sorted by light-travel time, from the <em>Moon</em>{" "}
-          (1.28 s) to the <em>Cosmic Microwave Background</em> (13.8 Gyr).
-          Click any dot — or use the <strong>← / →</strong> arrow keys
-          (Shift = jump 10) — to see how far the object sits, how long
-          its photons have been on their way, and what makes it
-          remarkable. The axis is sorted but non-linear in time
-          (lookback saturates near the Big Bang), so every object gets
-          readable room; the inset always carries the precise metric.
-          Nothing you ever see is happening &ldquo;now&rdquo;.
+          27 real objects lined up by how long their light has been
+          travelling to us, from the <em>Moon</em> (1.28 seconds ago) to
+          the <em>Cosmic Microwave Background</em> (13.8 billion years ago —
+          the oldest light there is). <strong>Drag the line, click any dot,
+          or press the ← / →</strong> arrow keys (hold <em>Shift</em> to jump
+          10 at a time) to read how far each object sits and how far back in
+          time you are looking. The dots are spaced evenly rather than to
+          true scale — otherwise the most distant objects would all pile up
+          at the far right — but the panel below always shows the exact
+          distance and travel time. The lesson in one line: nothing you ever
+          see in the sky is happening &ldquo;now.&rdquo;
         </>
       }
     >
@@ -437,6 +439,16 @@ export function CosmicScalePanel() {
           <div className="text-[13.5px] text-white/85 leading-[1.6] font-sans">
             {sel.description}
           </div>
+          <div className="mt-3 pt-2.5 border-t border-white/[0.08] text-[10.5px] text-white/45 leading-[1.5] font-sans">
+            <span className="font-mono uppercase tracking-[0.14em] text-white/55">key:</span>{" "}
+            <em>light-travel</em> = how long the light has been on its way (so how
+            far back in time you are seeing). <span className="font-mono">ly</span> = light-year
+            (the distance light covers in a year); <span className="font-mono">Mly</span>/<span className="font-mono">Gly</span> = million / billion light-years;
+            {" "}<span className="font-mono">AU</span> = Earth–Sun distance;
+            {" "}<span className="font-mono">M☉</span> = mass of one Sun;
+            {" "}<span className="font-mono">z</span> = redshift, how much a galaxy&apos;s light is
+            stretched by cosmic expansion (bigger <span className="font-mono">z</span> = older, more distant).
+          </div>
         </div>
       </div>
     </FigurePanel>
@@ -481,7 +493,7 @@ function balloonAgeGyr(a: number): number {
   );
 }
 function balloonFmtAge(gyr: number): string {
-  if (gyr <= 0) return "0";
+  if (gyr <= 0) return "0 yr";
   if (gyr < 0.001) return `${Math.round(gyr * 1e6)} kyr`;
   if (gyr < 1) return `${Math.round(gyr * 1000)} Myr`;
   return `${gyr.toFixed(1)} Gyr`;
@@ -708,14 +720,18 @@ export function BalloonAnalogyPanel() {
     return () => m.removeEventListener("change", onChange);
   }, []);
 
-  /* Wheel over the canvas drives the slider instead of the camera dolly.
-     Step is proportional to current a so one wheel-tick feels right at
-     both a≈0.5 and a≈15. Scroll-up (deltaY < 0, the usual "zoom in"
-     direction) → balloon expands → a increases. */
+  /* Wheel over the canvas drives the slider instead of the camera dolly —
+     but ONLY in fullscreen, so in the normal in-page view the wheel keeps
+     scrolling the page (matching the FigureFrame contract: no wheel
+     hijacking in normal flow). Step is proportional to current a so one
+     wheel-tick feels right at both a≈0.5 and a≈15. Scroll-up (deltaY < 0,
+     the usual "zoom in" direction) → balloon expands → a increases. */
   useEffect(() => {
     const el = canvasWrapRef.current;
     if (!el) return;
     function onWheel(e: WheelEvent) {
+      const frame = el?.closest("[data-figure-frame]");
+      if (!frame || !frame.classList.contains("is-fs")) return; // page scroll in normal flow
       e.preventDefault();
       setScale((prev) => {
         const base = Math.max(prev, 0.3);
@@ -748,24 +764,31 @@ export function BalloonAnalogyPanel() {
       kicker="Balloon Analogy · The Cosmological Principle"
       caption={
         <>
-          The Universe&apos;s expansion is not motion <em>through</em> space — it
-          is space itself stretching. Picture the cosmos as the surface of a
-          balloon (Eddington 1933): galaxies are dots glued to the rubber. As
-          the radius grows — the scale factor <em>a(t)</em> of the
-          Friedmann–Lemaître metric — every distance on the surface grows in
-          proportion. <strong>Click any galaxy to become it</strong>; the
-          others recede along Hubble–Lemaître lines. Pick a different one —
-          same picture from every observer (Einstein 1917, the cosmological
-          principle).
+          The Universe&apos;s expansion is not things flying <em>through</em>{" "}
+          space — it is space itself stretching. Picture the cosmos as the
+          skin of a balloon (a picture Arthur Eddington made famous in 1933):
+          the galaxies are dots glued to the rubber. As you inflate it, every
+          dot drifts away from every other dot, yet no dot is doing the
+          pushing and no dot is the centre. <strong>Drag the slider (or use
+          ← / →) to inflate the universe; click any galaxy — or press 1–6 —
+          to stand on it</strong> and watch all the others rush away from you.
+          Now stand on a <em>different</em> galaxy: the view is exactly the
+          same. That sameness-from-everywhere is the{" "}
+          <em>cosmological principle</em> — the idea, going back to Einstein
+          in 1917, that the Universe has no special centre and looks much the
+          same from any galaxy in it.
           <span className="block mt-1 text-white/45">
-            Drag to rotate · scroll over the balloon to expand the
-            universe · click a galaxy (or press 1–6) to switch observer.
+            Drag to rotate the balloon · drag the slider (or ← / →) to expand
+            it · click a galaxy (or press 1–6) to switch which one is
+            &ldquo;you.&rdquo;
           </span>
           <span className="block mt-1 text-white/35">
-            Visual radius scales as √a so a=20 still fits the frame; the
-            slider value is the true scale factor and the age <em>t</em>
-            comes from flat-ΛCDM (Planck 2018: Ω<sub>m</sub>=0.315,
-            Ω<sub>Λ</sub>=0.685, 1/H<sub>0</sub>=14.5 Gyr).
+            For the curious: the slider is the cosmologists&apos; <em>scale
+            factor a(t)</em> (a = 1 today), and the displayed age comes from
+            the standard model of the cosmos (flat ΛCDM, Planck 2018:
+            Ω<sub>m</sub>=0.315, Ω<sub>Λ</sub>=0.685, 1/H<sub>0</sub>=14.5 Gyr).
+            The drawn radius grows as √a so that a 20-fold expansion still fits
+            on screen.
           </span>
         </>
       }

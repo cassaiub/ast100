@@ -16,7 +16,7 @@ import { chapterPath, subPath } from "../../../data/course-nav";
 
 <ChapterLayout
   title="0.1 — Spacetime and Energy-Matter · AST 100"
-  description="Two theories — eleven quiet years apart — that stitched space, time, matter, and energy into one fabric."
+  description="Two theories — a decade apart — that stitched space, time, matter, and energy into one fabric."
   activeId="0.1"
   current="/chapter/0/0.1"
 >
@@ -26,23 +26,35 @@ import { chapterPath, subPath } from "../../../data/course-nav";
     <div class="prose-cosmic lesson-prose">
       <h2 id="special">Relativity: Special Theory</h2>
 
+      <p>Before Einstein, scientists believed that space and time were completely separate things. Space was viewed as a fixed stage where events happened, and time was like a universal clock that ticked at the same rate for everyone, everywhere. Einstein changed this view forever with his Special Theory of Relativity (1905, Bern). He started from a strange, stubborn fact: the speed of light is the same for everyone, no matter how fast they move. The only way that can stay true is if space and time themselves stretch and shrink to keep light's speed fixed — so the two must be linked. One consequence is that if you move very fast through space, time actually slows down for you compared to someone standing still. Space and time are not independent after all; they are woven together into a single, flexible fabric known as "spacetime."</p>
+
+      <p>This new way of thinking also connected matter and energy. Previously, people thought mass (how much "stuff" is in an object) and energy (the ability to do work) were totally different and could not change into each other. Einstein discovered that mass is really just a super-concentrated form of energy. His famous equation, E = mc², explains this relationship. It shows that a very small amount of mass is equal to a huge amount of energy. This proved that matter and energy are essentially the same thing in different forms, similar to how ice and steam are both just different forms of water.</p>
+
       <FigureFrame label="Special relativity">
         <SpecialRelativityPanel client:visible />
       </FigureFrame>
-
-      <p>Before Einstein, scientists believed that space and time were completely separate things. Space was viewed as a fixed stage where events happened, and time was like a universal clock that ticked at the same rate for everyone, everywhere. Einstein changed this view forever with his Special Theory of Relativity (1905, Bern). He realized that because the speed of light is always the same, space and time must be connected. He showed that if you move very fast through space, time actually slows down for you compared to someone standing still. This meant that space and time are not independent; instead, they are woven together into a single, flexible fabric known as "spacetime."</p>
-
-      <p>This new way of thinking also connected matter and energy. Previously, people thought mass (how much "stuff" is in an object) and energy (the ability to do work) were totally different and could not change into each other. Einstein discovered that mass is really just a super-concentrated form of energy. His famous equation, E = mc², explains this relationship. It shows that a very small amount of mass is equal to a huge amount of energy. This proved that matter and energy are essentially the same thing in different forms, similar to how ice and steam are both just different forms of water.</p>
 
       <EqPullQuote />
 
       <h2 id="general">Relativity: General Theory</h2>
 
-      <FigureFrame label="General relativity">
-        <GeneralRelativityPanel client:visible />
-      </FigureFrame>
-
       <p>Einstein took his earlier ideas a giant step further with the General Theory of Relativity (1915, Berlin), which explained gravity in a completely new way. Before this, gravity was thought of as an invisible force pulling things together. Einstein instead proposed that spacetime is like a stretchy fabric, similar to a trampoline. If you place a heavy object like a bowling ball in the center, the fabric curves downward. Lighter marbles rolled nearby will follow this curve and spiral inward. Einstein showed that massive objects like the Sun curve the fabric of spacetime around them, and this curvature is what we feel as gravity. It wasn't a "pull" anymore; it was objects just following the natural slopes in space.</p>
+
+      <FigureFrame label="The spacetime rubber sheet">
+        <figure class="figure-stub my-12 rounded-md p-4 md:p-6">
+          <div class="figure-body">
+            <SpacetimeFabric client:visible />
+            <p class="figure-stub-note mt-4 font-sans" style="color: rgb(var(--c-text-rgb) / 0.45);">
+              Drag the heavy mass anywhere on the sheet: the grid sags toward it, and the three small test particles fall into orbits that simply follow the dips in the surface — there is no "pull," only the shape of the space. (Physicists call those straightest-possible paths through curved spacetime <em>geodesics</em>.) It is only a two-dimensional cartoon — real spacetime curves in four dimensions and the true orbits are worked out differently — but the intuition is exactly right: mass makes the valley, and motion follows the valley.
+            </p>
+          </div>
+          <figcaption>
+            <span class="figure-tag">Fig. 0.1.b</span>
+            <span class="figure-title"> — Spacetime as a rubber sheet.</span>
+            A two-dimensional cartoon of how mass bends the fabric of space.
+          </figcaption>
+        </figure>
+      </FigureFrame>
 
       <p>General Relativity also predicted something quieter and stranger: time itself runs at different rates depending on where you are in a gravitational field. The deeper you sit inside a gravity well, the slower your clock ticks compared to someone in flat space far away. Atomic clocks at sea level and on mountain tops differ by measurable nanoseconds per day, and GPS satellites would drift off by kilometres within a day if engineers ignored it.</p>
 
@@ -50,27 +62,21 @@ import { chapterPath, subPath } from "../../../data/course-nav";
         <GravitationalTimeDilationPanel client:visible />
       </FigureFrame>
 
-      <FigureFrame label="Spacetime fabric interactive">
-        <figure class="figure-stub my-12 rounded-md p-4 md:p-6">
-          <div class="figure-body">
-            <SpacetimeFabric client:visible />
-            <p class="figure-stub-note mt-4 font-sans" style="color: rgb(var(--c-text-rgb) / 0.45);">
-              Drag the mass anywhere on the canvas; the grid sags toward it and three test particles follow the warped geodesics — there is no "pull," only geometry. Demonstration only: a real geodesic in general relativity is computed in four-dimensional Lorentzian spacetime, not a 2D Newtonian inverse-square — but the visual intuition is the right one.
-            </p>
-          </div>
-          <figcaption>
-            <span class="figure-tag">Fig. 0.1.d</span>
-            <span class="figure-title"> — Spacetime as a rubber sheet.</span>
-            A two-dimensional cartoon of how mass bends the fabric of space.
-          </figcaption>
-        </figure>
-      </FigureFrame>
-
-      <p>This theory created a direct two-way street between the "stage" (spacetime) and the "actors" (matter and energy). A famous physicist summed it up by saying, <em>"Matter tells space how to curve; space tells matter how to move."</em> Because energy and mass are interchangeable, any form of energy acts just like mass to bend space. This means that everything in the Universe is connected: a planet isn't just floating in empty nothingness; its mass is actively shaping the geometry of the space around it. Even light, which has no mass, follows these curves, bending as it passes massive stars, proving that space itself is warped by the energy within it.</p>
+      <p>This theory created a direct two-way street between the "stage" (spacetime) and the "actors" (matter and energy). A famous physicist summed it up by saying, <em>"Matter tells space how to curve; space tells matter how to move."</em> Because energy and mass are interchangeable, any form of energy acts just like mass to bend space. This means that everything in the Universe is connected: a planet isn't just floating in empty nothingness; its mass is actively shaping the geometry of the space around it.</p>
 
       <WheelerQuote />
 
+      <p>The bending reaches even light itself. Light has no mass, so you might expect gravity to leave it alone — and in Newton's physics any bend would be slight. Yet a beam that skims past a heavy star follows the curved spacetime around it and arrives bent by twice as much as Newton would allow. Because the light reaches us off its original line, the star appears nudged from its true place in the sky, and the heavier the object it passes, the larger the shift. Measuring exactly that shift during a 1919 solar eclipse — and finding the larger, Einsteinian value — was the first great confirmation that Einstein, not Newton, had gravity right.</p>
+
+      <FigureFrame label="Light bending near a star">
+        <GeneralRelativityPanel client:visible />
+      </FigureFrame>
+
       <p>The most profound implication of this theory was for the history of the Universe itself. If matter curves spacetime, then the shape and destiny of the entire Universe depend on how much "stuff" is in it. Einstein's equations suggested the Universe could not just be sitting still; it had to be either expanding or contracting. This realization allowed scientists to "rewind" the motion of the expanding Universe we see today. It pointed back to a single moment billions of years ago when all space, time, matter, and energy were compressed into a single, infinitely dense point, leading to the <strong>Big Bang theory</strong> — the idea that the Universe, and time itself, had a beginning.</p>
+
+      <hr />
+
+      <p><em>Two papers, a decade apart, dissolved the hard line between space, time, matter, and energy — and in doing so handed us a Universe with a beginning and a history. The rest of this course is that history, read forward from the first instant.</em></p>
     </div>
   </article>
 

@@ -140,7 +140,7 @@ export function TugOfWarPanel() {
               letterSpacing="2"
               fill="rgb(var(--c-accent-rgb) / 0.7)"
             >
-              ← GRAVITY · Ω
+              ← GRAVITY PULLS IN
             </text>
             <text
               x={W - 28}
@@ -150,7 +150,7 @@ export function TugOfWarPanel() {
               letterSpacing="2"
               fill="rgb(var(--c-accent-rgb) / 0.7)"
             >
-              EXPANSION · H₀ →
+              EXPANSION PUSHES OUT →
             </text>
           </g>
         </svg>
@@ -169,10 +169,10 @@ export function TugOfWarPanel() {
       <div className="mt-4">
         <div className="flex items-center justify-between mb-2">
           <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-            balance
+            gravity ↔ expansion
           </label>
           <span className="font-mono text-[10px] text-plasma/85">
-            Ω = {(1 - balance).toFixed(2)} · H₀ = {balance.toFixed(2)}
+            gravity {(1 - balance).toFixed(2)} · expansion {balance.toFixed(2)}
           </span>
         </div>
         <input
@@ -187,8 +187,16 @@ export function TugOfWarPanel() {
         <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
           <span>collapse</span>
           <span>structures</span>
-          <span>big rip</span>
+          <span>scatter</span>
         </div>
+      </div>
+
+      <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[62ch]">
+        Drag the slider between the two forces. Pull it left and gravity wins:
+        all the matter falls together into one bright clump. Push it right and
+        expansion wins: the matter flies apart before it can gather. Only in the
+        narrow middle do the dots settle into a lasting pattern — that balanced
+        window is where galaxies, stars, and planets actually get to form.
       </div>
     </FigurePanel>
   );
@@ -363,7 +371,7 @@ export function EntropyIslandPanel() {
             className="font-mono text-[9px] tracking-[0.22em] uppercase"
             style={{ color: "rgb(var(--c-text-rgb) / 0.5)" }}
           >
-            S<sub>global</sub>{" "}
+            disorder · all space{" "}
             <span style={{ color: "rgb(var(--c-accent-rgb) / 0.9)" }}>
               ↑ {(t * 100).toFixed(0)}%
             </span>
@@ -372,7 +380,7 @@ export function EntropyIslandPanel() {
             className="font-mono text-[9px] tracking-[0.22em] uppercase"
             style={{ color: "rgb(var(--c-text-rgb) / 0.5)" }}
           >
-            S<sub>island</sub>{" "}
+            disorder · island{" "}
             <span style={{ color: "rgb(var(--c-accent-rgb) / 0.9)" }}>
               ↓ {((1 - t) * 100).toFixed(0)}%
             </span>
@@ -413,6 +421,16 @@ export function EntropyIslandPanel() {
           t = {t.toFixed(2)}
         </span>
       </div>
+
+      <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[62ch]">
+        Press play (or drag the slider) to run time forward. Inside the dashed
+        circle, scattered dots gather into a neat spiral — a galaxy, a star, a
+        living cell: an "island" growing more ordered. But watch the dots
+        <em> outside</em> the circle drift ever farther apart. The order inside
+        is paid for by extra disorder dumped outside. Disorder — what physicists
+        call <strong>entropy</strong> — still rises for the Universe as a whole;
+        local order is only ever borrowed against it.
+      </div>
     </FigurePanel>
   );
 }
@@ -439,54 +457,61 @@ const ERD_POINTS: {
     name: "Sun ignites",
     t: 9.2,
     erd: 2e-4,
-    note: "A G-type main-sequence star — only ≈2 erg/g/s averaged across its plasma mass.",
+    note: "An ordinary star like our Sun — only a trickle of energy when you average its huge mass over its slow-burning core.",
   },
   {
     name: "Earth forms",
     t: 9.3,
     erd: 7.5e-3,
-    note: "Radiogenic, tidal, and insolation flux through a rocky planet — about 75 erg/g/s.",
+    note: "A rocky planet, warmed from within by its own radioactive rocks and from without by sunlight — a richer flow than the star that lights it.",
   },
   {
     name: "First life",
     t: 10.3,
     erd: 5e-2,
-    note: "Prokaryotic single cells — chemistry promoted to metabolism for the first time.",
+    note: "The first single cells — the moment plain chemistry became living metabolism, a self-sustaining flow of energy.",
   },
   {
     name: "Land plants",
     t: 13.3,
     erd: 0.7,
-    note: "Photosynthetic flora — orders of magnitude above the average biosphere throughput.",
+    note: "Plants on land, capturing sunlight directly — many times more energy per gram than the average living world.",
   },
   {
     name: "Mammals",
     t: 13.6,
     erd: 4,
-    note: "Endothermic vertebrates burn ≈4×10⁴ erg/s through every gram of warm-blooded body.",
+    note: "Warm-blooded animals, which must burn fuel constantly just to hold their body heat — a steep step up in energy flow.",
   },
   {
     name: "Human brain",
     t: 13.799,
     erd: 15,
-    note: "≈20 W flowing through 1.4 kg of neurons — the densest biological energy flux known.",
+    note: "About 20 watts running through 1.4 kg of neurons — the richest energy flow of any living thing we know of.",
   },
   {
     name: "Modern society",
     t: 13.7999,
     erd: 50,
-    note: "Industrial + digital civilisation — per-capita power-to-mass of the technosphere.",
+    note: "Industrial, electrified civilisation — the energy each person commands, spread over their share of the machines that serve them.",
   },
   {
     name: "Jet engine",
     t: 13.79999,
     erd: 8200,
-    note: "Modern turbofan — the highest sustained energy rate density humans have ever built.",
+    note: "A modern jet turbofan — the most concentrated, sustained energy flow humans have ever engineered.",
   },
 ];
 
 export function EnergyRateDensityPanel() {
-  const [hover, setHover] = useState<number | null>(null);
+  /* `selected` is the rung currently described in the overlay. It is
+     driven three ways that all agree: clicking/hovering a data point,
+     clicking a numbered rung pill below the plot, and — because that
+     pill set carries data-shortcut="1".."9" with .is-active on the
+     current one — the global FigureFrame navigator (← / → keys, and
+     mouse-wheel in fullscreen). Defaulting to 0 means a description is
+     always visible, so the figure reads without a mouse. */
+  const [selected, setSelected] = useState(0);
 
   const W = 720;
   const H = 380;
@@ -556,19 +581,23 @@ export function EnergyRateDensityPanel() {
   };
   const sup = (n: number) =>
     String(n).split("").map((c) => supDigit[c] ?? c).join("");
+  /* Human-readable W/kg — plain decimals, never machine exponential
+     (e.g. 0.00001, 15, 8,200) so the readout stays jargon-free. */
+  const fmtWkg = (v: number) =>
+    v >= 1 ? Math.round(v).toLocaleString("en-US") : String(v);
 
   return (
     <FigurePanel
       idx="0.2.c"
       kicker="Energy Rate Density · Cosmic History"
-      caption="Eric Chaisson's complexity metric: free energy flowing through every kilogram of a system, every second. Across 13.8 billion years the value climbs nine orders of magnitude — from the first proto-galaxies to a modern jet engine."
+      caption="Astrophysicist Eric Chaisson's measure of complexity: how much energy flows through every kilogram of a thing, each second. Across 13.8 billion years it climbs by a factor of a billion — from the first galaxies to a modern jet engine."
     >
       <div className="fig-viz relative w-full overflow-hidden rounded-md">
-        {/* Hover description — absolute overlay inside fig-viz so it never
-            competes with the SVG for vertical space. Without this, growing
-            the description sibling would shrink fig-viz, relocate the data
-            points under the cursor, and trigger an endless hover-flip
-            (visible as screen "shake" in fullscreen). */}
+        {/* Selected-rung description — absolute overlay inside fig-viz so it
+            never competes with the SVG for vertical space. Without this,
+            growing the description sibling would shrink fig-viz, relocate
+            the data points under the cursor, and trigger an endless
+            hover-flip (visible as screen "shake" in fullscreen). */}
         <div
           className="absolute left-3 right-3 bottom-3 md:left-5 md:right-auto md:bottom-5 md:max-w-md p-3 rounded-md text-[13px] leading-[1.6] pointer-events-none z-10"
           style={{
@@ -579,23 +608,15 @@ export function EnergyRateDensityPanel() {
             minHeight: "5.4em",
           }}
         >
-          {hover !== null ? (
-            <>
-              <span className="text-plasma font-mono tracking-[0.14em]">
-                {ERD_POINTS[hover].name.toUpperCase()}
-              </span>
-              <span className="mx-2 text-white/35">/</span>
-              <span className="text-white/85">{ERD_POINTS[hover].note}</span>
-              <div className="font-mono text-[11px] text-white/55 mt-1">
-                t ≈ {ERD_POINTS[hover].t} Gyr · Φₘ ≈{" "}
-                {ERD_POINTS[hover].erd.toExponential(1)} W/kg
-              </div>
-            </>
-          ) : (
-            <span className="text-white/55 italic">
-              Hover a point to read what each rung of complexity represents.
-            </span>
-          )}
+          <span className="text-plasma font-mono tracking-[0.14em]">
+            {ERD_POINTS[selected].name.toUpperCase()}
+          </span>
+          <span className="mx-2 text-white/35">/</span>
+          <span className="text-white/85">{ERD_POINTS[selected].note}</span>
+          <div className="font-mono text-[11px] text-white/55 mt-1">
+            t ≈ {ERD_POINTS[selected].t} Gyr · energy flow ≈{" "}
+            {fmtWkg(ERD_POINTS[selected].erd)} W/kg
+          </div>
         </div>
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
           {/* Y-axis gridlines */}
@@ -765,15 +786,15 @@ export function EnergyRateDensityPanel() {
 
           {/* Data points + leaders + labels */}
           {points.map((p, i) => {
-            const isHover = hover === i;
+            const isOn = selected === i;
             const lx = p.x + p.lo.dx;
             const ly = p.y + p.lo.dy;
             return (
               <g
                 key={p.name}
-                onMouseEnter={() => setHover(i)}
-                onMouseLeave={() => setHover(null)}
-                style={{ cursor: "default" }}
+                onMouseEnter={() => setSelected(i)}
+                onClick={() => setSelected(i)}
+                style={{ cursor: "pointer" }}
               >
                 <line
                   x1={p.x}
@@ -781,7 +802,7 @@ export function EnergyRateDensityPanel() {
                   x2={lx}
                   y2={ly - 3}
                   stroke={
-                    isHover
+                    isOn
                       ? "rgb(var(--c-accent-rgb) / 0.75)"
                       : "rgb(var(--c-accent-rgb) / 0.3)"
                   }
@@ -790,10 +811,10 @@ export function EnergyRateDensityPanel() {
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={isHover ? 6.5 : 4}
+                  r={isOn ? 6.5 : 4}
                   fill="rgb(var(--c-accent-rgb))"
                   style={{
-                    filter: isHover
+                    filter: isOn
                       ? "drop-shadow(0 0 12px rgb(var(--c-accent-rgb) / 0.9))"
                       : "drop-shadow(0 0 4px rgb(var(--c-accent-rgb) / 0.45))",
                     transition:
@@ -804,11 +825,11 @@ export function EnergyRateDensityPanel() {
                   x={lx}
                   y={ly}
                   textAnchor={p.lo.anchor}
-                  fontSize={isHover ? "12" : "11"}
+                  fontSize={isOn ? "12" : "11"}
                   fontFamily="var(--font-sans)"
-                  fontWeight={isHover ? 500 : 400}
+                  fontWeight={isOn ? 500 : 400}
                   fill={
-                    isHover
+                    isOn
                       ? "rgb(var(--c-accent-rgb))"
                       : "rgb(var(--c-text-rgb) / 0.85)"
                   }
@@ -819,7 +840,7 @@ export function EnergyRateDensityPanel() {
                 >
                   {p.name}
                 </text>
-                {/* Invisible hover catcher */}
+                {/* Invisible hover/click catcher */}
                 <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
               </g>
             );
@@ -827,6 +848,40 @@ export function EnergyRateDensityPanel() {
         </svg>
       </div>
 
+      {/* Numbered rung selector — gives the figure a discrete control set
+          so the global FigureFrame navigator (← / → and, in fullscreen,
+          the mouse-wheel) can step through the nine rungs. Each pill
+          carries data-shortcut="1".."9"; the active one is .is-active. */}
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {ERD_POINTS.map((p, i) => {
+          const active = selected === i;
+          return (
+            <button
+              key={p.name}
+              type="button"
+              onClick={() => setSelected(i)}
+              data-shortcut={String(i + 1)}
+              aria-pressed={active}
+              className={[
+                "pill rounded-full px-3 py-1 text-[10px] font-mono tracking-[0.14em] uppercase transition-all duration-200",
+                active ? "is-active" : "",
+              ].join(" ")}
+            >
+              {i + 1}. {p.name}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[64ch]">
+        Tap a rung (or use the ← / → keys) to walk the ladder from the first
+        galaxies to a jet engine. The vertical axis is the energy flow through
+        each kilogram of a thing, every second — and notice it climbs by a
+        factor of ten with every gridline. A whole star is near the bottom; a
+        warm-blooded animal, a brain, a city all sit far higher. Complexity
+        isn't about being big — it's about how much energy you push through
+        each gram of yourself.
+      </div>
     </FigurePanel>
   );
 }

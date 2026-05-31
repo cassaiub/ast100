@@ -13,12 +13,12 @@ import {
 
 <ChapterLayout
   title="0.4 — Light and Telescopes · AST 100"
-  description="Light is two oscillating fields locked in step. Telescopes are tuned ears for catching that light across sixteen orders of magnitude in wavelength."
+  description="Light is two oscillating fields locked in step. Telescopes are tuned ears for catching that light across seventeen orders of magnitude in wavelength."
   activeId="0.4"
   current="/chapter/0/0.4"
 >
   <Hero
-    tease="Astronomy's only signal is light. This lesson peels back what light actually is — coupled oscillating electric and magnetic fields propagating at the speed c — then walks the full electromagnetic spectrum from kilometre-wavelength radio waves through visible light to gamma rays at 10⁻²² metres. A bestiary of fourteen working telescopes across every band, plus a step-through of the Cassegrain reflector's optics, closes the chapter and prepares you to read the data."
+    tease="Astronomy's only signal is light. This lesson peels back what light actually is — paired electric and magnetic fields wiggling in step and racing along at the speed of light, c — then walks the whole electromagnetic spectrum from kilometre-long radio waves through visible light to gamma rays whose waves shrink below 10⁻¹⁵ metres — smaller than the nucleus of an atom. A gallery of the real telescopes built for each band, plus a step-through of how a reflecting telescope routes light from sky to screen, closes the chapter and prepares you to read the data."
     client:load
   />
 
@@ -34,7 +34,9 @@ import {
 
       <p>Light is a form of electromagnetic radiation (or waves) composed of rapidly fluctuating electric (<strong>E</strong>) and magnetic (<strong>B</strong>) fields that vibrate perpendicular to one another and to their direction of travel, moving through the vacuum of space at a constant, finite speed, <em>c</em>. This radiation arises whenever electrically charged particles, such as <strong>electrons</strong>, undergo <strong>acceleration</strong> or a change in motion; for instance, in a lightning bolt, accelerated charged particles release energy as visible light.</p>
 
-      <p>We characterize these waves by their <strong>wavelength</strong> — the distance between two consecutive wave crests — and their <strong>frequency</strong>, which is the number of crests that pass a specific point every second. These two properties share an inverse relationship, meaning that if you double the frequency, the wavelength is cut in half, because their combination must always equal the constant speed of light. Additionally, light behaves as discrete packets of energy known as photons, where the amount of energy carried is directly proportional to the frequency.</p>
+      <p>We characterize these waves by their <strong>wavelength</strong> — the distance between two consecutive wave crests — and their <strong>frequency</strong>, which is the number of crests that pass a specific point every second. These two properties share an inverse relationship, meaning that if you double the frequency, the wavelength is cut in half, because their combination must always equal the constant speed of light. Additionally, light behaves as discrete packets of energy known as <strong>photons</strong>, where the amount of energy carried is directly proportional to the frequency.</p>
+
+      <p>The figure below builds this picture in three dimensions. A single charged particle bobs up and down, and the light it radiates streams away as two linked ripples — one electric, one magnetic — set at right angles to each other. Drag to spin the view around and watch the two waves travel in lock-step.</p>
 
       <FigureFrame label="EM wave oscillator">
         <EmWaveOscillatorPanel client:visible />
@@ -44,7 +46,9 @@ import {
 
       <p>The electromagnetic spectrum begins with low-frequency radio waves, which possess the longest wavelengths — comparable to the scale of mountains — and the lowest energy. As the frequency increases and wavelengths shorten, we encounter high-frequency radio waves, microwaves, infrared radiation (which we feel as heat), the narrow band of visible light, ultraviolet radiation, X-rays, and finally gamma rays — which carry billions of times the energy of visible light and are associated with nuclear reactions.</p>
 
-      <p>Earth's atmosphere functions as a selective shield, effectively opaque to most electromagnetic radiation but permeable through specific "spectral windows" where the air is transparent. The most significant openings are the optical window, allowing visible light to reach the surface, and the radio window, which permits the passage of radio waves with wavelengths ranging from approximately one centimeter to ten meters. The ozone layer blocks lethal ultraviolet, X-rays, and gamma rays, rendering these energetic bands observable only from space.</p>
+      <p>Earth's atmosphere functions as a selective shield, effectively opaque to — that is, it blocks — most electromagnetic radiation, but it is permeable through specific "spectral windows" where the air is transparent and lets light pass. The most significant openings are the optical window, allowing visible light to reach the surface, and the radio window, which permits the passage of radio waves with wavelengths ranging from approximately one centimeter to ten meters. The ozone layer high overhead blocks lethal ultraviolet, X-rays, and gamma rays, rendering these energetic bands observable only from telescopes above the atmosphere, in space.</p>
+
+      <p>Slide the marker across the strip below — or tap it and press the ← / → keys — to sweep from long radio waves on the left all the way to gamma rays on the right. Each band lights up with both an everyday use and an astronomical one, and the lower panel shows how much of that light actually survives the trip through our air.</p>
 
       <FigureFrame label="EM spectrum scrubber">
         <EmSpectrumScrubberPanel client:visible />
@@ -54,6 +58,8 @@ import {
 
       <p>To study the Universe, astronomers use specialized tools tuned to different wavelengths of the electromagnetic spectrum. Radio waves are captured by instruments like LOFAR and the Five-hundred-meter Aperture Spherical Telescope (FAST). For microwaves, the South Pole Telescope and the Planck satellite map the afterglow of the Big Bang. To capture infrared light, the James Webb Space Telescope observes stars and galaxies through cosmic dust. Visible light is monitored by the Keck Observatory and Hubble. In higher energies, GALEX maps the ultraviolet sky, Chandra captures X-rays from black holes, and the Fermi telescope plus the Cherenkov Telescope Array observe the extremely high-energy Universe.</p>
 
+      <p>The gallery below lines these real instruments up by the colour of light each was built to catch — on the very same spectrum bar you just scrubbed. Hover a card (or step through with the ← / → keys) to light up the slice of spectrum that telescope covers; click any one for a full rundown — its working range, what it studies, where it sits, who built it, and what it cost.</p>
+
       <FigureFrame label="Telescope bestiary">
         <TelescopeBestiaryPanel client:visible />
       </FigureFrame>
@@ -62,9 +68,11 @@ import {
 
       <p>Every modern telescope system works as a three-part team to transform faint cosmic whispers into clear, viewable data. The process begins with a <strong>collector</strong> — usually a large, curved mirror — which acts like a giant light bucket, catching incoming rays and concentrating them onto the focal plane. At this focus plane sits the <strong>detector</strong>, typically a high-tech chip similar to the sensors in digital cameras. This chip counts photons and converts them into electrical signals. Finally, these signals are sent to a <strong>processor</strong>, where computers clean up digital noise and translate the data into the stunning images we see on our screens. This process is known as <strong>photometry</strong>.</p>
 
-      <p>Beyond just taking beautiful pictures, telescopes can also serve as long-distance laboratories through <strong>spectroscopy</strong> by using a device called a spectrograph. By placing a high-tech prism between the collector and the detector, astronomers spread light into its component colors, creating a spectrum. This reveals the unique "fingerprints" of matter; by studying these patterns, scientists can identify exactly what a distant star is made of, how hot it is, and how fast it is moving.</p>
+      <p>Beyond just taking beautiful pictures, telescopes can also serve as long-distance laboratories through <strong>spectroscopy</strong> by using a device called a spectrometer. By placing a high-tech prism between the collector and the detector, astronomers spread light into its component colors, creating a spectrum. This reveals the unique "fingerprints" of matter; by studying these patterns, scientists can identify exactly what a distant star is made of, how hot it is, and how fast it is moving.</p>
 
       <p>The true power of a telescope is defined by two qualities: <strong>resolution</strong> (the ability to see fine details) and <strong>sensitivity</strong> (the light-gathering power). A larger mirror intercepts more light, allowing us to see objects billions of times fainter than anything the human eye could spot on its own.</p>
+
+      <p>The diagram below traces a single photon through one common design — the Cassegrain reflector, where a big main mirror bounces light off a small second mirror and out through a hole in its own centre. Drag the slider (or press ← / →) to follow that light step by step from the sky to the final picture, and flip the detector switch to see the same beam turned into either an image or a spectrum.</p>
 
       <FigureFrame label="Telescope anatomy">
         <TelescopeAnatomyPanel client:visible />
