@@ -142,7 +142,7 @@ export default function Hero({ tease }: { tease: string }) {
             7 ages
           </span>
           <span className="text-white/15">·</span>
-          <span>25 events</span>
+          <span>49 events</span>
           <span className="text-white/15">·</span>
           <span>13.8 Gyr</span>
           <span className="text-white/15">·</span>

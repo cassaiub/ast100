@@ -238,14 +238,14 @@ export default function TimelineScene() {
             className="section-title"
           >
             <span className="section-number">2.</span>
-            <span className="section-title-text">Twenty-five turns of the river</span>
+            <span className="section-title-text">Forty-nine turns of the river</span>
           </h2>
           <p
             data-fade
             style={{ ["--delay" as string]: "160ms" }}
             className="mt-5 max-w-[60ch] text-white/65 text-[16px]"
           >
-            From the singularity to the screen you are reading this on — twenty-five events,
+            From the singularity to the screen you are reading this on — forty-nine events,
             grouped into seven ages, on a single 13.8-billion-year scroll.
           </p>
         </header>
