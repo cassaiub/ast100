@@ -7,14 +7,21 @@ function FigurePanel({
   kicker,
   caption,
   children,
+  fitFs = false,
 }: {
   idx: string;
   kicker: string;
   caption: ReactNode;
   children: ReactNode;
+  /** content-heavy panels (viz + detail panel + controls) shrink the viz in
+      fullscreen so the whole figure fits the viewport with no scrollbars. */
+  fitFs?: boolean;
 }) {
   return (
-    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+    <figure
+      data-fade
+      className={`figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}`}
+    >
       <div className="figure-body">{children}</div>
       <figcaption>
         <span className="figure-tag">Fig. {idx}</span>
@@ -504,76 +511,80 @@ const ERD_POINTS: {
 ];
 
 export function EnergyRateDensityPanel() {
-  /* `selected` is the rung currently described in the overlay. It is
-     driven three ways that all agree: clicking/hovering a data point,
-     clicking a numbered rung pill below the plot, and — because that
-     pill set carries data-shortcut="1".."9" with .is-active on the
-     current one — the global FigureFrame navigator (← / → keys, and
-     mouse-wheel in fullscreen). Defaulting to 0 means a description is
-     always visible, so the figure reads without a mouse. */
+  /* `selected` is the stage currently described in the panel below the plot.
+     It is driven three ways that all agree: hovering/clicking a data point,
+     dragging the slider, and — because that native range slider is the
+     figure's discrete control — the global FigureFrame navigator (← / →
+     keys, and the mouse-wheel in fullscreen). Defaulting to 0 means a
+     description is always visible, so the figure reads without a mouse. */
   const [selected, setSelected] = useState(0);
 
   const W = 720;
-  const H = 380;
-  const PAD_L = 78;
-  const PAD_R = 110;
-  const PAD_T = 40;
-  const PAD_B = 70;
+  const H = 360;
+  const PAD_L = 64;
+  const PAD_R = 34;
+  const PAD_T = 30;
+  const PAD_B = 48;
   const plotW = W - PAD_L - PAD_R;
   const plotH = H - PAD_T - PAD_B;
 
-  /* x: time in Gyr (linear, 0 → 14)
-     y: log10(erd in W/kg), (−5 → 4) */
-  const X_MIN = 0;
-  const X_MAX = 14;
+  const N = ERD_POINTS.length;
   const Y_MIN = -5;
   const Y_MAX = 4;
-  const toX = (t: number) =>
-    PAD_L + ((t - X_MIN) / (X_MAX - X_MIN)) * plotW;
+  /* x is ORDINAL: the nine stages are spread evenly across the plot so none
+     bunch up at "today" and the curve only ever climbs up and to the right.
+     The real ages live in the detail panel + readout below the plot.
+     y: log10(erd in W/kg), (−5 → 4). */
+  const toX = (i: number) => PAD_L + (i / (N - 1)) * plotW;
   const toY = (logE: number) =>
     PAD_T + plotH - ((logE - Y_MIN) / (Y_MAX - Y_MIN)) * plotH;
 
-  /* Per-point screen coords + label placement.
-     Bunched right-edge points fan their labels left/right alternately. */
-  const LABEL_OFFSETS: { dx: number; dy: number; anchor: "start" | "end" | "middle" }[] = [
-    { dx: 14, dy: -10, anchor: "start" },    // First galaxies
-    { dx: 0, dy: 20, anchor: "middle" },     // Sun ignites
-    { dx: 10, dy: -12, anchor: "start" },    // Earth forms
-    { dx: 14, dy: -14, anchor: "start" },    // First life
-    { dx: -14, dy: 4, anchor: "end" },       // Land plants
-    { dx: 14, dy: 5, anchor: "start" },      // Mammals
-    { dx: -14, dy: -2, anchor: "end" },      // Human brain
-    { dx: 14, dy: 5, anchor: "start" },      // Modern society
-    { dx: -14, dy: -2, anchor: "end" },      // Jet engine
-  ];
   const points = ERD_POINTS.map((p, i) => ({
     ...p,
-    x: toX(p.t),
+    x: toX(i),
     y: toY(Math.log10(p.erd)),
-    lo: LABEL_OFFSETS[i],
   }));
 
-  /* Smooth Catmull-Rom curve through the data (tension 0.5) */
+  /* Monotone cubic spline (Fritsch–Carlson tangents) through the points.
+     Unlike Catmull-Rom it never overshoots, so the curve has no horizontal
+     back-and-forth — it climbs continuously up and to the right. */
   const curveD = (() => {
-    const parts: string[] = [];
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[Math.max(0, i - 1)];
-      const p1 = points[i];
-      const p2 = points[i + 1];
-      const p3 = points[Math.min(points.length - 1, i + 2)];
-      const c1x = p1.x + (p2.x - p0.x) / 6;
-      const c1y = p1.y + (p2.y - p0.y) / 6;
-      const c2x = p2.x - (p3.x - p1.x) / 6;
-      const c2y = p2.y - (p3.y - p1.y) / 6;
-      if (i === 0) parts.push(`M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`);
+    const xs = points.map((p) => p.x);
+    const ys = points.map((p) => p.y);
+    const n = xs.length;
+    const dx: number[] = [];
+    const slope: number[] = [];
+    for (let i = 0; i < n - 1; i++) {
+      const h = xs[i + 1] - xs[i];
+      dx.push(h);
+      slope.push((ys[i + 1] - ys[i]) / h);
+    }
+    const m = new Array(n).fill(0);
+    m[0] = slope[0];
+    m[n - 1] = slope[n - 2];
+    for (let i = 1; i < n - 1; i++) {
+      if (slope[i - 1] * slope[i] <= 0) {
+        m[i] = 0;
+      } else {
+        const w1 = 2 * dx[i] + dx[i - 1];
+        const w2 = dx[i] + 2 * dx[i - 1];
+        m[i] = (w1 + w2) / (w1 / slope[i - 1] + w2 / slope[i]);
+      }
+    }
+    const parts = [`M ${xs[0].toFixed(1)} ${ys[0].toFixed(1)}`];
+    for (let i = 0; i < n - 1; i++) {
+      const h = dx[i];
+      const c1x = xs[i] + h / 3;
+      const c1y = ys[i] + (m[i] * h) / 3;
+      const c2x = xs[i + 1] - h / 3;
+      const c2y = ys[i + 1] - (m[i + 1] * h) / 3;
       parts.push(
-        `C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`,
+        `C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${xs[i + 1].toFixed(1)} ${ys[i + 1].toFixed(1)}`,
       );
     }
     return parts.join(" ");
   })();
 
-  const X_TICKS = [0, 2, 4, 6, 8, 10, 12, 14];
   const Y_TICKS = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4];
   const supDigit: Record<string, string> = {
     "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
@@ -585,41 +596,19 @@ export function EnergyRateDensityPanel() {
      (e.g. 0.00001, 15, 8,200) so the readout stays jargon-free. */
   const fmtWkg = (v: number) =>
     v >= 1 ? Math.round(v).toLocaleString("en-US") : String(v);
+  const sel = ERD_POINTS[selected];
+  const selPt = points[selected];
 
   return (
     <FigurePanel
       idx="0.2.c"
       kicker="Energy Rate Density · Cosmic History"
       caption="Astrophysicist Eric Chaisson's measure of complexity: how much energy flows through every kilogram of a thing, each second. Across 13.8 billion years it climbs by a factor of a billion — from the first galaxies to a modern jet engine."
+      fitFs
     >
       <div className="fig-viz relative w-full overflow-hidden rounded-md">
-        {/* Selected-rung description — absolute overlay inside fig-viz so it
-            never competes with the SVG for vertical space. Without this,
-            growing the description sibling would shrink fig-viz, relocate
-            the data points under the cursor, and trigger an endless
-            hover-flip (visible as screen "shake" in fullscreen). */}
-        <div
-          className="absolute left-3 right-3 bottom-3 md:left-5 md:right-auto md:bottom-5 md:max-w-md p-3 rounded-md text-[13px] leading-[1.6] pointer-events-none z-10"
-          style={{
-            background: "rgb(var(--c-bg-rgb) / 0.86)",
-            border: "1px solid rgb(var(--c-text-rgb) / 0.1)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            minHeight: "5.4em",
-          }}
-        >
-          <span className="text-plasma font-mono tracking-[0.14em]">
-            {ERD_POINTS[selected].name.toUpperCase()}
-          </span>
-          <span className="mx-2 text-white/35">/</span>
-          <span className="text-white/85">{ERD_POINTS[selected].note}</span>
-          <div className="font-mono text-[11px] text-white/55 mt-1">
-            t ≈ {ERD_POINTS[selected].t} Gyr · energy flow ≈{" "}
-            {fmtWkg(ERD_POINTS[selected].erd)} W/kg
-          </div>
-        </div>
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Y-axis gridlines */}
+          {/* Y-axis gridlines — the meaningful decade lines */}
           {Y_TICKS.map((e) => (
             <line
               key={`yg-${e}`}
@@ -632,19 +621,17 @@ export function EnergyRateDensityPanel() {
               strokeDasharray="2 4"
             />
           ))}
-          {/* X-axis gridlines */}
-          {X_TICKS.map((t) => (
-            <line
-              key={`xg-${t}`}
-              x1={toX(t)}
-              x2={toX(t)}
-              y1={PAD_T}
-              y2={H - PAD_B}
-              stroke="rgb(var(--c-text-rgb) / 0.06)"
-              strokeWidth="0.6"
-              strokeDasharray="2 4"
-            />
-          ))}
+
+          {/* Faint guide from the selected stage down to the time axis */}
+          <line
+            x1={selPt.x}
+            x2={selPt.x}
+            y1={selPt.y}
+            y2={H - PAD_B}
+            stroke="rgb(var(--c-accent-rgb) / 0.28)"
+            strokeWidth="0.8"
+            strokeDasharray="2 3"
+          />
 
           {/* Axis frame */}
           <line
@@ -664,42 +651,17 @@ export function EnergyRateDensityPanel() {
             strokeWidth="0.9"
           />
 
-          {/* X ticks + labels */}
-          {X_TICKS.map((t) => {
-            const x = toX(t);
-            return (
-              <g key={`xt-${t}`}>
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={H - PAD_B}
-                  y2={H - PAD_B + 4}
-                  stroke="rgb(var(--c-text-rgb) / 0.4)"
-                  strokeWidth="0.8"
-                />
-                <text
-                  x={x}
-                  y={H - PAD_B + 18}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fontFamily="var(--font-mono)"
-                  fill="rgb(var(--c-text-rgb) / 0.6)"
-                >
-                  {t}
-                </text>
-              </g>
-            );
-          })}
+          {/* X-axis label — ordinal cosmic time, earliest at left */}
           <text
             x={(PAD_L + W - PAD_R) / 2}
-            y={H - PAD_B + 42}
+            y={H - PAD_B + 30}
             textAnchor="middle"
             fontSize="9"
             letterSpacing="3"
             fontFamily="var(--font-mono)"
             fill="rgb(var(--c-text-rgb) / 0.55)"
           >
-            TIME AFTER BIG BANG · Gyr
+            COSMIC TIME · BIG BANG → TODAY
           </text>
 
           {/* Y ticks + labels */}
@@ -729,7 +691,7 @@ export function EnergyRateDensityPanel() {
             );
           })}
           <text
-            transform={`translate(${PAD_L - 56}, ${PAD_T + plotH / 2}) rotate(-90)`}
+            transform={`translate(${PAD_L - 48}, ${PAD_T + plotH / 2}) rotate(-90)`}
             textAnchor="middle"
             fontSize="9"
             letterSpacing="3"
@@ -737,38 +699,6 @@ export function EnergyRateDensityPanel() {
             fill="rgb(var(--c-text-rgb) / 0.55)"
           >
             ENERGY RATE DENSITY · W/kg
-          </text>
-
-          {/* Endpoint annotations */}
-          <text
-            x={PAD_L + 6}
-            y={PAD_T + 14}
-            fontSize="9"
-            letterSpacing="3"
-            fontFamily="var(--font-mono)"
-            fill="rgb(var(--c-accent-rgb) / 0.8)"
-          >
-            BIG BANG →
-          </text>
-          <line
-            x1={toX(13.8)}
-            x2={toX(13.8)}
-            y1={PAD_T}
-            y2={H - PAD_B}
-            stroke="rgb(var(--c-accent-rgb) / 0.3)"
-            strokeWidth="0.8"
-            strokeDasharray="2 3"
-          />
-          <text
-            x={toX(13.8) - 6}
-            y={PAD_T + 14}
-            textAnchor="end"
-            fontSize="9"
-            letterSpacing="3"
-            fontFamily="var(--font-mono)"
-            fill="rgb(var(--c-accent-rgb) / 0.8)"
-          >
-            ← NOW
           </text>
 
           {/* Rising curve */}
@@ -784,11 +714,18 @@ export function EnergyRateDensityPanel() {
             }}
           />
 
-          {/* Data points + leaders + labels */}
+          {/* Data points. Only the SELECTED point carries a name label, so
+             the plot stays clean and labels can never overlap — every stage
+             is named in the detail panel below as you step through them. */}
           {points.map((p, i) => {
             const isOn = selected === i;
-            const lx = p.x + p.lo.dx;
-            const ly = p.y + p.lo.dy;
+            /* Place the single active label in clear space: above-left of the
+               dot, tucked below for the top point and right for the first. */
+            const topZone = p.y < PAD_T + plotH * 0.16;
+            const leftZone = i === 0;
+            const lx = leftZone ? p.x + 10 : p.x - 10;
+            const ly = topZone ? p.y + 20 : p.y - 11;
+            const anchor: "start" | "end" = leftZone ? "start" : "end";
             return (
               <g
                 key={p.name}
@@ -796,18 +733,6 @@ export function EnergyRateDensityPanel() {
                 onClick={() => setSelected(i)}
                 style={{ cursor: "pointer" }}
               >
-                <line
-                  x1={p.x}
-                  y1={p.y}
-                  x2={lx}
-                  y2={ly - 3}
-                  stroke={
-                    isOn
-                      ? "rgb(var(--c-accent-rgb) / 0.75)"
-                      : "rgb(var(--c-accent-rgb) / 0.3)"
-                  }
-                  strokeWidth="0.7"
-                />
                 <circle
                   cx={p.x}
                   cy={p.y}
@@ -821,25 +746,19 @@ export function EnergyRateDensityPanel() {
                       "r 200ms var(--ease), filter 200ms var(--ease)",
                   }}
                 />
-                <text
-                  x={lx}
-                  y={ly}
-                  textAnchor={p.lo.anchor}
-                  fontSize={isOn ? "12" : "11"}
-                  fontFamily="var(--font-sans)"
-                  fontWeight={isOn ? 500 : 400}
-                  fill={
-                    isOn
-                      ? "rgb(var(--c-accent-rgb))"
-                      : "rgb(var(--c-text-rgb) / 0.85)"
-                  }
-                  style={{
-                    transition:
-                      "fill 200ms var(--ease), font-size 200ms var(--ease)",
-                  }}
-                >
-                  {p.name}
-                </text>
+                {isOn && (
+                  <text
+                    x={lx}
+                    y={ly}
+                    textAnchor={anchor}
+                    fontSize="13"
+                    fontFamily="var(--font-sans)"
+                    fontWeight={500}
+                    fill="rgb(var(--c-accent-rgb))"
+                  >
+                    {p.name}
+                  </text>
+                )}
                 {/* Invisible hover/click catcher */}
                 <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
               </g>
@@ -848,39 +767,58 @@ export function EnergyRateDensityPanel() {
         </svg>
       </div>
 
-      {/* Numbered rung selector — gives the figure a discrete control set
-          so the global FigureFrame navigator (← / → and, in fullscreen,
-          the mouse-wheel) can step through the nine rungs. Each pill
-          carries data-shortcut="1".."9"; the active one is .is-active. */}
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {ERD_POINTS.map((p, i) => {
-          const active = selected === i;
-          return (
-            <button
-              key={p.name}
-              type="button"
-              onClick={() => setSelected(i)}
-              data-shortcut={String(i + 1)}
-              aria-pressed={active}
-              className={[
-                "pill rounded-full px-3 py-1 text-[10px] font-mono tracking-[0.14em] uppercase transition-all duration-200",
-                active ? "is-active" : "",
-              ].join(" ")}
-            >
-              {i + 1}. {p.name}
-            </button>
-          );
-        })}
+      {/* Detail panel — full width BELOW the plot so it never covers the
+          axes. Fixed min-height keeps the layout steady as you step through
+          stages (no vertical shift = no fullscreen hover-flip). */}
+      <div
+        className="mt-4 p-3 md:p-4 rounded-md text-[13px] leading-[1.6]"
+        style={{
+          background: "rgb(var(--c-text-rgb) / 0.04)",
+          border: "1px solid rgb(var(--c-text-rgb) / 0.1)",
+          minHeight: "5.2em",
+        }}
+      >
+        <span className="text-plasma font-mono tracking-[0.14em]">
+          {sel.name.toUpperCase()}
+        </span>
+        <span className="mx-2 text-white/35">/</span>
+        <span className="text-white/85">{sel.note}</span>
+        <div className="font-mono text-[11px] text-white/55 mt-1">
+          ≈ {sel.t.toFixed(1)} Gyr after the Big Bang · energy flow ≈{" "}
+          {fmtWkg(sel.erd)} W/kg
+        </div>
+      </div>
+
+      {/* Slider — the figure's discrete control, so FigureFrame's global
+          navigator (← / → keys, mouse-wheel in fullscreen) steps the
+          stages. Stepping it also moves the highlight on the plot. */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between mb-2">
+          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
+            step through cosmic history
+          </label>
+          <span className="font-mono text-[10px] text-plasma/85">
+            {selected + 1} / {N}
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={N - 1}
+          step={1}
+          value={selected}
+          onChange={(e) => setSelected(parseInt(e.target.value, 10))}
+          className="cosmic-slider"
+          aria-label="Cosmic-history stage"
+        />
       </div>
 
       <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[64ch]">
-        Tap a rung (or use the ← / → keys) to walk the ladder from the first
-        galaxies to a jet engine. The vertical axis is the energy flow through
-        each kilogram of a thing, every second — and notice it climbs by a
-        factor of ten with every gridline. A whole star is near the bottom; a
-        warm-blooded animal, a brain, a city all sit far higher. Complexity
-        isn't about being big — it's about how much energy you push through
-        each gram of yourself.
+        Each step up the vertical axis is another factor of ten — the energy
+        flowing through every gram of a thing, each second. A whole star sits
+        near the bottom; a warm-blooded animal, a brain, and a city all sit far
+        higher. Complexity isn't about being big — it's about how much energy
+        you push through each gram of yourself.
       </div>
     </FigurePanel>
   );
