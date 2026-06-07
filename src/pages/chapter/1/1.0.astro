@@ -2,13 +2,12 @@
 import ChapterLayout from "../../../layouts/ChapterLayout.astro";
 import Hero from "../../../components/scenes/1.0/Hero";
 import PrevNext from "../../../components/scenes/1.0/PrevNext.astro";
-import FigureFrame from "../../../components/shared/FigureFrame.astro";
-import PrimordialTimeline from "../../../components/scenes/1.0/PrimordialTimeline";
+import { subPath } from "../../../data/course-nav";
 ---
 
 <ChapterLayout
   title="1.0 — Particle Age · AST 100"
-  description="The first 380,000 years — from the Planck epoch to recombination. Forces separate, particles form, the cosmos cools, and light streams free for the first time."
+  description="The first 380,000 years — from the Planck epoch to recombination. Four lessons and seven milestones woven into one story: forces separate, particles freeze out of light, the first nuclei form, and light finally streams free."
   activeId="1.0"
   chapter={1}
   current="/chapter/1/1.0"
@@ -20,13 +19,63 @@ import PrimordialTimeline from "../../../components/scenes/1.0/PrimordialTimelin
 
   <article class="topic-page">
     <div class="prose-cosmic lesson-prose">
-      <h2 id="fifteen-rewrites-before-t-1-second">Fifteen rewrites before t = 1 second</h2>
-      <p>Most of what makes the Universe interesting happens before the Universe is a single second old. In that first second, gravity separates from the other three forces. Space exponentially inflates. Strong and electroweak forces split. Quarks freeze into protons and neutrons. By the time a human heartbeat could have completed, the cosmos has gone through more phase transitions than the rest of its history combined.</p>
-      <p>The Particle Age — Chapter 1 of <em>Our Cosmic History</em> — is about that astonishing first stretch, from <strong>t = 0</strong> at the Big Bang singularity all the way to <strong>380,000 years</strong> later, when the cosmos finally cooled enough for light to stream free. Everything we are made of, every force we feel, every ingredient of every star — all of it is set during this window.</p>
-      <FigureFrame label="Primordial timeline">
-        <PrimordialTimeline client:visible />
-      </FigureFrame>
+      <h2 id="first-instant">The First Instant</h2>
+      <p>Almost everything that makes the Universe <em>interesting</em> happens before it is a single second old. In that first second gravity peels away from the other forces, space inflates, matter freezes out of pure light, and the recipe for the first atoms is written. The <strong>Particle Age</strong> — Chapter 1 of <em>Our Cosmic History</em> — is that astonishing opening stretch, from <strong>t = 0</strong> at the Big Bang all the way to <strong>380,000 years</strong> later, when the cosmos finally cooled enough for light to fly free. The story is told across <strong>four lessons</strong> and turns on <strong>seven milestones</strong>; what follows threads them into a single arc.</p>
+      <p>It opens with the <strong>Big Bang</strong> itself — not an explosion <em>in</em> space but the sudden appearance <em>of</em> space, time, energy, and matter, born from an unimaginably hot, dense point that has been expanding ever since. A sliver of a second later — between 10⁻³⁵ and 10⁻³² seconds (10⁻³⁵ means 1 divided by a 1 with 35 zeros after it — for scale, a 1 with just 9 zeros is a billion, and 12 zeros a trillion) — comes <strong>cosmic inflation</strong>, a burst of exponential growth that swelled the Universe by a factor of roughly 10⁵⁰ (a 1 followed by 50 zeros) and ironed it almost perfectly smooth. Every galaxy we see today grew from the faint ripples that survived that stretching.</p>
+
+      <h2 id="four-forces">One Force Becomes Four</h2>
+      <p>At the very beginning a single <strong>"superforce"</strong> governed everything. As the cosmos cooled it crossed critical thresholds and that unity shattered — much as cooling water freezes into ice — in a staged <strong>separation of forces</strong>: gravity froze out first at 10⁻⁴³ seconds, the strong nuclear force separated next (releasing the energy that drove inflation), and the <strong>electroweak</strong> force split last, at a trillionth of a second, into electromagnetism and the weak nuclear force.</p>
+      <p>The four that emerged span an almost absurd hierarchy of strength — the strong force is some <strong>10³⁹ times</strong> mightier than gravity — yet each holds a different scale of the Universe together: the strong force glues quarks into nuclei, electromagnetism binds atoms and rules chemistry and light, the weak force drives radioactive decay and fusion, and gravity, feeble but infinite in reach, sculpts stars, galaxies, and the very shape of spacetime. The first lesson follows all four, from the original superforce down to the carrier particles that transmit them.</p>
+      <a
+        href={subPath("1.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">1.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">The Four Fundamental Forces</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="particles">Matter Condenses from Energy</h2>
+      <p>With the forces in place, the young Universe set about making <strong>matter itself</strong>. In its searing radiation bath, creation ran in both directions: high-energy light converted into particle–antiparticle pairs (E = mc² read forwards), and those pairs annihilated straight back into light. As the cosmos cooled below each particle's threshold temperature, species <strong>froze out</strong> one by one — quarks bound into protons and neutrons within a microsecond, then neutrinos slipped away, then electrons settled out by the first minute.</p>
+      <p>Everything we are made of is the residue of a tiny imbalance: for every billion particles of antimatter there were a billion-<strong>and-one</strong> of ordinary matter, and when the two annihilated in a near-total erasure, that <strong>one-in-a-billion</strong> surplus is all that survived. The second lesson lays out the full cosmic inventory — the <strong>Standard Model's</strong> seventeen particles, the quarks and leptons that are the <em>bricks</em>, the bosons that are the <em>mortar</em>, and the Higgs field that grants them mass.</p>
+      <a
+        href={subPath("1.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">1.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Formation of Elementary Particles</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="nucleosynthesis">Fifteen Minutes of Alchemy</h2>
+      <p>By a few minutes old the Universe was cool enough to fuse those fresh protons and neutrons into the first nuclei — <strong>primordial nucleosynthesis</strong>. The reaction was held back by a <strong>deuterium bottleneck</strong>: until the temperature fell below a billion kelvin, radiation shattered every deuterium nucleus the instant it formed. Once that barrier broke, a furious chain of fusion locked nearly every free neutron into stable <strong>helium-4</strong>.</p>
+      <p>The window slammed shut at about <strong>15 minutes</strong>, when expansion dropped the density too low to fuse anything heavier — freezing the cosmic recipe at roughly <strong>75% hydrogen and 25% helium</strong>, plus traces of deuterium and lithium. That this exact mixture is still what we measure across the sky is one of the strongest pillars of the Big Bang. The third lesson walks the whole assembly line and explains why the leftover hydrogen became the fuel of every star to come.</p>
+      <a
+        href={subPath("1.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">1.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Synthesis of Elements</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="matter-domination">Matter Takes Over</h2>
+      <p>For tens of thousands of years light still ruled the cosmos, its energy outweighing all the matter. Then, around <strong>50,000 years</strong> in, the ledger tipped: the energy held in matter — protons, nuclei, electrons — finally overtook the energy held in radiation. This <strong>matter domination</strong> is a quiet milestone with loud consequences, because only now could gravity begin gathering matter into the faint clumps that would one day grow into stars and galaxies.</p>
+
+      <h2 id="recombination">The Fog Lifts</h2>
+      <p>Through all of this the Universe stayed <strong>opaque</strong> — a hot fog of free electrons that scattered light endlessly, so no ray could travel far. Then, about <strong>380,000 years</strong> after the Big Bang, it cooled to roughly <strong>3000 K</strong> and electrons finally bound to nuclei to make the first neutral atoms. This is <strong>recombination</strong>, and with it the fog lifted: photons decoupled from matter and streamed freely for the first time, bringing the Particle Age to its close.</p>
+      <p>That ancient light is still arriving. Fourteen billion years of expansion have stretched it a thousandfold, cooling it into the faint <strong>2.73 K microwave hiss</strong> that fills the whole sky — the <strong>Cosmic Microwave Background</strong>. Penzias and Wilson stumbled onto it in 1964; COBE, WMAP, and Planck have since mapped its minute temperature ripples, the gravitational seeds of every galaxy. The final lesson tells that story and reads the CMB as the oldest light we will ever see.</p>
+      <a
+        href={subPath("1.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">1.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Cosmic Microwave Background</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
       <hr />
+
       <blockquote><p>The Particle Age is over before our species can begin to imagine its own beginning. Everything that came after — every star, every world, every reader of every word — is downstream of these 380,000 years.</p></blockquote>
     </div>
   </article>

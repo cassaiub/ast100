@@ -260,8 +260,16 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
     { id: "anatomy", label: "Inside a Telescope" },
   ],
   /* Chapter 1 */
-  "1.0": [],
+  "1.0": [
+    { id: "first-instant", label: "The First Instant" },
+    { id: "four-forces", label: "One Force → Four" },
+    { id: "particles", label: "Matter from Energy" },
+    { id: "nucleosynthesis", label: "First Nuclei" },
+    { id: "matter-domination", label: "Matter Takes Over" },
+    { id: "recombination", label: "The Fog Lifts" },
+  ],
   "1.1": [
+    { id: "force-energy", label: "Force & Energy" },
     { id: "superforce", label: "The Superforce" },
     { id: "separation", label: "Forces Separate" },
     { id: "hierarchy", label: "Hierarchy of Strengths" },
