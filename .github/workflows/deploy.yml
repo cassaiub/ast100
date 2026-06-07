@@ -33,16 +33,25 @@ jobs:
       - name: Build Astro static site
         run: npm run build
 
-      # rsync ./dist/ → ~/public_html/courses/ast100/ on Bluehost.
-      # --delete makes the remote a mirror of dist/, so renamed/removed
-      # files don't linger. The path is owned by this workflow.
-      - name: Deploy via rsync over SSH
-        uses: burnett01/rsync-deployments@7.0.1
-        with:
-          switches: -avzr --delete --exclude='.git*' --exclude='node_modules' --exclude='.env*'
-          path: ./dist/
-          remote_path: ~/public_html/courses/ast100/
-          remote_host: ${{ secrets.BLUEHOST_HOST }}
-          remote_user: ${{ secrets.BLUEHOST_USER }}
-          remote_port: ${{ secrets.BLUEHOST_SSH_PORT }}
-          remote_key:  ${{ secrets.BLUEHOST_SSH_KEY }}
+      # Write the CI deploy key + pinned host key. These are the SAME
+      # credentials as the sibling `cassa` repo (rotated 2026-06-04).
+      # IdentitiesOnly=yes is essential: it offers ONLY this key, avoiding the
+      # server's "Too many authentication failures" disconnect.
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.BLUEHOST_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.BLUEHOST_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      # rsync ./dist/ → public_html/courses/ast100/ on Bluehost. --delete
+      # mirrors the build into THIS sub-directory only; it cannot touch the
+      # sibling sites (the root / and /abekta) because they live outside the
+      # destination path.
+      - name: Deploy with rsync
+        run: |
+          rsync -avz --delete --human-readable \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts" \
+            dist/ \
+            "${{ secrets.BLUEHOST_USER }}@${{ secrets.BLUEHOST_HOST }}:public_html/courses/ast100/"
