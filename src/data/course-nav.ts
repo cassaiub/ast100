@@ -173,7 +173,7 @@ export const CHAPTERS: Chapter[] = [
     age: "Cultural Age",
     title: "Cultural Age",
     telescope: "Allen Array",
-    weeks: "12–13",
+    weeks: "12",
     overviewLive: false,
     subs: [
       { id: "7.1", title: "History of the World", live: false },
@@ -277,22 +277,15 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
   ],
   "1.2": [
     { id: "standard-model", label: "The Standard Model" },
-    { id: "bricks", label: "Bricks · Fermions" },
-    { id: "mortar", label: "Mortar · Bosons" },
-    { id: "antimatter", label: "Antimatter Mirror" },
-    { id: "origin", label: "Origin of Particles" },
+    { id: "origin", label: "Origin of the Particles" },
   ],
   "1.3": [
-    { id: "quark-soup", label: "Quark Soup" },
-    { id: "bottleneck", label: "Deuterium Bottleneck" },
-    { id: "alchemy", label: "Cosmic Alchemy" },
-    { id: "abundance", label: "75% & 25%" },
+    { id: "ingredients", label: "The Ingredients" },
+    { id: "furnace", label: "The Fifteen-Minute Furnace" },
   ],
   "1.4": [
-    { id: "fog-clears", label: "The Fog Lifts" },
-    { id: "redshift", label: "Stretched to Microwaves" },
-    { id: "penzias-wilson", label: "Penzias & Wilson" },
-    { id: "satellites", label: "COBE → Planck" },
+    { id: "fog", label: "The Fog Lifts" },
+    { id: "map", label: "The Baby Picture" },
   ],
 };
 

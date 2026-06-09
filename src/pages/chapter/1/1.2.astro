@@ -7,17 +7,18 @@ import {
   StandardModelPanel,
   AntiparticleAnnihilationPanel,
 } from "../../../components/scenes/1.2/figures";
+import { subPath } from "../../../data/course-nav";
 ---
 
 <ChapterLayout
   title="1.2 — Formation of Elementary Particles · AST 100"
-  description="The Standard Model — seventeen particles that build everything. Plus pair production, freeze-out, and the one-in-a-billion accident that left a Universe of matter behind."
+  description="The Standard Model — the short list of particles that build everything — and the story of how they appeared out of pure energy in the first moments after the Big Bang."
   activeId="1.2"
   chapter={1}
   current="/chapter/1/1.2"
 >
   <Hero
-    tease="The Standard Model is the cosmic inventory: seventeen elementary particles that build everything you have ever touched. Quarks and leptons are the bricks of matter; gauge bosons — photon, gluon, W, Z — are the mortar of energy that binds them; the Higgs is the field that grants mass. Mix in pair production, annihilation, threshold freeze-outs, and the one-in-a-billion matter–antimatter rounding error that left a Universe of stuff behind."
+    tease="Everything you have ever touched is built from a handful of elementary particles — the smallest pieces of nature, the things that cannot be split into anything smaller. This is their catalogue, the Standard Model: the bricks that make up matter, the packets of energy that act as mortar to hold them together, and the Higgs that gives them weight. Then we rewind to where they came from — matter freezing out of raw energy in the first moments after the Big Bang, and the tiny one-in-a-billion surplus of matter over antimatter that is the reason anything solid exists at all."
     client:load
   />
 
@@ -25,49 +26,64 @@ import {
     <div class="prose-cosmic lesson-prose">
       <h2 id="standard-model">The Standard Model</h2>
       <p>
-        The Standard Model of Particle Physics is a cosmic inventory that organizes the Universe into <strong>bricks</strong> (elementary particles of matter) and the <strong>mortar</strong> (elementary particles of energy) that binds them. At the very center lies the <strong>Higgs boson</strong>, the particle associated with a field that permeates the vacuum of space. By interacting with this field, other particles gain mass, effectively transitioning from manifestations of pure energy into the building blocks of a tangible world. Without this mechanism, the fundamental bricks would zip through the Universe at the speed of light, unable to clump together to form atoms, stars, or the complex structures of life.
+        Everything you have ever seen or touched — your own body, the chair you are sitting on, the air, the oceans, the distant stars — is built from a surprisingly short list of building blocks. Physicists have sorted that list into a single chart called the <strong>Standard Model</strong> of particle physics. Think of it as the Universe's parts catalogue. The pieces it lists are <strong>elementary particles</strong>: the smallest known bits of nature, things that — as far as anyone has ever been able to tell — are not made of anything smaller and cannot be split apart.
+      </p>
+      <p>
+        The catalogue sorts everything into two kinds of thing. There are the <strong>bricks</strong> — the bits of solid matter that things are made of — and the <strong>mortar</strong> — packets of pure energy that pass between the bricks and hold them together. We will take the bricks first, then the mortar, and finish with one special particle that gives everything its weight.
+      </p>
+      <p>
+        <strong>The bricks: particles of matter.</strong> The matter particles are called <strong>fermions</strong> — that is simply the family name for the bits that make up stuff. They come in two groups. The first group is the <strong>quarks</strong>. Quarks are never found alone; they always clump together in threes. Two quarks of one type and one of another lock together to make a <strong>proton</strong> or a <strong>neutron</strong> — the heavy particles packed into the tiny core, or <strong>nucleus</strong>, at the centre of every atom. The second group is the <strong>leptons</strong>. The most familiar lepton is the <strong>electron</strong>, the tiny negatively charged particle that swarms around the outside of every atom and whose flow through wires we call electricity. The electron has a near-weightless, barely-there cousin called the <strong>neutrino</strong>: trillions of them stream through your body every second without bumping into anything at all.
+      </p>
+      <p>
+        Oddly, nature made three almost identical copies of this set of bricks, which physicists call three <strong>generations</strong>. Only the lightest generation — the two lightest quarks plus the electron and its neutrino — makes up the ordinary, stable world around you. The two heavier generations are the very same particles built heavier; they appear only in violent collisions, such as when fast-moving particles from space slam into the upper atmosphere, and they fall apart again almost instantly.
+      </p>
+      <p>
+        <strong>The mortar: particles of force.</strong> The mortar particles are called <strong>bosons</strong>. They are not lumps of matter; each is a packet of energy passed between the bricks, and that exchange is what we feel as a <strong>force</strong>. These are the four forces and their carriers from the previous lesson — <a href={subPath("1.1")}>§1.1, The Four Fundamental Forces</a>, explains what each force does and how a carrier works. Here we simply add the carriers to the catalogue as particles in their own right: the <strong>photon</strong> (γ) for electricity and magnetism, the <strong>gluon</strong> (g) for the strong force that glues quarks together, and the heavy <strong>W</strong> and <strong>Z</strong> for the weak force.
+      </p>
+      <p>
+        <strong>The Higgs: the giver of weight.</strong> At the heart of the chart sits one more particle, the <strong>Higgs</strong>. It belongs to an invisible something — a <strong>field</strong> — that fills all of empty space. Particles gain their <strong>mass</strong> (their heft, their resistance to being pushed around) by dragging through this field, the way you feel heavier and slower wading through water. Without it, the bricks would all rush around at the speed of light and could never slow down to settle into atoms, planets, or people. The Higgs was the last piece of the catalogue to be found, finally spotted in 2012 inside a giant machine that smashes particles together.
+      </p>
+      <p>
+        <strong>Antimatter: the mirror twins.</strong> Finally, every particle in the catalogue has a mirror twin called an <strong>antiparticle</strong> — identical in mass but carrying the opposite electric charge. The electron's twin, for example, is the positively charged <strong>positron</strong>. Matter and antimatter cannot live side by side: the instant a particle meets its antiparticle, the two destroy each other completely and vanish in a flash of light. That looks like a curiosity here, but it turns out to be the key to the whole second half of the story.
+      </p>
+      <p>
+        The chart below lays all of this out at once. The matter bricks sit on the left — the quarks along the top, the leptons just below — arranged in three columns for the three generations, lightest on the left and heaviest on the right. The force-carrying mortar (photon, gluon, W and Z) stands in its own column to the right, and the Higgs sits apart on its own. Click any tile to read what that particle is and what it does.
       </p>
 
       <FigureFrame label="Standard Model">
         <StandardModelPanel client:visible />
       </FigureFrame>
 
-      <h2 id="mortar">Mortar — the Bosons</h2>
+      <h2 id="origin">The Origin of the Particles</h2>
       <p>
-        The orange ring of the Standard Model identifies the <strong>bosons</strong>, which can be thought of as the "mortar" or force carriers of the Universe. Rather than solid matter, these particles are essentially discrete packets of energy — quanta — that mediate interactions. The photon (γ) carries electromagnetic energy, the gluon (g) manages the strong-force glue that keeps atomic nuclei together, and the heavy W and Z bosons facilitate the weak nuclear force responsible for radioactive decay. Forces are not mysterious actions at a distance but the result of these energy-carrying particles being exchanged between matter, much like a ball tossed between two players to keep them connected.
+        Where did all of these particles come from? Rewind to the first tiny fractions of a second after the <strong>Big Bang</strong> — the hot, dense beginning from which the Universe has been expanding ever since — and you find no matter at all. There were no bricks and no atoms, only energy, in the form of intensely hot radiation. Every bit of matter that exists today condensed out of that raw energy.
       </p>
-
-      <h2 id="bricks">Bricks — the Fermions</h2>
       <p>
-        The outermost rings contain the <strong>fermions</strong>, the bricks that constitute all material structures. These split into <strong>quarks</strong>, which combine to form protons and neutrons, and <strong>leptons</strong>, such as the electron and the ghostly, nearly massless neutrino.
+        This is possible because mass and energy are really two forms of the same thing. Einstein captured the link in his famous equation <strong>E = mc²</strong> — energy equals mass multiplied by the speed of light times itself. In plain terms it says that energy can be turned into mass, and mass can be turned back into energy. The early Universe was doing exactly that, constantly.
       </p>
-
-      <h2 id="antimatter">Antimatter Mirror</h2>
       <p>
-        To maintain cosmic symmetry, every one of these particles has a mirror-image antiparticle, such as the <strong>positron</strong> (the antimatter version of the electron). While matter and energy are often viewed as distinct, they are fundamentally linked; for instance, if an electron meets a positron, they undergo <em>annihilation</em>, instantly canceling each other out to release a flash of pure energy in the form of gamma-ray (extremely high-energy or high-frequency) photons.
+        In the furnace of those first moments, packets of energy crashed together and condensed into matter through a process called <strong>pair production</strong>: a collision that creates a particle and its antiparticle together, always as a matched pair. The opposite happened just as often — a particle would meet its antiparticle and the two would <strong>annihilate</strong>, turning straight back into energy. Creation and destruction balanced each other, and the cosmos stayed a churning mix of energy and short-lived matter.
+      </p>
+      <p>
+        Then the expansion tipped that balance. As the Universe grew it also <strong>cooled</strong>, in the same way a gas cools as it spreads out and thins. Once the temperature dropped low enough, collisions no longer carried enough energy to create a particular kind of particle. From that moment on, that particle was no longer being replaced as fast as it was destroyed, so the ones that happened to survive became permanent. Physicists call this <strong>freezing out</strong>. Heavier particles take more energy to make, so they froze out earliest, while the Universe was still ferociously hot.
+      </p>
+      <p>
+        The order of appearance followed that rule. The force carriers settled out first, as the single unified force of the newborn Universe split into the four we know today — the story told in <a href={subPath("1.1")}>§1.1</a>. The matter bricks came next, heaviest first. For about the first millionth of a second the Universe was a <strong>quark–gluon plasma</strong> — a soup so hot that the quarks could not yet stick together; only as it cooled did they lock into protons and neutrons, the first step toward building atoms that <a href={subPath("1.3")}>§1.3, Synthesis of Elements</a>, picks up. Around one second in, the ghostly neutrinos stopped interacting with everything else and began drifting freely through space, where they still travel today. By about one minute, the lightest charged brick — the electron — froze out, and the main era of matter-making came to an end.
+      </p>
+      <p>
+        That leaves one last puzzle, the most important of all. If matter and antimatter were always made in equal amounts and always destroy each other on contact, then as the Universe cooled they should have wiped each other out completely, leaving nothing behind but light. We should not exist. The escape was a tiny imbalance: for reasons physicists are still working out, the early Universe made a very slight surplus of matter — roughly a billion-and-one matter particles for every billion antimatter particles. When the great wave of annihilation swept through, every antiparticle found a matter partner and both vanished — but that single leftover matter particle in every billion had no partner, and survived. Everything solid in the Universe today — every galaxy, every star, every living thing — is built from that one-in-a-billion residue of survivors. The annihilation also flooded the cosmos with light — the relic glow that still bathes the whole sky today, which we will meet as the <strong>Cosmic Microwave Background</strong> in <a href={subPath("1.4")}>§1.4</a>.
+      </p>
+      <p>
+        Press play on the animation below — or step through it with the arrow keys — to watch the whole story unfold. While the Universe is hot, light and matter trade places freely: light turns into matter–antimatter pairs (drawn as a filled dot and a matching ring), and those pairs annihilate straight back into light, in balance. As space cools, creation switches off and every pair annihilates for good. Because matter outnumbered antimatter by about one particle in a billion, that tiny surplus is left with nothing to cancel against — and the lone survivor it shows you stands for all the matter there is.
       </p>
 
       <FigureFrame label="Antiparticle annihilation">
         <AntiparticleAnnihilationPanel client:visible />
       </FigureFrame>
 
-      <h2 id="origin">Origin of the Particles</h2>
-      <p>
-        The genesis of the material Universe was a process governed by the dynamic equivalence of matter and energy, formulated by Einstein's celebrated principle, E = mc². In the intensely energetic environment of the infant Universe, subatomic particles did not exist as stable entities; instead, they "materialized" from radiant energy through <strong>pair production</strong> — a mechanism in which high-energy bosons collided to generate a particle and its corresponding antiparticle. This creative flux was balanced by immediate annihilation, wherein particle pairs reverted to pure energy upon contact.
-      </p>
-      <p>
-        However, as the Universe expanded and cooled, the energy density dropped below the specific <strong>threshold temperatures</strong> required to sustain the production of massive particles. Various types of particles "froze out" of the radiation field, becoming permanent features of the Universe. This is why the bosons emerged in a specific order: the hypothetical graviton first (Planck epoch), then gluons at the GUT epoch around 10⁻³⁵ seconds, and finally the photons and W/Z bosons at 10⁻¹² seconds.
-      </p>
-      <p>
-        Fermions followed, stabilising in order of mass. Within the first microsecond, the Universe was a <strong>quark-gluon plasma</strong>. As the temperature fell below 10¹³ Kelvin (≈1 microsecond), quarks bound permanently into hadrons — protons and neutrons. By 1 second, neutrinos decoupled and began their journey as leftover radiation. By 1 minute and 10⁹ Kelvin, electrons froze out, ending the primary matter-creation phase.
-      </p>
-      <p>
-        The persistence of this material world is attributed to a subtle yet critical imbalance between matter and antimatter. For every billion particles of antimatter, a billion-and-one particles of ordinary matter were produced. As the cosmos cooled, matter and antimatter annihilated in a near-total erasure, transforming their mass back into the radiant energy that permeates the modern sky as the Cosmic Microwave Background. The entire observable Universe — every galaxy, star, and human being — is constructed from the minuscule <strong>one-in-a-billion</strong> residue of survivors.
-      </p>
-
       <hr />
 
-      <p><em>Seventeen particles, three generations, one Higgs field — and a rounding error from cosmic accounting that lets a Universe of matter exist at all.</em></p>
+      <p><em>A short catalogue of particles, three repeating generations, and one Higgs that grants them weight — all of it conjured out of pure energy, and saved from total annihilation by a single extra particle in every billion.</em></p>
     </div>
   </article>
 

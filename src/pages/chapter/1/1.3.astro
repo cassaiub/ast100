@@ -4,64 +4,86 @@ import Hero from "../../../components/scenes/1.3/Hero";
 import PrevNext from "../../../components/scenes/1.3/PrevNext.astro";
 import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import {
-  NucleosynthesisTimelinePanel,
-  PrimordialAbundancePanel,
+  ProtonNeutronPanel,
+  DeuteriumBottleneckPanel,
+  FusionChainPanel,
+  HeliumRecipePanel,
 } from "../../../components/scenes/1.3/figures";
+import { subPath } from "../../../data/course-nav";
 ---
 
 <ChapterLayout
   title="1.3 — Synthesis of Elements · AST 100"
-  description="Cosmic alchemy. In the first 15 minutes after the Big Bang, the Universe forged hydrogen, deuterium, helium, and traces of lithium — then expanded so fast the recipe was frozen forever."
+  description="How the first elements were forged in the Universe's opening minutes — protons and neutrons from quarks, the deuterium bottleneck, and the burst of fusion that locked in roughly 75% hydrogen and 25% helium for good."
   activeId="1.3"
   chapter={1}
   current="/chapter/1/1.3"
 >
   <Hero
-    tease="Fifteen minutes of cosmic alchemy. Microseconds after the Big Bang, quarks confined into protons and neutrons; for several long minutes radiation shattered every deuterium nucleus that tried to form. Once temperatures fell below a billion kelvin the bottleneck broke open, and a furious chain of fusion locked almost every available neutron into helium-4. The Universe then expanded too fast to fuse anything heavier — freezing the recipe forever at roughly 75% hydrogen, 25% helium, plus traces of deuterium and lithium."
+    tease="Long before the first star, the Universe ran its only burst of cooking. Within moments the leftover quarks had clumped into protons and neutrons; then a stubborn bottleneck held everything back, because light itself kept smashing apart the first nucleus that tried to form. When the Universe finally cooled below a billion degrees — about three minutes in — fusion raced for a quarter of an hour and locked almost every neutron into helium. Then expansion shut the furnace, freezing the recipe at roughly three-quarters hydrogen and one-quarter helium: the raw material of every star and galaxy to come."
     client:load
   />
 
   <article class="topic-page">
     <div class="prose-cosmic lesson-prose">
-      <h2 id="quark-soup">Quark Soup</h2>
+      <h2 id="ingredients">The Ingredients — and the Bottleneck</h2>
       <p>
-        Immediately after the Big Bang, the Universe was a blazing furnace of energy where temperatures were too extreme for even simple atoms to survive. Within microseconds, the cosmos cooled enough for fundamental quarks to combine into <strong>protons</strong> (made of two "up" and one "down" quark) and <strong>neutrons</strong> (one up and two downs).
+        The very first chemical elements were not cooked inside stars. They were forged in the first few minutes after the <strong>Big Bang</strong>, out of the particles left over from the previous lesson. Recall from <a href={subPath("1.2")}>§1.2</a> that once the searing <strong>quark–gluon plasma</strong> — the soup of free quarks that filled the newborn Universe — cooled, those quarks locked together into <strong>protons</strong> and <strong>neutrons</strong>, the two particles that make up the dense core, or <strong>nucleus</strong>, of every atom. A proton is built from two "up" quarks and one "down"; a neutron from one up and two downs.
+      </p>
+      <p>
+        The figure below lets you take each particle apart into its quarks — and shows what becomes of a neutron left on its own.
       </p>
 
-      <h2 id="bottleneck">The Deuterium Bottleneck</h2>
-      <p>
-        The path to building heavier elements was blocked by the <strong>"deuterium bottleneck"</strong>. For several minutes, intense radiation acted like a cosmic hammer, instantly shattering deuterium — a "heavy" hydrogen isotope made of one proton and one neutron — as soon as it formed. This fragile stepping stone was vital for cosmic evolution but could not endure the heat until the temperature fell below <strong>1 billion Kelvin</strong>. Roughly two minutes after the start of time, the radiation finally eased, allowing deuterium to survive and triggering the next stage of creation.
-      </p>
-
-      <FigureFrame label="Nucleosynthesis timeline">
-        <NucleosynthesisTimelinePanel client:visible />
+      <FigureFrame label="Protons and neutrons from quarks">
+        <ProtonNeutronPanel client:visible />
       </FigureFrame>
 
-      <h2 id="alchemy">Cosmic Alchemy</h2>
       <p>
-        Once this bottleneck was passed, a rapid and spectacular chain of primordial nucleosynthesis began, driven by a delicate tug-of-war between the fundamental forces. Initially, the electromagnetic force acted as a barrier, using its positive charge to repel protons from one another. However, the immense thermal energy of the early Universe provided these particles with enough speed to crash through that resistance and enter the tiny, powerful reach of the strong nuclear force, which acts like cosmic glue.
+        At first the Universe made protons and neutrons in roughly equal numbers. But the two are not quite alike: a neutron is a shade heavier than a proton, and a free neutron is <strong>unstable</strong> — within about ten minutes it decays, through the <strong>weak force</strong> (one of the four forces of <a href={subPath("1.1")}>§1.1</a>), into a proton plus a stray electron and neutrino. As the Universe cooled, no new neutrons were being made while the existing ones kept decaying, so by the time element-building could begin there were about <strong>seven protons for every neutron</strong>. Hold on to that ratio — it quietly decides what the whole Universe is mostly made of.
       </p>
       <p>
-        Deuterium nuclei quickly captured available protons to transform into <strong>Helium-3</strong> (two protons, one neutron). These then swept up free neutrons — which were otherwise unstable and decaying due to the weak nuclear force — to create the incredibly stable <strong>Helium-4</strong> nucleus, also known as an alpha particle. This burst of cosmic alchemy was so efficient that it locked almost all available neutrons into these sturdy helium structures before they had a chance to disappear.
-      </p>
-
-      <h2 id="abundance">Locked at 75% & 25%</h2>
-      <p>
-        This grand assembly line was extraordinarily brief, lasting only until the Universe was about <strong>15 minutes old</strong>. As the cosmos expanded at a staggering rate, its density and temperature plummeted below the levels required to fuse helium into more complex elements like carbon or oxygen. This rapid expansion effectively froze the chemical makeup of the early Universe, leaving it with a simple but vital composition: roughly <strong>75% hydrogen</strong> and <strong>25% helium</strong>.
+        To build anything bigger than hydrogen, nature must start small: glue one proton to one neutron to make <strong>deuterium</strong> (a heavy form of hydrogen, written ²H), the first stepping-stone toward larger nuclei. Here the early Universe hit a wall — the <strong>deuterium bottleneck</strong>. Matter and light were mixed together, and <strong>photons</strong> (particles of light) outnumbered atoms by about a <strong>billion</strong> to one (a billion is a 1 followed by nine zeros). So even though most of that light was far too weak to matter, the rare high-energy photons in such an enormous crowd were enough to smash every deuterium nucleus apart the instant it formed. Nothing larger could be built until the Universe cooled below about a billion degrees — which took roughly three minutes.
       </p>
       <p>
-        If the expansion had been any slower, the Universe might have fused all its material into iron — the most stable but inert element — resulting in a stagnant and lifeless cosmos. Instead, by stopping when it did, the Universe preserved the vast reserves of hydrogen fuel that would eventually ignite the very first stars. Today, the fact that we still observe this precise 25% helium abundance and the presence of deuterium stands as one of the most powerful and undeniable pillars of evidence for the Big Bang.
+        Drag the slider in the figure below to cool the young Universe past that threshold and watch deuterium flip from shattered to stable.
       </p>
 
-      <FigureFrame label="Primordial abundance" variant="narrow">
-        <PrimordialAbundancePanel client:visible />
+      <FigureFrame label="The deuterium bottleneck">
+        <DeuteriumBottleneckPanel client:visible />
       </FigureFrame>
+
+      <h2 id="furnace">The Fifteen-Minute Furnace</h2>
+      <p>
+        About three minutes in, the temperature finally fell below a billion degrees, deuterium could survive, and the bottleneck burst open. What followed was the only round of <strong>fusion</strong> — the merging of light nuclei into heavier ones — that the entire Universe would undergo before stars existed. It was a tug-of-war between two of the forces from <a href={subPath("1.1")}>§1.1</a>: the <strong>electromagnetic force</strong> pushes protons apart, because their positive charges repel, while the <strong>strong nuclear force</strong> clamps nuclei together once they actually touch. The Universe was still hot enough to hurl the particles into one another hard enough to win that contest.
+      </p>
+      <p>
+        From the surviving deuterium, a quick chain assembled <strong>helium</strong>: two deuteriums merge into <strong>helium-3</strong>, which grabs yet another deuterium to become <strong>helium-4</strong> — a nucleus of two protons and two neutrons that is extraordinarily stable. Because it is such a tight, contented package, almost every neutron still left in the Universe ended up locked inside one. Step through the chain below, one reaction at a time.
+      </p>
+
+      <FigureFrame label="The fusion chain to helium">
+        <FusionChainPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        This is where that seven-to-one ratio pays off. Neutrons are the scarce ingredient, and each helium-4 needs two of them. Pair up every two neutrons with two protons to build one helium-4, and the many leftover protons simply stay as hydrogen. With seven protons for every neutron, the bookkeeping lands at roughly <strong>three-quarters hydrogen and one-quarter helium by weight</strong> — close to 25% helium, a figure now written into every corner of the cosmos. Slide the proton-to-neutron ratio in the figure below to see how that single number fixes the recipe; our Universe sits at about seven to one.
+      </p>
+
+      <FigureFrame label="The frozen helium recipe" variant="narrow">
+        <HeliumRecipePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The whole furnace ran for only about <strong>fifteen to twenty minutes</strong>. As space kept expanding, the gas thinned and cooled until particles could no longer meet hard or often enough to fuse, and the recipe <strong>froze</strong> — fixed at roughly 75% hydrogen and 25% helium, with only the faintest traces of leftover deuterium, helium-3, and lithium. Building stopped there for a curious reason: there is no stable nucleus with exactly five or exactly eight particles, so the chain had no easy rung to climb past helium. Every element heavier than lithium — the carbon in your cells, the oxygen you breathe, the iron in your blood — would have to wait hundreds of millions of years to be forged inside stars.
+      </p>
+      <p>
+        That ancient quarter-helium is more than a leftover: it is evidence. We measure very nearly the same helium fraction in gas clouds right across the sky, exactly as a hot, dense beginning predicts, and the trace of surviving deuterium reveals how much ordinary matter the Universe holds. Together they form one of the firmest pillars of the Big Bang — standing alongside the relic light we turn to next, the <strong>Cosmic Microwave Background</strong> of <a href={subPath("1.4")}>§1.4</a>.
+      </p>
 
       <hr />
 
       <blockquote>
         <p>
-          Fifteen minutes of work, fourteen billion years of consequence. Every atom heavier than helium that exists in your body was made later — inside stars — out of the fuel reserved by this brief, perfect window of cosmic alchemy.
+          Fifteen minutes of work, fourteen billion years of consequence. Every atom heavier than helium in your body was made later, inside stars — out of the hydrogen fuel this brief, perfect window left behind.
         </p>
       </blockquote>
     </div>

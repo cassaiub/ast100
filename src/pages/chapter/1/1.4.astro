@@ -4,94 +4,69 @@ import Hero from "../../../components/scenes/1.4/Hero";
 import PrevNext from "../../../components/scenes/1.4/PrevNext.astro";
 import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import {
-  RecombinationRedshiftPanel,
-  PenziasWilsonStoryPanel,
-  CmbSatellitesPanel,
+  RecombinationPanel,
+  RedshiftPanel,
+  CmbMapPanel,
 } from "../../../components/scenes/1.4/figures";
-import { withBase } from "../../../data/course-nav";
+import { subPath } from "../../../data/course-nav";
 ---
 
 <ChapterLayout
   title="1.4 — Cosmic Microwave Background · AST 100"
-  description="The oldest light in the Universe. Recombination, redshift, the 1964 discovery at Bell Labs, and the satellite maps that turned cosmology into a precision science."
+  description="The oldest light in the Universe. How the cosmic fog lifted at recombination, how expansion stretched that light into microwaves, and how the Planck map of its faint ripples became the baby picture of every galaxy."
   activeId="1.4"
   chapter={1}
   current="/chapter/1/1.4"
 >
   <Hero
-    tease="The oldest light we will ever see. About 380,000 years after the Big Bang the Universe cooled to roughly 3000 K, electrons bound to nuclei, and the cosmic fog lifted — photons streamed free. Cosmic expansion has since stretched them a thousandfold into a 2.73 K microwave hiss. Penzias and Wilson stumbled onto it in 1964; COBE, WMAP, and Planck have mapped its faint temperature ripples — the gravitational seeds of every galaxy."
+    tease="The oldest light we will ever see. About 380,000 years after the Big Bang the Universe cooled enough for atoms to form, the cosmic fog lifted, and light streamed free for the first time. Space has stretched that light a thousandfold since — from a hot glow into a faint 2.7-degree microwave hiss filling the whole sky. Penzias and Wilson stumbled onto it in 1964; COBE, WMAP, and Planck have mapped its tiny temperature ripples — the seeds of every galaxy."
     client:load
   />
 
   <article class="topic-page">
     <div class="prose-cosmic lesson-prose">
-      <h2 id="fog-clears">The Fog Lifts</h2>
+      <h2 id="fog">The Fog Lifts</h2>
+      <p>
+        At the end of the last lesson the Universe was a few minutes old and full of fresh hydrogen and helium nuclei (<a href={subPath("1.3")}>§1.3</a>) — but it was not yet anything you could see through. It was a <strong>plasma</strong>: a hot soup of bare nuclei and free <strong>electrons</strong> (the tiny negatively charged particles of <a href={subPath("1.2")}>§1.2</a>). Free electrons are superb at batting light around, so every <strong>photon</strong> (a particle of light) ricocheted endlessly off them and could never travel in a straight line. The Universe glowed, but it was <strong>opaque</strong> — a glowing fog, like the inside of the Sun.
+      </p>
+      <p>
+        Then, about <strong>380,000 years</strong> after the Big Bang, the expanding Universe cooled to roughly <strong>3,000 degrees</strong> (3,000 K — about half the temperature of the Sun's surface). That was finally cool enough for the electrons to be captured by the nuclei and settle into complete, neutral <strong>atoms</strong>. With the free electrons gone, there was nothing left to scatter the light: the fog lifted, and for the first time photons streamed freely across space. Physicists call this moment <strong>recombination</strong>, and the instant the light broke free the <strong>surface of last scattering</strong>. Drag the slider below to cool the young Universe through that threshold and watch the fog clear.
+      </p>
 
-      <p>In the earliest moments of the Universe, photons were trapped in a hot, dense fog of free electrons that scattered light continuously, rendering the cosmos opaque. However, approximately <strong>400,000 years</strong> after the Big Bang, the expanding Universe cooled to roughly <strong>3000 K</strong>, a threshold low enough for electrons to combine with protons and form neutral hydrogen atoms. This pivotal event, known as <strong>recombination</strong>, lifted the fog and allowed photons to decouple from matter, finally streaming freely through space.</p>
-
-      <h2 id="redshift">Stretched to Microwaves</h2>
-
-      <p>Over the subsequent 14 billion years, the relentless expansion of the Universe has stretched the fabric of space itself, elongating the wavelengths of these ancient photons by a factor of roughly <strong>1,100</strong> through cosmological redshift. Consequently, this primordial radiation has cooled and shifted from energetic light into the low-energy microwave band, permeating the cosmos today as the <strong>Cosmic Microwave Background (CMB)</strong> radiation with a temperature of approximately <strong>2.73 K</strong>, often rounded to 3 K.</p>
-
-      <FigureFrame label="Recombination & redshift">
-        <RecombinationRedshiftPanel client:visible />
+      <FigureFrame label="Recombination — the fog lifts">
+        <RecombinationPanel client:visible />
       </FigureFrame>
 
-      <h2 id="penzias-wilson">Penzias & Wilson, 1964</h2>
+      <p>
+        That liberated light has been travelling ever since — for 13.8 billion years — and it is still arriving today. But it no longer arrives as the hot glow it set out as. Across those eons <strong>space itself has expanded</strong>, and as it stretched it stretched the light's waves along with it. Space has grown about <strong>1,100 times</strong> larger since, so each wave is now about 1,100 times longer than when it left. Stretching a light wave lowers its energy and reddens it; stretch it this far and it slides out of visible light, through the infrared, and into <strong>microwaves</strong> — a low-energy form of light, a close cousin of the visible light and radio waves of <a href={subPath("0.4")}>§0.4</a>. Cooled by the same factor, the glow's temperature has dropped from 3,000 K to just <strong>2.725 K</strong> — under three degrees above absolute zero, the coldest anything can ever be. This faint, sky-filling glow is the <strong>Cosmic Microwave Background (CMB)</strong> — the relic light promised at the close of <a href={subPath("1.3")}>§1.3</a>. Slide the figure below to expand space and watch the glow stretch and cool.
+      </p>
 
-      <p>The definitive confirmation of the Big Bang theory emerged serendipitously in 1964 when <strong>Arno Penzias</strong> and <strong>Robert Wilson</strong>, utilizing a 20-foot horn-shaped radio antenna at Bell Labs in New Jersey, detected an inexplicable signal. While attempting to calibrate the instrument for satellite communications, they encountered a persistent, low-level background "hiss" that arrived uniformly from every direction, unwavering regardless of time or season.</p>
-
-      <p>After rigorously ruling out terrestrial interference — a process that even involved scrubbing pigeon droppings from the antenna — they consulted Robert Dicke's team at Princeton, who identified the "static" as the elusive CMB. This discovery provided the smoking gun for the Big Bang theory, as the radiation perfectly matched the predicted "fossil remnant" of the Universe's hot, dense origin — now redshifted to about 3 Kelvin — a phenomenon the competing Steady State theory could not explain.</p>
-
-      <FigureFrame label="Penzias & Wilson 1964" variant="narrow">
-        <PenziasWilsonStoryPanel client:visible />
+      <FigureFrame label="Stretched to microwaves">
+        <RedshiftPanel client:visible />
       </FigureFrame>
 
-      <h2 id="satellites">COBE → WMAP → Planck</h2>
-
-      <p>Following the initial detection of the CMB, astronomers deployed a succession of satellites to map its subtle temperature variations across the celestial sphere. NASA's <strong>COBE</strong> satellite (1989) pioneered this effort by producing the first full-sky map, confirming the CMB's <strong>blackbody spectrum</strong> — the specific pattern of light intensity emitted by an object based solely on its temperature — and detecting the minute temperature ripples (anisotropies) essential for structure formation.</p>
-
-      <p>This view was radically sharpened by the <strong>WMAP</strong> mission (2001), which mapped the sky with 30× better resolution and significantly greater sensitivity than its predecessor. Finally, the European Space Agency's <strong>Planck</strong> mission (2009) brought the early Universe into even sharper focus, improving resolution by another factor of three and sensitivity by a factor of ten. Together, these progressively detailed maps have transformed cosmology into a precision science, confirming a spatially flat Universe dominated by dark energy and dark matter.</p>
-
-      <FigureFrame label="COBE WMAP Planck satellites">
-        <CmbSatellitesPanel client:visible />
-      </FigureFrame>
-
-      <p>The Planck mission delivered the most exquisite all-sky map of the CMB to date. This <em>baby picture</em> of the cosmos reveals minute temperature variations of roughly 400 microkelvin (millionth of a Kelvin). These temperature differences signify regions of slightly differing density; specifically, the blue (colder and denser) and red (hotter and less dense) spots track primordial density fluctuations that acted as the cosmic seeds for future growth. Through the relentless influence of gravity, matter eventually coalesced in the denser regions to form the vast web of galaxies and clusters observed today, making the Planck map a direct image of the embryonic structures of our Universe.</p>
+      <h2 id="map">The Baby Picture</h2>
+      <p>
+        Nobody set out to find the CMB — it was stumbled upon. In <strong>1964</strong>, at Bell Labs in New Jersey, two radio engineers — <strong>Arno Penzias</strong> and <strong>Robert Wilson</strong> — were calibrating a giant horn-shaped antenna when they ran into a faint, steady <strong>hiss</strong> that came from every direction of the sky and never went away. They ruled out everything they could think of: city radio, the wiring, even the pigeons nesting inside the antenna (and the droppings they left). The hiss remained. A team at Princeton led by <strong>Robert Dicke</strong> had the explanation: this was the leftover heat of the Big Bang they had themselves been preparing to hunt for. The accidental hiss matched the predicted <strong>blackbody glow</strong> — the particular spread of colours any warm object gives off, set only by its temperature — of a once-hot Universe now cooled to a few degrees, something the rival "Steady State" theory could not explain. Penzias and Wilson shared the <strong>1978 Nobel Prize</strong> for hearing the oldest light in the cosmos.
+      </p>
+      <p>
+        Hearing it was one thing; mapping it took satellites lofted above the blurring atmosphere. NASA's <strong>COBE</strong> (launched 1989) confirmed the CMB is the most perfect blackbody glow ever measured and, in 1992, caught the first hint of faint <strong>ripples</strong> in it. <strong>WMAP</strong> (2001) sharpened the picture many times over, and the European Space Agency's <strong>Planck</strong> satellite (launched 2009) delivered the exquisite all-sky map below. Planck worked from a quiet gravitational parking spot 1.5 million kilometres from Earth and observed at many wavelengths at once, so astronomers could subtract the <strong>Milky Way's</strong> own bright microwave glow — a band across the middle of the raw data — and reveal the primordial sky behind it. Hover anywhere on the map to magnify the faint ripples — the colour bar reads from blue (cooler, denser) to red (hotter, thinner) — and use the arrow keys to pan the magnifier across the sky.
+      </p>
 
       <FigureFrame label="Planck all-sky CMB map">
-        <figure class="figure-stub my-0 rounded-md p-4 md:p-6">
-          <div class="fig-viz">
-            <img
-              src={withBase("/images/media/cmb.webp")}
-              alt="ESA Planck satellite's all-sky map of the Cosmic Microwave Background — temperature fluctuations of about 400 microkelvin on a 2.7 K background. Blue regions are slightly cooler and denser; red regions slightly hotter and less dense."
-              loading="lazy"
-              decoding="async"
-              class="w-full h-auto rounded-md"
-              style="display: block; border: 1px solid var(--c-border);"
-            />
-          </div>
-          <figcaption>
-            <span class="figure-tag">Fig. 1.4.d</span>
-            <span class="figure-title"> — Planck all-sky CMB map.</span>
-            Every point is a photon released 380,000 years after the Big Bang
-            and stretched a thousand-fold during its 13.8-billion-year journey.
-            The tiny temperature ripples — blue cooler, red hotter — are the
-            gravitational seeds of every galaxy, cluster, and cosmic-web
-            filament that followed.
-            <span class="block mt-2 font-mono text-[10px] tracking-[0.18em] uppercase text-white/40">
-              Credit · ESA / Planck Collaboration
-            </span>
-          </figcaption>
-        </figure>
+        <CmbMapPanel client:visible />
       </FigureFrame>
 
-      <p>Planck operated from the <strong>L2 Lagrangian</strong> point, a gravitationally stable position 1.5 million kilometers from Earth where it could remain permanently shadowed from the Sun. Rather than orbiting Earth, Planck followed our planet around the Sun, scanning the entire sky every six months. To generate the final image, astronomers mathematically excised significant foreground interference — most notably the microwave emissions from the Milky Way Galaxy, which appeared as a bright band in the raw data. By comparing observations at multiple wavelengths (3 mm to 13 mm), scientists successfully subtracted these local signals to unveil the faint, primordial background Universe at its infancy.</p>
+      <p>
+        What those ripples mean is the quiet punchline of the whole chapter. The map is smooth to about <strong>one part in 100,000</strong> — almost perfectly uniform — yet the tiny patches that are a few <strong>millionths of a degree</strong> cooler or hotter are not random noise. On the largest scales, the slightly cooler spots mark places that were slightly <strong>denser</strong>, and over the following billions of years gravity pulled ever more matter into exactly those places. Every galaxy, every cluster, every thread of the cosmic web grew from this faint mottling. The CMB is at once the oldest light we can ever see — a wall of glow 13.8 billion years away — and the baby photograph of every structure that was still to come.
+      </p>
 
       <hr />
 
       <blockquote>
-        <p>The CMB is the wall of light at the edge of what we can see. Every photon arriving today set out 13.8 billion years ago — stretched a thousandfold, cooled to almost absolute zero, and still carrying the imprint of every galaxy yet to come.</p>
+        <p>
+          The CMB is the edge of the visible Universe: a sky-wide flash from the moment atoms first formed, stretched a thousandfold, chilled to three degrees above absolute zero, and still carrying the seed-pattern of every galaxy that would ever exist.
+        </p>
       </blockquote>
     </div>
   </article>

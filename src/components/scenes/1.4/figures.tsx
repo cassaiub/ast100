@@ -1,9 +1,22 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { mulberry32 } from "../../../data/chapter-0-events";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { withBase } from "../../../data/course-nav";
 
-function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: string; caption: ReactNode; children: ReactNode }) {
+/* Shared figure shell — mirrors the 0.4 / 1.2 / 1.3 pattern. */
+function FigurePanel({
+  idx,
+  kicker,
+  caption,
+  children,
+  fitFs = false,
+}: {
+  idx: string;
+  kicker: string;
+  caption: ReactNode;
+  children: ReactNode;
+  fitFs?: boolean;
+}) {
   return (
-    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+    <figure data-fade className={`figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}`}>
       <div className="figure-body">{children}</div>
       <figcaption>
         <span className="figure-tag">Fig. {idx}</span>
@@ -14,214 +27,243 @@ function FigurePanel({ idx, kicker, caption, children }: { idx: string; kicker: 
   );
 }
 
-/* ── Recombination & Redshift ───────────────────────────────────────
-   Slider scrubs cosmic scale factor a from 1 (at recombination) to
-   1100 (today). Visualises:
-   - Top: a patch of Universe transitioning from opaque plasma fog
-     (free electrons + photons trapped) to clear Universe with neutral
-     atoms and freely streaming photons.
-   - Bottom: a sinusoidal wave that stretches with scale, showing
-     wavelength growing from ~visible (380 nm-ish in scale terms)
-     to microwave-band. */
-export function RecombinationRedshiftPanel() {
-  const [scale, setScale] = useState(50); // 1 to 1100
-  const T_today = 2.73; // K
-  const T = T_today * scale; // approximate
-  const lambda0 = 800; // nm at emission (visible/IR rest-frame band)
-  const lambda = lambda0 * (scale); // stretched wavelength in nm
-  function fmtWave(nm: number) {
-    if (nm < 1000) return `${nm.toFixed(0)} nm (visible / IR)`;
-    if (nm < 1e6) return `${(nm / 1000).toFixed(0)} µm (infrared)`;
-    return `${(nm / 1e6).toFixed(2)} mm (microwave)`;
-  }
-  function band(nm: number) {
-    if (nm < 750) return "VISIBLE";
-    if (nm < 1e6) return "INFRARED";
-    return "MICROWAVE";
-  }
+/* Tracks `.is-fs` on the enclosing FigureFrame so HTML control/detail text can
+   scale up in fullscreen (the SVG scales with its viewBox; fixed-px HTML would
+   stay tiny). MutationObserver pattern from 1.2 / 1.3 / 0.4. */
+function useFs(ref: { current: Element | null }) {
+  const [fs, setFs] = useState(false);
+  useEffect(() => {
+    const frame = ref.current?.closest("[data-figure-frame]");
+    if (!frame) return;
+    const sync = () => setFs(frame.classList.contains("is-fs"));
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(frame, { attributes: true, attributeFilter: ["class"] });
+    return () => mo.disconnect();
+  }, []);
+  return fs;
+}
+
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+
+/* Off-screen real <button> for keyboard hooks FigureFrame drives via .click(). */
+const srOnly: CSSProperties = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0,0,0,0)",
+  whiteSpace: "nowrap",
+  border: 0,
+};
+
+const PHOTON = "rgb(var(--c-accent-rgb))";
+const HOT = "rgb(var(--c-solar-rgb))";
+
+/* ── 1.4.a · Recombination — the fog lifts ──────────────────────────── */
+/* A dozen fixed particle positions across the field (deterministic, no RNG). */
+const MOTES: [number, number][] = [
+  [90, 60], [180, 120], [250, 50], [330, 95], [410, 140], [470, 55],
+  [540, 110], [610, 70], [150, 150], [300, 150], [560, 150], [650, 130],
+];
+
+export function RecombinationPanel() {
+  const [cool, setCool] = useState(0.2); // 0 = hot/earliest, 1 = cool/latest
+  const vizRef = useRef<HTMLDivElement>(null);
+  const fs = useFs(vizRef);
+  const sz = (r: number) => (fs ? `calc(clamp(16px, 2.1vh, 27px) * ${r})` : undefined);
+
+  const T = Math.round((4500 - 3000 * cool) / 50) * 50; // 4500 K → 1500 K
+  const bound = T < 3000; // electrons captured → transparent
+  const Ttext = `${T.toLocaleString()} K`;
+  const era = T > 3050 ? "before ≈380,000 yr" : T < 2950 ? "after ≈380,000 yr" : "≈380,000 yr — recombination";
 
   const W = 720;
-  const H = 180;
-
-  /* Free electron / plasma dots — visibility fades as we approach today */
-  const plasmaOpacity = Math.max(0, 1 - (scale - 1) / 30); // fades fast
-  const motes = useMemo(() => {
-    const rng = mulberry32(91);
-    return Array.from({ length: 28 }, () => ({
-      x: rng() * W,
-      y: rng() * H,
-      r: 1.2 + rng() * 1.8,
-    }));
-  }, []);
-
-  /* Wave path stretching with scale. We always show at least ~1.2 cycles
-     so the user sees the wave shape; the wavelength bracket below the
-     wave is what conveys the *actual* stretch factor numerically. */
-  const refCycles = 10; // reference wave at scale=1
-  const cycles = Math.max(1.2, refCycles / Math.sqrt(scale));
-  const waveAmp = 32;
-  const refAmp = 18;
-  const xStart = 40;
-  const xEnd = W - 40;
-  const waveLen = xEnd - xStart;
-  const wavePts: string[] = [];
-  const refPts: string[] = [];
-  for (let i = 0; i <= 200; i++) {
-    const t = i / 200;
-    const x = xStart + t * waveLen;
-    const y = 80 + waveAmp * Math.sin(t * cycles * Math.PI * 2);
-    const yRef = 80 + refAmp * Math.sin(t * refCycles * Math.PI * 2);
-    wavePts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
-    refPts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${yRef.toFixed(1)}`);
-  }
-  /* Position of the bracket showing one full wavelength of the active wave */
-  const cycleWidth = waveLen / cycles;
-  const bracketX1 = xStart + cycleWidth * 0.2;
-  const bracketX2 = bracketX1 + cycleWidth;
+  const H = 210;
+  const trans = "opacity 240ms var(--ease)";
 
   return (
     <FigurePanel
       idx="1.4.a"
-      kicker="Recombination · The Fog Lifts, Photons Stretch"
-      caption="At 380,000 years, the Universe cooled enough for electrons to bind to nuclei. Light decoupled from matter and streamed free. As space has expanded by a factor of 1100 since, those primordial photons have stretched from visible/IR light into microwaves — the CMB we see today at 2.73 K."
+      kicker="Recombination — The Fog Lifts"
+      caption="For its first ~380,000 years the Universe was an opaque fog: free electrons (charged) batted every photon around, so light could not travel in a straight line. Drag the slider to cool it. Below about 3,000 K, electrons are captured by nuclei into neutral atoms — they stop scattering light, and photons stream free for the first time. That escaping light is the CMB; the moment is called the 'last scattering'."
     >
-      {/* Plasma → clear panel */}
-      <div className="fig-viz relative w-full overflow-hidden rounded-md mb-3" style={{ background: "rgb(var(--c-bg-rgb) / 0.5)" }}>
+      <div ref={vizRef} className="fig-viz relative w-full overflow-hidden rounded-md" style={{ background: "rgb(var(--c-bg-rgb) / 0.5)" }}>
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* free electron dots — fade out as scale grows past 1 */}
-          {motes.map((m, i) => (
-            <circle key={i} cx={m.x} cy={m.y} r={m.r} fill={`rgba(255, 200, 120, ${plasmaOpacity * 0.7})`} />
-          ))}
-          {/* "neutral atoms" appear as scale grows */}
-          {motes.slice(0, 12).map((m, i) => (
-            <circle
-              key={`a-${i}`}
-              cx={m.x + 4}
-              cy={m.y + 2}
-              r={m.r + 0.5}
-              fill="none"
-              stroke="rgb(var(--c-accent-rgb))"
-              strokeWidth="0.6"
-              opacity={Math.max(0, 1 - plasmaOpacity)}
-            />
-          ))}
-          {/* "streaming photon" — a horizontal arrow once the fog clears */}
-          {scale > 5 && (
-            <g opacity={Math.min(1, (scale - 5) / 10)}>
-              <line x1={40} y1={H / 2 - 50} x2={W - 40} y2={H / 2 - 50} stroke="rgb(var(--c-accent-rgb) / 0.7)" strokeWidth="1.2" strokeDasharray="3 4" />
-              <text x={50} y={H / 2 - 56} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb))">
-                STREAMING PHOTON →
-              </text>
-            </g>
-          )}
           {/* state label */}
-          <text x={W - 14} y={20} textAnchor="end" fontSize="10" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb) / 0.85)">
-            {scale < 1.5 ? "PLASMA FOG · OPAQUE" : scale < 8 ? "RECOMBINATION · CLEARING" : "TRANSPARENT · LIGHT FREE"}
-          </text>
-        </svg>
-      </div>
-
-      {/* Wave stretching panel — taller so the wave breathes and a
-         reference wave at scale=1 sits behind for comparison */}
-      <div className="fig-viz relative w-full overflow-hidden rounded-md" style={{ background: "rgb(var(--c-bg-rgb) / 0.45)" }}>
-        <svg viewBox={`0 0 ${W} 170`} className="block w-full h-auto">
-          {/* Centre axis */}
-          <line x1={40} x2={W - 40} y1={80} y2={80} stroke="rgb(var(--c-text-rgb) / 0.15)" strokeWidth="0.6" strokeDasharray="2 4" />
-
-          {/* Reference wave at scale=1 (dim, dashed) */}
-          <path
-            d={refPts.join(" ")}
-            stroke="rgb(var(--c-text-rgb) / 0.3)"
-            strokeWidth="1.2"
-            fill="none"
-            strokeDasharray="2 3"
-          />
-          <text x={50} y={150} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.4)">
-            REFERENCE · WAVELENGTH AT RECOMBINATION
+          <text x={W - 14} y={22} textAnchor="end" fontSize="12" letterSpacing="2" fontFamily="var(--font-mono)" fill={bound ? PHOTON : HOT}>
+            {bound ? "TRANSPARENT — LIGHT FREE" : "OPAQUE — PHOTONS TRAPPED"}
           </text>
 
-          {/* Active stretched wave */}
-          <path
-            d={wavePts.join(" ")}
-            stroke="rgb(var(--c-accent-rgb))"
-            strokeWidth="2.4"
-            fill="none"
-            style={{ filter: "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.7))" }}
-          />
-
-          {/* Wavelength bracket showing one full λ of the active wave */}
-          <g>
-            <line x1={bracketX1} y1={32} x2={bracketX2} y2={32} stroke="rgb(var(--c-accent-rgb))" strokeWidth="1.2" />
-            <line x1={bracketX1} y1={26} x2={bracketX1} y2={38} stroke="rgb(var(--c-accent-rgb))" strokeWidth="1.2" />
-            <line x1={bracketX2} y1={26} x2={bracketX2} y2={38} stroke="rgb(var(--c-accent-rgb))" strokeWidth="1.2" />
-            <text
-              x={(bracketX1 + bracketX2) / 2}
-              y={22}
-              textAnchor="middle"
-              fontSize="11"
-              letterSpacing="2"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-accent-rgb))"
-            >
-              λ = {fmtWave(lambda)}
-            </text>
+          {/* free electrons (hot) — fade out as we cool */}
+          <g style={{ opacity: bound ? 0 : 1, transition: trans }}>
+            {MOTES.map(([x, y], i) => (
+              <g key={`e${i}`}>
+                <circle cx={x} cy={y} r="7" fill={HOT} opacity="0.85" />
+                <text x={x} y={y + 4} textAnchor="middle" fontSize="9" fontStyle="italic" fontFamily="var(--font-serif)" fill="rgb(var(--c-bg-rgb))">e⁻</text>
+              </g>
+            ))}
           </g>
 
-          <text x={50} y={18} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-text-rgb) / 0.55)">
-            PHOTON WAVELENGTH
-          </text>
-          <text x={W - 50} y={18} textAnchor="end" fontSize="11" letterSpacing="2" fontFamily="var(--font-mono)" fill="rgb(var(--c-accent-rgb))">
-            {band(lambda)}
-          </text>
+          {/* neutral atoms (cool) — fade in: nucleus + electron shell */}
+          <g style={{ opacity: bound ? 1 : 0, transition: trans }}>
+            {MOTES.map(([x, y], i) => (
+              <g key={`a${i}`}>
+                <circle cx={x} cy={y} r="11" fill="none" stroke={PHOTON} strokeWidth="1.4" opacity="0.7" />
+                <circle cx={x} cy={y} r="4" fill={PHOTON} opacity="0.85" />
+              </g>
+            ))}
+          </g>
+
+          {/* trapped photon — zig-zag scattering path (hot) */}
+          <g style={{ opacity: bound ? 0 : 1, transition: trans }}>
+            <path
+              d="M 40 175 L 110 70 L 175 150 L 250 60 L 320 150 L 400 80 L 470 160 L 540 70"
+              stroke={PHOTON}
+              strokeWidth="2.2"
+              fill="none"
+              strokeLinejoin="round"
+              style={{ filter: "drop-shadow(0 0 5px rgb(var(--c-accent-rgb) / 0.6))" }}
+            />
+            <text x={44} y={192} fontSize="11" letterSpacing="1.5" fontFamily="var(--font-mono)" fill={PHOTON}>photon trapped — bounces off every free electron</text>
+          </g>
+
+          {/* free-streaming photon — straight arrow exits right (cool) */}
+          <g style={{ opacity: bound ? 1 : 0, transition: trans }}>
+            <line x1={40} y1={H / 2} x2={W - 54} y2={H / 2} stroke={PHOTON} strokeWidth="2.4" style={{ filter: "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.7))" }} />
+            <path d={`M ${W - 54} ${H / 2 - 7} L ${W - 40} ${H / 2} L ${W - 54} ${H / 2 + 7} Z`} fill={PHOTON} />
+            <text x={44} y={H / 2 - 12} fontSize="11" letterSpacing="1.5" fontFamily="var(--font-mono)" fill={PHOTON}>photon streams free → becomes the CMB</text>
+          </g>
         </svg>
       </div>
 
-      <div
-        className="mt-4 grid grid-cols-3 gap-3 p-3 rounded-md"
-        style={{
-          background: "rgb(var(--c-accent-rgb) / 0.04)",
-          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-        }}
-      >
+      <div className="mt-4 grid grid-cols-2 gap-4 p-3 rounded-md" style={{ background: "rgb(var(--c-accent-rgb) / 0.04)", border: "1px solid rgb(var(--c-accent-rgb) / 0.18)", flexShrink: 0 }}>
         <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">scale factor</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.3rem", color: "var(--c-accent)" }}>
-            × {scale.toFixed(0)}
-          </div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>temperature</div>
+          <div className="font-serif font-medium mt-1" style={{ fontSize: sz(1.5) ?? "1.4rem", color: bound ? PHOTON : HOT, lineHeight: 1.1 }}>{Ttext}</div>
         </div>
         <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">CMB temperature</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.3rem", color: "var(--c-accent)" }}>
-            {T < 1000 ? T.toFixed(0) : (T / 1000).toFixed(1) + "k"} K
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>matter is…</div>
+          <div className="font-serif font-medium mt-1" style={{ fontSize: sz(1.1) ?? "1.05rem", color: bound ? PHOTON : HOT, lineHeight: 1.15 }}>
+            {bound ? "neutral atoms" : "a charged plasma"}
           </div>
+          <div className="font-mono text-white/55 mt-1" style={{ fontSize: sz(0.6) }}>{era}</div>
+        </div>
+      </div>
+
+      <div className="mt-4" style={{ flexShrink: 0 }}>
+        <div className="flex items-center justify-between mb-1">
+          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.62) }}>temperature — drag to cool the Universe →</label>
+          <span className="font-mono text-[10px] text-plasma" style={{ fontSize: sz(0.62) }}>T ≈ {Ttext}</span>
+        </div>
+        <input type="range" min={0} max={1} step={0.02} value={cool} onChange={(e) => setCool(parseFloat(e.target.value))} className="cosmic-slider" />
+        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1" style={{ fontSize: sz(0.56) }}>
+          <span>hotter · earlier</span>
+          <span>≈ 3,000 K · last scattering</span>
+          <span>cooler · later</span>
+        </div>
+      </div>
+    </FigurePanel>
+  );
+}
+
+/* ── 1.4.b · Stretched to microwaves (cosmological redshift) ─────────── */
+export function RedshiftPanel() {
+  // The slider is the fraction of the way from last scattering (frac 0 → a=1)
+  // to today (frac 1 → a=1100), spaced LOGARITHMICALLY in the scale factor so
+  // the wave keeps visibly stretching across the whole 1→1100 range.
+  const [frac, setFrac] = useState(0.4);
+  const vizRef = useRef<HTMLDivElement>(null);
+  const fs = useFs(vizRef);
+  const sz = (r: number) => (fs ? `calc(clamp(16px, 2.1vh, 27px) * ${r})` : undefined);
+
+  const A_MAX = 1100;
+  const a = Math.round(Math.pow(A_MAX, frac)); // 1 → 1100, log-spaced
+  const T = 3000 / a; // K — falls as 1/a
+  const lambdaMM = 2.898 / T; // Wien peak wavelength in mm
+  const fmtLambda = (mm: number) =>
+    mm < 0.001 ? `${Math.round(mm * 1e6)} nm` : mm < 1 ? `${(mm * 1000).toFixed(0)} μm` : `${mm.toFixed(2)} mm`;
+  const fmtT = (k: number) => (k >= 100 ? `${Math.round(k).toLocaleString()} K` : `${k.toFixed(2)} K`);
+  const band = lambdaMM < 0.00075 ? "VISIBLE" : lambdaMM < 1 ? "INFRARED" : "MICROWAVE";
+  // What the eye would see: a ~3,000 K glow is a dim orange ember; as it cools
+  // it reddens, then leaves the visible band entirely.
+  const visible = T > 1000;
+  const eye = T > 1800 ? "a dim orange glow" : T > 1000 ? "a faint red glow" : T > 60 ? "invisible — infrared heat" : "invisible — microwaves";
+
+  const W = 720;
+  const H = 150;
+  const xs = 40;
+  const xe = W - 40;
+  const span = xe - xs;
+  /* Cycles shrink LINEARLY in `frac`, so the wave keeps stretching evenly all
+     the way to today: ~12 short waves at last scattering down to ~0.6 of a wave
+     (a single long crest) at full redshift. */
+  const CYCLES_MAX = 12;
+  const CYCLES_MIN = 0.6;
+  const cycles = CYCLES_MAX * Math.pow(CYCLES_MIN / CYCLES_MAX, frac);
+  const pts: string[] = [];
+  for (let i = 0; i <= 240; i++) {
+    const t = i / 240;
+    const x = xs + t * span;
+    const y = 78 + 34 * Math.sin(t * cycles * Math.PI * 2);
+    pts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
+  }
+  /* One-wavelength bracket; clamp to the frame when a single λ is wider than it. */
+  const cycleW = span / cycles;
+  const bX1 = xs + Math.min(cycleW * 0.12, span * 0.1);
+  const bX2 = Math.min(bX1 + cycleW, xe);
+
+  return (
+    <FigurePanel
+      idx="1.4.b"
+      kicker="Stretched to Microwaves — Cosmological Redshift"
+      caption="The light set free at last scattering started as a hot ~3,000 K glow (just past visible red). But space has stretched about 1,100-fold since, and it stretched the light's waves with it — lengthening them ~1,100× and cooling the glow to just 2.725 K. Drag to expand space: watch the wave stretch, the colour leave the visible band, and the temperature fall to the faint microwave hiss we detect today."
+    >
+      <div ref={vizRef} className="fig-viz relative w-full overflow-hidden rounded-md" style={{ background: "rgb(var(--c-bg-rgb) / 0.45)" }}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
+          <line x1={xs} x2={xe} y1={78} y2={78} stroke="rgb(var(--c-text-rgb) / 0.15)" strokeWidth="0.6" strokeDasharray="2 4" />
+          <path d={pts.join(" ")} stroke={PHOTON} strokeWidth="2.4" fill="none" style={{ filter: "drop-shadow(0 0 6px rgb(var(--c-accent-rgb) / 0.6))" }} />
+          {/* one-wavelength bracket */}
+          <line x1={bX1} y1={28} x2={bX2} y2={28} stroke={PHOTON} strokeWidth="1.2" />
+          <line x1={bX1} y1={22} x2={bX1} y2={34} stroke={PHOTON} strokeWidth="1.2" />
+          <line x1={bX2} y1={22} x2={bX2} y2={34} stroke={PHOTON} strokeWidth="1.2" />
+          <text x={(bX1 + bX2) / 2} y={18} textAnchor="middle" fontSize="12" letterSpacing="1.5" fontFamily="var(--font-mono)" fill={PHOTON}>λ = {fmtLambda(lambdaMM)}</text>
+          <text x={W - 44} y={H - 14} textAnchor="end" fontSize="12" letterSpacing="2" fontFamily="var(--font-mono)" fill={PHOTON}>{band}</text>
+        </svg>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 rounded-md" style={{ background: "rgb(var(--c-accent-rgb) / 0.04)", border: "1px solid rgb(var(--c-accent-rgb) / 0.18)", flexShrink: 0 }}>
+        <div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>space stretched</div>
+          <div className="font-serif font-medium mt-1" style={{ fontSize: sz(1.4) ?? "1.3rem", color: PHOTON, lineHeight: 1.1 }}>× {Math.round(a).toLocaleString()}</div>
         </div>
         <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55">wavelength</div>
-          <div className="font-serif font-medium mt-1" style={{ fontSize: "1.1rem", color: "var(--c-accent)" }}>
-            {fmtWave(lambda)}
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>temperature</div>
+          <div className="font-serif font-medium mt-1" style={{ fontSize: sz(1.4) ?? "1.3rem", color: PHOTON, lineHeight: 1.1 }}>{fmtT(T)}</div>
+        </div>
+        <div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>wavelength</div>
+          <div className="font-serif font-medium mt-1" style={{ fontSize: sz(1.2) ?? "1.1rem", color: PHOTON, lineHeight: 1.1 }}>{fmtLambda(lambdaMM)}</div>
+        </div>
+        <div>
+          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>to the eye</div>
+          <div className="flex items-center gap-2 mt-1">
+            <span style={{ display: "inline-block", width: "0.9em", height: "0.9em", borderRadius: "9999px", background: visible ? HOT : "rgb(var(--c-text-rgb) / 0.25)", boxShadow: visible ? "0 0 8px rgb(var(--c-solar-rgb) / 0.7)" : "none" }} />
+            <span className="font-sans text-white/80" style={{ fontSize: sz(0.72) ?? "0.78rem", lineHeight: 1.2 }}>{eye}</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4" style={{ flexShrink: 0 }}>
         <div className="flex items-center justify-between mb-1">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">stretch space (a)</label>
-          <span className="font-mono text-[10px] text-plasma">
-            from 1 (recombination) to {scale.toFixed(0)} of 1100 (today)
-          </span>
+          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.62) }}>expand space — drag toward today →</label>
+          <span className="font-mono text-[10px] text-plasma" style={{ fontSize: sz(0.62) }}>× {Math.round(a).toLocaleString()} of 1,100</span>
         </div>
-        <input
-          type="range"
-          min={1}
-          max={1100}
-          step={1}
-          value={scale}
-          onChange={(e) => setScale(parseFloat(e.target.value))}
-          className="cosmic-slider"
-        />
-        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1">
-          <span>recombination · 3000 K</span>
-          <span>halfway · 1500 K</span>
+        <input type="range" min={0} max={1} step={0.01} value={frac} onChange={(e) => setFrac(parseFloat(e.target.value))} className="cosmic-slider" />
+        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1" style={{ fontSize: sz(0.56) }}>
+          <span>last scattering · 3,000 K</span>
           <span>today · 2.73 K</span>
         </div>
       </div>
@@ -229,342 +271,129 @@ export function RecombinationRedshiftPanel() {
   );
 }
 
-/* ── Penzias-Wilson Story · 1964 Discovery ──────────────────────────
-   A six-step interactive walkthrough of the accidental discovery of the
-   CMB. Each step reveals a narrative beat with a small SVG vignette
-   (horn antenna, hiss signal, pigeons, Princeton link, blackbody match,
-   Nobel). */
-type Beat = {
-  id: string;
-  year: string;
-  title: string;
-  body: string;
-  icon: "antenna" | "hiss" | "pigeon" | "letter" | "spectrum" | "nobel";
-};
-const BEATS: Beat[] = [
-  {
-    id: "antenna",
-    year: "1964",
-    title: "A 20-foot horn at Bell Labs",
-    body: "Arno Penzias and Robert Wilson, two radio engineers in Holmdel, New Jersey, are calibrating a giant horn-shaped radio antenna for satellite communications. The instrument was designed to bounce signals off the Echo balloon satellite.",
-    icon: "antenna",
-  },
-  {
-    id: "hiss",
-    year: "1964",
-    title: "The persistent hiss",
-    body: "They detect a faint, steady background noise — a low-level microwave 'hiss' that arrives uniformly from every direction in the sky. It does not change with time of day, season, or which direction the antenna points.",
-    icon: "hiss",
-  },
-  {
-    id: "pigeons",
-    year: "1964",
-    title: "Pigeons & droppings",
-    body: "They rule out every source they can think of: radio stations, atmospheric effects, the Sun, and most famously, pigeons that had nested inside the antenna leaving behind 'a white dielectric material'. Even after the antenna is cleaned the hiss persists.",
-    icon: "pigeon",
-  },
-  {
-    id: "princeton",
-    year: "1964",
-    title: "Princeton's prediction",
-    body: "A colleague mentions a paper from Robert Dicke's team at Princeton, who were independently *predicting* a faint microwave background as the fossil radiation of the Big Bang — and were building an antenna to look for it. Penzias and Wilson had accidentally beaten them to the discovery.",
-    icon: "letter",
-  },
-  {
-    id: "confirm",
-    year: "1965",
-    title: "Big Bang confirmed",
-    body: "The 'static' matches the predicted blackbody spectrum of the Universe's hot, dense origin — redshifted to about 3 Kelvin today. The competing Steady State theory of cosmology has no way to explain it. The Big Bang becomes the accepted model.",
-    icon: "spectrum",
-  },
-  {
-    id: "nobel",
-    year: "1978",
-    title: "Nobel Prize in Physics",
-    body: "Penzias and Wilson share the 1978 Nobel Prize in Physics for the discovery. The signal they couldn't explain turns out to be the oldest light in the Universe — the fossil afterglow of the Big Bang.",
-    icon: "nobel",
-  },
-];
+/* ── 1.4.c · The Planck CMB map, with a hover magnifier ──────────────── */
+const CMB_IMG = withBase("/images/media/planck-cmb.webp");
+/* Diverging colour scale matching the Planck map: blue = slightly cooler
+   (denser), red = slightly hotter (thinner), 2.725 K average in the middle. */
+const CMB_SCALE =
+  "linear-gradient(90deg, rgb(40 90 200) 0%, rgb(90 160 230) 24%, rgb(228 231 235) 50%, rgb(236 150 70) 76%, rgb(200 55 40) 100%)";
 
-function BeatIcon({ icon, color }: { icon: Beat["icon"]; color: string }) {
-  const W = 220, H = 110;
-  switch (icon) {
-    case "antenna":
-      return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          <path d={`M 40 90 L 120 50 L 200 65 L 200 90 Z`} fill="none" stroke={color} strokeWidth="1.4" />
-          <line x1={40} y1={90} x2={200} y2={90} stroke={color} strokeWidth="1.4" />
-          <line x1={120} y1={50} x2={140} y2={20} stroke={color} strokeWidth="1.2" strokeDasharray="2 3" />
-          <text x={20} y={104} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={color} opacity="0.7">HORN · 20 FT</text>
-        </svg>
-      );
-    case "hiss":
-      return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {Array.from({ length: 5 }).map((_, i) => {
-            const pts: string[] = [];
-            for (let j = 0; j <= 80; j++) {
-              const t = j / 80;
-              const x = 20 + t * 180;
-              const y = 20 + i * 18 + 5 * Math.sin(t * Math.PI * (3 + i)) + (Math.random() - 0.5) * 2;
-              pts.push(`${j === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
-            }
-            return <path key={i} d={pts.join(" ")} stroke={color} strokeWidth="1" fill="none" opacity={0.4 + i * 0.1} />;
-          })}
-          <text x={10} y={104} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={color} opacity="0.7">UNIFORM · ALL SKY</text>
-        </svg>
-      );
-    case "pigeon":
-      return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          <ellipse cx={70} cy={55} rx={28} ry={18} fill="none" stroke={color} strokeWidth="1.3" />
-          <circle cx={92} cy={42} r={9} fill="none" stroke={color} strokeWidth="1.3" />
-          <line x1={100} y1={42} x2={108} y2={40} stroke={color} strokeWidth="1.3" />
-          <line x1={56} y1={70} x2={56} y2={86} stroke={color} strokeWidth="1.2" />
-          <line x1={84} y1={70} x2={84} y2={86} stroke={color} strokeWidth="1.2" />
-          <path d="M 130 80 L 200 80" stroke={color} strokeWidth="1.4" strokeDasharray="4 3" />
-          <text x={134} y={94} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={color} opacity="0.7">CLEAN ANTENNA</text>
-        </svg>
-      );
-    case "letter":
-      return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          <rect x={30} y={30} width={70} height={50} fill="none" stroke={color} strokeWidth="1.3" rx="2" />
-          <path d="M 30 30 L 65 60 L 100 30" fill="none" stroke={color} strokeWidth="1.2" />
-          <line x1={110} y1={55} x2={150} y2={55} stroke={color} strokeWidth="1.3" />
-          <polygon points={`150,50 158,55 150,60`} fill={color} />
-          <rect x={160} y={30} width={36} height={50} fill="none" stroke={color} strokeWidth="1.3" rx="2" />
-          <text x={166} y={102} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={color} opacity="0.7">PRINCETON</text>
-        </svg>
-      );
-    case "spectrum":
-      return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Blackbody-ish curve */}
-          {(() => {
-            const pts: string[] = [];
-            for (let i = 0; i <= 100; i++) {
-              const t = i / 100;
-              const x = 20 + t * 180;
-              const y = 90 - 60 * t * t * (1 - t) * 5;
-              pts.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
-            }
-            return <path d={pts.join(" ")} stroke={color} strokeWidth="1.6" fill="none" />;
-          })()}
-          {/* Data points overlaying — perfect match */}
-          {[0.2, 0.35, 0.5, 0.65, 0.8].map((t, i) => {
-            const x = 20 + t * 180;
-            const y = 90 - 60 * t * t * (1 - t) * 5;
-            return <circle key={i} cx={x} cy={y} r="3" fill={color} />;
-          })}
-          <text x={10} y={104} fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={color} opacity="0.7">BLACKBODY · 2.73 K</text>
-        </svg>
-      );
-    case "nobel":
-      return (
-        <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
-          {/* Medal */}
-          <circle cx={110} cy={50} r={28} fill="none" stroke={color} strokeWidth="1.6" />
-          <circle cx={110} cy={50} r={20} fill="none" stroke={color} strokeWidth="1" opacity="0.6" />
-          <text x={110} y={56} textAnchor="middle" fontSize="14" fontFamily="var(--font-serif)" fontStyle="italic" fill={color}>N</text>
-          {/* Ribbon */}
-          <polygon points={`92,72 110,86 128,72 128,98 110,90 92,98`} fill="none" stroke={color} strokeWidth="1.4" />
-          <text x={110} y={108} textAnchor="middle" fontSize="9" letterSpacing="2" fontFamily="var(--font-mono)" fill={color} opacity="0.7">1978</text>
-        </svg>
-      );
-  }
-}
+export function CmbMapPanel() {
+  const [hover, setHover] = useState<{ fx: number; fy: number } | null>(null);
+  const [pan, setPan] = useState({ x: 0.5, y: 0.5 }); // keyboard lens position; mouse hover overrides
+  const [box, setBox] = useState({ w: 0, h: 0, ox: 0, oy: 0 }); // rendered image box within the wrapper
+  const vizRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const fs = useFs(vizRef);
+  const sz = (r: number) => (fs ? `calc(clamp(16px, 2.1vh, 27px) * ${r})` : undefined);
 
-export function PenziasWilsonStoryPanel() {
-  const [sel, setSel] = useState(0);
-  const cur = BEATS[sel];
-  return (
-    <FigurePanel
-      idx="1.4.b"
-      kicker="The 1964 Accident · Penzias & Wilson"
-      caption="The Cosmic Microwave Background was discovered by two engineers who were trying to do something else entirely. Walk through the six steps of the most accidental Nobel Prize in cosmology."
-    >
-      <ol className="flex gap-1 mb-4 flex-wrap">
-        {BEATS.map((b, i) => (
-          <button
-            key={b.id}
-            type="button"
-            onClick={() => setSel(i)}
-            data-shortcut={i < 9 ? String(i + 1) : undefined}
-            className={`pill rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.18em] uppercase ${sel === i ? "is-active" : ""}`}
-          >
-            {String(i + 1).padStart(2, "0")} · {b.year}
-          </button>
-        ))}
-      </ol>
-
-      <div
-        className="fig-stretch grid md:grid-cols-[240px_1fr] gap-5 p-4 rounded-md items-start"
-        style={{
-          background: "rgb(var(--c-accent-rgb) / 0.05)",
-          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-        }}
-      >
-        <div
-          className="fig-viz rounded-md p-3"
-          style={{
-            background: "rgb(var(--c-bg-rgb) / 0.45)",
-            border: "1px solid rgb(var(--c-text-rgb) / 0.08)",
-          }}
-        >
-          <BeatIcon icon={cur.icon} color="rgb(var(--c-accent-rgb))" />
-        </div>
-        <div className="min-h-[12em]">
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 mb-1">
-            step {sel + 1} · {cur.year}
-          </div>
-          <div className="font-serif font-medium leading-tight" style={{ fontSize: "1.5rem", color: "var(--c-accent)" }}>
-            {cur.title}
-          </div>
-          <p className="mt-3 text-[14px] text-white/85 leading-[1.65] font-sans min-h-[6.6em]">{cur.body}</p>
-        </div>
-      </div>
-    </FigurePanel>
-  );
-}
-
-/* ── CMB Satellites · Resolution Progression ─────────────────────────
-   Same simulated CMB patch rendered at three resolutions (COBE coarse,
-   WMAP medium, Planck fine). Hover or click to see specs for each. */
-type Mission = {
-  id: string;
-  name: string;
-  year: number;
-  grid: number; // grid resolution for the swatch
-  res: string;
-  blurb: string;
-};
-const MISSIONS: Mission[] = [
-  { id: "cobe",  name: "COBE",  year: 1989, grid: 8,  res: "≈7° resolution", blurb: "NASA's pioneer. First full-sky CMB map; confirmed the blackbody spectrum and detected the first tiny anisotropies that would seed structure." },
-  { id: "wmap",  name: "WMAP",  year: 2001, grid: 24, res: "≈14′ resolution (30× COBE)", blurb: "Nailed the Universe's age, composition, and curvature. The 'precision cosmology' era starts here." },
-  { id: "planck",name: "Planck",year: 2009, grid: 64, res: "≈5′ resolution (3× WMAP)", blurb: "ESA's most exquisite all-sky CMB map. From the L2 Lagrange point, Planck scanned the sky every 6 months at 9 frequencies (3 mm to 13 mm) to subtract Milky Way foregrounds." },
-];
-
-/* Generate a stable pseudo-random CMB-like patch sampled on a grid.
-   Each cell colour interpolates between deep-blue (cold) and warm
-   orange (hot), with most cells near the neutral midpoint. */
-function cmbColor(v: number): string {
-  /* v in [0,1]; 0 = cold (blue), 0.5 = neutral, 1 = hot (orange) */
-  const r = Math.round(255 * Math.max(0, (v - 0.4) * 2.2));
-  const g = Math.round(Math.max(60, 180 - Math.abs(v - 0.5) * 200));
-  const b = Math.round(255 * Math.max(0, (0.6 - v) * 2.2));
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-export function CmbSatellitesPanel() {
-  const [sel, setSel] = useState<string>("planck");
-  /* Pre-generate a smooth-ish noise field then sample at each grid res */
-  const field = useMemo(() => {
-    const rng = mulberry32(101);
-    const N = 64;
-    const f: number[][] = [];
-    for (let y = 0; y < N; y++) {
-      const row: number[] = [];
-      for (let x = 0; x < N; x++) {
-        /* coarse perlin-ish: average of a few sinusoids */
-        const a = Math.sin(x * 0.3) + Math.cos(y * 0.25);
-        const b = Math.sin((x + y) * 0.18 + 1.3);
-        const c = (rng() - 0.5) * 0.4;
-        row.push(0.5 + (a + b) * 0.12 + c);
-      }
-      f.push(row);
-    }
-    return f;
+  /* Measure the IMAGE's rendered box (and its offset inside the wrapper) so the
+     lens stays aligned whether the image is width- or height-limited — which is
+     what lets the whole map fit, uncropped, in fullscreen. */
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const img = imgRef.current;
+    if (!wrap || !img) return;
+    const measure = () => setBox({ w: img.clientWidth, h: img.clientHeight, ox: img.offsetLeft, oy: img.offsetTop });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    ro.observe(img);
+    if (!img.complete) img.addEventListener("load", measure, { once: true });
+    return () => ro.disconnect();
   }, []);
 
-  function downsample(grid: number) {
-    const N = 64;
-    const step = N / grid;
-    const out: number[][] = [];
-    for (let y = 0; y < grid; y++) {
-      const row: number[] = [];
-      for (let x = 0; x < grid; x++) {
-        /* Box-average source field */
-        let sum = 0, count = 0;
-        for (let dy = 0; dy < step; dy++) {
-          for (let dx = 0; dx < step; dx++) {
-            sum += field[Math.floor(y * step + dy)][Math.floor(x * step + dx)];
-            count++;
-          }
-        }
-        row.push(sum / count);
-      }
-      out.push(row);
-    }
-    return out;
-  }
+  const step = (dx: -1 | 0 | 1, dy: -1 | 0 | 1) =>
+    setPan((p) => ({ x: clamp01(p.x + dx * 0.08), y: clamp01(p.y + dy * 0.08) }));
+  const pt = hover ?? { fx: pan.x, fy: pan.y };
+  const { w, h, ox, oy } = box;
+  const zoom = 3;
+  const D = Math.max(120, Math.min(fs ? 360 : 210, Math.round((fs ? 0.46 : 0.4) * h)));
+  const cxpx = pt.fx * w;
+  const cypx = pt.fy * h;
 
-  const sm = downsample(MISSIONS[0].grid);
-  const md = downsample(MISSIONS[1].grid);
-  const lg = downsample(MISSIONS[2].grid);
-  const samples = [
-    { mission: MISSIONS[0], grid: sm },
-    { mission: MISSIONS[1], grid: md },
-    { mission: MISSIONS[2], grid: lg },
-  ];
-  const cur = MISSIONS.find((m) => m.id === sel)!;
+  const onMove = (e: ReactMouseEvent) => {
+    const img = imgRef.current;
+    if (!img) return;
+    const r = img.getBoundingClientRect();
+    setHover({ fx: clamp01((e.clientX - r.left) / r.width), fy: clamp01((e.clientY - r.top) / r.height) });
+  };
 
-  function Swatch({ data, gridN, active }: { data: number[][]; gridN: number; active: boolean }) {
-    const cell = 100 / gridN;
-    return (
-      <svg viewBox="0 0 100 100" className="block w-full h-auto rounded-md" style={{ border: active ? "2px solid var(--c-accent)" : "1px solid rgb(var(--c-text-rgb) / 0.15)", transition: "border-color 220ms" }}>
-        {data.map((row, y) =>
-          row.map((v, x) => (
-            <rect key={`${x}-${y}`} x={x * cell} y={y * cell} width={cell + 0.4} height={cell + 0.4} fill={cmbColor(Math.max(0, Math.min(1, v)))} />
-          ))
-        )}
-      </svg>
-    );
-  }
+  const lensStyle: CSSProperties = {
+    position: "absolute",
+    width: D,
+    height: D,
+    left: ox + cxpx - D / 2,
+    top: oy + cypx - D / 2,
+    borderRadius: "9999px",
+    backgroundImage: `url(${CMB_IMG})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: `${w * zoom}px ${h * zoom}px`,
+    backgroundPosition: `${-(cxpx * zoom - D / 2)}px ${-(cypx * zoom - D / 2)}px`,
+    boxShadow: "0 0 0 2px rgb(var(--c-accent-rgb)), 0 8px 28px rgb(0 0 0 / 0.55)",
+    pointerEvents: "none",
+    transition: hover ? "none" : "left 200ms var(--ease), top 200ms var(--ease)",
+  };
 
   return (
     <FigurePanel
       idx="1.4.c"
-      kicker="Maps of the Baby Universe · COBE → WMAP → Planck"
-      caption="The same patch of CMB, sampled at three telescope resolutions across three decades. Each colder (blue) or hotter (red) speck is a primordial density fluctuation — a future galaxy cluster or void, seen at the age of 380,000 years."
+      kicker="The Baby Picture — Planck's All-Sky CMB Map"
+      caption="The oldest light in the Universe, mapped by ESA's Planck satellite: every point is a photon released ~380,000 years after the Big Bang and stretched a thousand-fold on its 13.8-billion-year journey. Hover anywhere to magnify the faint ripples; the arrow keys pan the magnifier. On the colour scale the deepest blues are about a few hundred millionths of a degree (a few hundred μK) cooler and denser than the 2.725 K average — the seeds of galaxies — and the deepest reds are that much hotter and thinner. Credit: ESA / Planck Collaboration."
     >
-      <ol className="fig-stretch grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {samples.map(({ mission, grid }, i) => (
-          <li
-            key={mission.id}
-            onClick={() => setSel(mission.id)}
-            data-shortcut={String(i + 1)}
-            aria-selected={sel === mission.id}
-            className="cursor-pointer"
-          >
-            <Swatch data={grid} gridN={mission.grid} active={sel === mission.id} />
-            <div className="flex items-baseline justify-between mt-2">
-              <span
-                className="font-serif font-medium"
-                style={{ fontSize: "1.1rem", color: sel === mission.id ? "var(--c-accent)" : "var(--c-text-strong)" }}
-              >
-                {mission.name}
-              </span>
-              <span className="font-mono text-[10px] text-white/55">{mission.year}</span>
-            </div>
-            <div className="font-mono text-[9px] tracking-[0.18em] uppercase mt-1" style={{ color: sel === mission.id ? "var(--c-accent)" : "var(--c-text-faint)" }}>
-              {mission.res}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div
-        className="p-3 rounded-md text-[13px] text-white/85 leading-[1.6] font-sans min-h-[5.5em]"
-        style={{
-          background: "rgb(var(--c-accent-rgb) / 0.04)",
-          border: "1px solid rgb(var(--c-accent-rgb) / 0.18)",
-        }}
-      >
-        <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-plasma mr-2">
-          {cur.name.toUpperCase()} · {cur.year}
-        </span>
-        {cur.blurb}
+      <div ref={vizRef} className="fig-viz relative w-full overflow-hidden rounded-md flex items-center justify-center">
+        <div
+          ref={wrapRef}
+          className="relative flex items-center justify-center"
+          style={{ width: "100%", height: fs ? "100%" : "auto", lineHeight: 0, cursor: "crosshair" }}
+          onMouseMove={onMove}
+          onMouseLeave={() => setHover(null)}
+        >
+          <img
+            ref={imgRef}
+            src={CMB_IMG}
+            alt="ESA Planck satellite all-sky map of the Cosmic Microwave Background: a mottled oval of blue and red specks on a 2.725 K background. Blue patches are slightly cooler and denser, red patches slightly hotter and thinner — the seeds of every galaxy."
+            decoding="async"
+            style={{
+              display: "block",
+              width: fs ? "auto" : "100%",
+              height: "auto",
+              maxWidth: "100%",
+              maxHeight: fs ? "100%" : undefined,
+              objectFit: "contain",
+              borderRadius: "6px",
+              border: "1px solid var(--c-border)",
+            }}
+          />
+          {w > 0 && <div style={lensStyle} aria-hidden="true" />}
+        </div>
       </div>
+
+      {/* Colour scale — blue (cooler/denser) ↔ red (hotter/thinner), with the
+         magnitude at each end — plus the hover/keyboard hint. */}
+      <div className="mt-4" style={{ flexShrink: 0 }}>
+        <div
+          className="w-full rounded-full"
+          style={{ height: fs ? "clamp(12px, 1.6vh, 22px)" : "11px", background: CMB_SCALE, border: "1px solid rgb(var(--c-text-rgb) / 0.12)" }}
+        />
+        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.16em] uppercase text-white/55 mt-1.5" style={{ fontSize: sz(0.58) }}>
+          <span>a few hundred <span style={{ textTransform: "none" }}>μK</span> cooler</span>
+          <span className="text-white/45">2.725 K</span>
+          <span>a few hundred <span style={{ textTransform: "none" }}>μK</span> hotter</span>
+        </div>
+        <div className="font-mono text-[9px] tracking-[0.16em] uppercase text-white/40 text-center mt-2" style={{ fontSize: sz(0.56) }}>
+          hover to magnify · arrow keys pan the lens
+        </div>
+      </div>
+
+      {/* Hidden keyboard hooks: all four arrows pan the magnifier across the sky.
+         FigureFrame routes ←/→ (via stepFrame) and ↑/↓ (its vertical branch) to
+         these buttons; mouse hover overrides. */}
+      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowLeft" onClick={() => step(-1, 0)} style={srOnly}>pan left</button>
+      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowRight" onClick={() => step(1, 0)} style={srOnly}>pan right</button>
+      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowUp" onClick={() => step(0, -1)} style={srOnly}>pan up</button>
+      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowDown" onClick={() => step(0, 1)} style={srOnly}>pan down</button>
     </FigurePanel>
   );
 }

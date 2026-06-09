@@ -550,8 +550,13 @@ figure.figure-stub > figcaption .figure-title {
 .figure-frame.is-fs .figure-stub > figcaption {
   flex: 0 0 auto;
   margin-top: 0;
-  padding-top: 8px;
-  max-height: 22vh;
+  padding-top: 10px;
+  /* Scale the caption up in fullscreen so it reads at the same visual weight
+     as the enlarged figure (the SVG/viz grows with its viewBox; the caption
+     would otherwise stay at its small in-page px size). */
+  font-size: clamp(15px, 1.95vh, 26px);
+  line-height: 1.55;
+  max-height: 30vh;
   overflow: hidden;
 }
 /* Figure body wrapper — whatever the panel returns, single child div.
@@ -1888,6 +1893,22 @@ a.rail-item:hover .rail-dot {
   border: 0;
   height: 1px;
   background: rgb(var(--c-text-rgb) / 0.08);
+}
+
+/* Inline cross-references between lessons (e.g. "see §1.1"). Accent-coloured
+   with a soft underline that firms up on hover. */
+.lesson-prose a {
+  color: var(--c-accent);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--c-accent-rgb) / 0.4);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition:
+    color var(--dur) var(--ease),
+    text-decoration-color var(--dur) var(--ease);
+}
+.lesson-prose a:hover {
+  text-decoration-color: var(--c-accent);
 }
 
 .lesson-prose ul,

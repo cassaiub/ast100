@@ -216,6 +216,25 @@ const variantClass =
         }
         return;
       }
+
+      // 3) Vertical arrows → a button with `data-shortcut="ArrowUp"`/
+      //    `"ArrowDown"`, if the figure provides one (e.g. 2-D pan on the
+      //    1.4 CMB-map magnifier). Additive: figures without these buttons
+      //    keep their default behaviour (page scroll), since we only
+      //    preventDefault when a matching button exists.
+      if (
+        (e.key === "ArrowUp" || e.key === "ArrowDown") &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey
+      ) {
+        const vbtn = frame.querySelector<HTMLElement>(`[data-shortcut="${e.key}"]`);
+        if (vbtn && !vbtn.hasAttribute("disabled")) {
+          e.preventDefault();
+          vbtn.click();
+        }
+        return;
+      }
     }
 
     /* `canStep(frame)` — quick predicate: does this figure have any of
