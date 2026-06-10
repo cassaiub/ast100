@@ -269,11 +269,8 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
     { id: "recombination", label: "The Fog Lifts" },
   ],
   "1.1": [
-    { id: "force-energy", label: "Force & Energy" },
-    { id: "superforce", label: "The Superforce" },
-    { id: "separation", label: "Forces Separate" },
-    { id: "hierarchy", label: "Hierarchy of Strengths" },
-    { id: "carriers", label: "Force Carriers" },
+    { id: "superforce", label: "One Superforce to Four" },
+    { id: "hierarchy", label: "The Four Forces" },
   ],
   "1.2": [
     { id: "standard-model", label: "The Standard Model" },

@@ -612,6 +612,13 @@ figure.figure-stub > figcaption .figure-title {
 .figure-frame.is-fs .figure-stub input[type="range"] {
   overflow: visible;
 }
+/* …and KaTeX, whose vlist layout positions superscripts outside their
+   parent boxes — the blanket overflow:hidden clips the raised digits
+   (broken 10⁻⁴³ in the 1.1.a fullscreen caption). */
+.figure-frame.is-fs .figure-stub .katex,
+.figure-frame.is-fs .figure-stub .katex * {
+  overflow: visible;
+}
 /* Optional body wrapper — every figure-stub should contain exactly one
    non-figcaption direct child (a `.figure-body` div) and the figcaption.
    In normal flow this is transparent; in fullscreen it becomes the flex

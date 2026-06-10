@@ -4,6 +4,7 @@ import Hero from "../../../components/scenes/1.1/Hero";
 import PrevNext from "../../../components/scenes/1.1/PrevNext.astro";
 import FigureFrame from "../../../components/shared/FigureFrame.astro";
 import { FourForcesPanel } from "../../../components/scenes/1.1/figures";
+import { subPath } from "../../../data/course-nav";
 ---
 
 <ChapterLayout title="1.1 — The Four Fundamental Forces · AST 100"
@@ -15,117 +16,101 @@ import { FourForcesPanel } from "../../../components/scenes/1.1/figures";
 
   <article class="topic-page">
     <div class="prose-cosmic lesson-prose">
-      <h2 id="force-energy">What Are Force and Energy?</h2>
-      <p>Before tracing where the forces came from, it helps to pin down two everyday words that physics uses with
-        precision: <strong>force</strong> and <strong>energy</strong>. A <strong>force</strong> is simply a push or a
-        pull — any influence that can start something moving, stop it, speed it up, slow it down, or change its
-        direction. Physicists measure force in <strong>newtons (N)</strong>; one newton is roughly the gentle downward
-        tug you feel holding a small apple in your hand. <strong>Energy</strong> is the capacity to cause change — to
-        move, heat, light, or rearrange things. It comes in many forms (the energy of motion, of heat, of light, of
-        chemical bonds, of atomic nuclei), it can switch from one form to another, but it can never be created or
-        destroyed. Energy is measured in <strong>joules (J)</strong>; lifting that same apple about a metre off the
-        table takes roughly one joule, and a small LED light bulb burns through about ten joules every second.</p>
-
-      <p>Force and energy are two sides of one coin: a force acting on something transfers energy to it, and every force
-        stores energy in an invisible <strong>field</strong> that fills the space around it. In the Universe today,
-        every push, pull, and transformation — from a falling raindrop to the nuclear fusion burning in the Sun (fusion — the merging of light atomic nuclei into heavier ones, which releases enormous energy) — is
-        governed by just <strong>four fundamental forces</strong>: gravity, electromagnetism, the strong nuclear force,
-        and the weak nuclear force. Each carries its own associated energy, and together these four are the complete
-        toolkit nature uses to build and move everything there is. The rest of this lesson is the story of how a single
-        original force became these four.</p>
-
       <h2 id="superforce">From One Superforce to Four</h2>
-      <p>The story of the four fundamental forces begins at the Big Bang (t = 0), a state of effectively infinite
-        density and temperature. During the <strong>Planck Epoch</strong> — the first 10⁻⁴³ seconds (that is 1 divided by a
-        1 with 43 zeros after it — for scale, a 1 with just 9 zeros is a billion, and 12 zeros a trillion) — the entire
-        Universe was a chaotic quantum foam (a violent, ever-shifting churn of energy at the smallest scales) barely 10⁻³⁵ metres across (the Planck length), at temperatures above
-        10³² Kelvin (a 1 followed by 32 zeros). At that energy there were not four forces but <strong>one</strong>: gravity, the strong nuclear
-        force, electromagnetism, and the weak nuclear force were a single, indistinguishable interaction physicists call
-        the <strong>Superforce</strong>. Because it unifies all four, this single, earliest force is also described as a
+      <p>Physics uses two everyday words with precision. A <strong>force</strong> is any push or pull — anything that
+        can start, stop, speed up, slow down, or steer motion; it is measured in <strong>newtons (N)</strong>, and one
+        newton is roughly the gentle tug of a small apple resting in your hand. <strong>Energy</strong> is the capacity
+        to cause change — to move, heat, light, or rearrange things; it can switch between forms but can never be created
+        or destroyed, and it is measured in <strong>joules (J)</strong> — lifting that apple a metre takes about one
+        joule. The two are linked: a force acting on something transfers energy to it, and every force stores energy in
+        an invisible <strong>field</strong> filling the space around it. Remarkably, every push and pull in today's
+        Universe — a falling raindrop, the fusion burning in the Sun — comes down to just <strong>four fundamental
+        forces</strong>: gravity, electromagnetism, the strong nuclear force, and the weak nuclear force. This lesson is
+        the story of how one original force became those four.</p>
+
+      <p>The story begins at the Big Bang (t = 0), a state of effectively infinite density and temperature. During the
+        <strong>Planck Epoch</strong> — the first 10⁻⁴³ seconds (that is 1 divided by a 1 with 43 zeros after it; for
+        scale, a 1 with just nine zeros is a billion) — the entire Universe was a chaotic quantum foam (a violent,
+        ever-shifting churn of energy at the smallest scales) barely 10⁻³⁵ metres across, hotter than 10³² Kelvin. At
+        that energy there were not four forces but <strong>one</strong>: a single, indistinguishable interaction
+        physicists call the <strong>Superforce</strong>. The theory that would describe it is nicknamed a
         <strong>Theory of Everything (TOE)</strong> — a theory we do not yet possess, since no laboratory can recreate
         Planck-epoch energies.</p>
 
-      <p>Physicists describe what happened next using the analogy of <strong>"freezing"</strong> — a phase transition
-        like liquid water turning into ice. In the extreme heat of the early Universe the forces were symmetric and
-        interchangeable, as featureless as liquid water. As the cosmos expanded and cooled, it passed through a series of
-        critical thresholds where this symmetry was <strong>spontaneously broken</strong> (the forces stopped being alike, all on their own). Just as cooling water releases
-        latent heat (the hidden energy a liquid gives off as it freezes) and crystallises into distinct ice, the cooling Universe released energy at each threshold and the
-        unified force "froze out" into the separate, asymmetric forces we live under today.</p>
-
-      <h2 id="separation">Forces Separate</h2>
-      <p>The separation happened in <strong>three stages</strong>, each at a lower temperature than the last.
-        <strong>Gravity</strong> decoupled first — that is, it broke away and stopped acting as one with the other
-        forces — at about <strong>10⁻⁴³ seconds</strong>, leaving the other three still
-        unified in what is called the <strong>Grand Unified Theory (GUT)</strong> force. Next, around
-        <strong>10⁻³⁵ seconds</strong>, as the Universe cooled to roughly <strong>10²⁸ Kelvin</strong>, the
-        <strong>strong nuclear force</strong> broke away — and the energy released in that transition is the leading
-        explanation for <strong>cosmic inflation</strong>, the brief burst of exponential (runaway, ever-faster) expansion. Finally, at
+      <p>What happened next is best pictured as <strong>freezing</strong>. In the extreme heat the forces were
+        symmetric and interchangeable, as featureless as liquid water; as the cosmos expanded and cooled it crossed
+        critical thresholds where that symmetry was <strong>spontaneously broken</strong> (the forces stopped being
+        alike, all on their own), and — like water releasing latent heat as it crystallises into ice — the unified force
+        released energy and "froze out" into separate forces, in <strong>three stages</strong>. <strong>Gravity</strong>
+        decoupled first, at about <strong>10⁻⁴³ seconds</strong>, leaving the other three united as the
+        <strong>GUT force</strong> (named for the <strong>Grand Unified Theories</strong> that describe it — still
+        unconfirmed by any experiment). Next, around <strong>10⁻³⁵ seconds</strong> and <strong>10²⁸ Kelvin</strong>,
+        the <strong>strong nuclear force</strong> broke away — a transition widely linked to the trigger for
+        <strong>cosmic inflation</strong>, the brief burst of exponential (runaway, ever-faster) expansion. Finally, at
         <strong>10⁻¹² seconds</strong> (one <strong>picosecond</strong>, a trillionth of a second) and about
         <strong>10¹⁵ Kelvin</strong>, the remaining <strong>electroweak</strong> force split into
-        <strong>electromagnetism</strong> and the <strong>weak nuclear force</strong>. By one picosecond, all four forces
-        existed as the separate entities we know today.</p>
+        <strong>electromagnetism</strong> and the <strong>weak nuclear force</strong>. One picosecond in, all four
+        forces existed as we know them today. The family tree below draws exactly this story —
+        <strong>click any branch, or any era of the trunk itself</strong> (press 1 to 7, or walk the story with the
+        arrow keys), to open its details.</p>
 
       <FigureFrame label="The four fundamental forces">
         <FourForcesPanel client:visible />
       </FigureFrame>
 
-      <p>Read from left to right, the tree begins as a single dark trunk — the Superforce — that forks three times as
-        the cosmos cools from 10³² K down to 10¹⁵ K across the first picosecond, leaving four separate forces. Click any
-        branch, or press 1 to 4, to compare how strong each force is, what particle carries it, and what it builds —
-        which is the subject of the rest of this lesson.</p>
+      <p>Read from left to right: the dark trunk is whichever forces still act as one — the <strong>Superforce</strong>,
+        then the <strong>GUT force</strong> once gravity departs, then the <strong>electroweak</strong> pair once the
+        strong force leaves — dissolving into four separate branches as the cosmos cools from 10³² K to 10¹⁵ K. The
+        three trunk eras also tell a story about evidence: the Theory of Everything is still a hope, the Grand Unified
+        Theories are unconfirmed, but electroweak unification has been <strong>proven in the laboratory</strong> — its
+        predicted W and Z carriers were found at CERN in 1983. Each branch ends in a strength bar and a carrier
+        particle; comparing them is part two of this lesson.</p>
 
-      <h2 id="hierarchy">Hierarchy of Strengths</h2>
-      <p>The four forces that emerged are not equals. Ranked by <strong>relative strength</strong> — taking the strongest
-        as 1 — they span an almost unimaginable range, from 1 down to 10⁻³⁹: nearly <strong>forty orders of
-        magnitude</strong> (each "order of magnitude" means another factor of ten). Each force is transmitted by its
-        own <strong>carrier particle</strong>, a boson (a force-carrying particle) exchanged
-        between the particles that feel it.</p>
+      <h2 id="hierarchy">The Four Forces We Live Under</h2>
+      <p>The four forces that emerged are not equals. Ranked by <strong>relative strength</strong> — taking the
+        strongest as 1 — they span from 1 down to 10⁻³⁹: nearly <strong>forty orders of magnitude</strong> (each "order
+        of magnitude" means another factor of ten). This is exactly what the log-scale strength bars on the right of
+        the figure compare, and each branch there also names the force's <strong>carrier particle</strong> — a boson (a
+        force-carrying particle) exchanged between the particles that feel the force — and its <strong>range</strong>.</p>
 
-      <p>At the top sits the <strong>Strong Nuclear Force</strong>, with relative strength <strong>1</strong>, carried by
-        massless particles called <strong>gluons</strong>. It binds quarks (the smallest known building blocks of matter) into protons and neutrons, and a residual (leftover) part of it then binds
-        those protons and neutrons together into atomic nuclei (the dense cores of atoms), overcoming the electric repulsion that would otherwise
-        blow them apart. It acts only across nuclear distances, about 10⁻¹⁵ metres. It was predicted in <strong>1935 by
-        Hideki Yukawa</strong> — who proposed it is carried by particles called mesons — and confirmed experimentally in <strong>1947</strong>.
-        Its fingerprints are everywhere matter is stable: intact atomic nuclei, and the hydrogen-to-helium fusion that
-        powers the Sun and every star.</p>
+      <p>At the top sits the <strong>Strong Nuclear Force</strong>, with relative strength <strong>1</strong>, carried
+        by massless <strong>gluons</strong>. It binds quarks (the smallest known building blocks of matter — the
+        subject of <a href={subPath("1.2")}>§1.2</a>) into protons and neutrons, and a residual (leftover) part of it
+        then binds those into atomic nuclei (the dense cores of atoms), overcoming the electric repulsion that would
+        otherwise blow them apart. Its reach is only nuclear, about 10⁻¹⁵ metres. Predicted in <strong>1935 by Hideki
+        Yukawa</strong> and confirmed in <strong>1947</strong>, its fingerprints are every stable nucleus and the
+        hydrogen-to-helium fusion that powers the Sun and every star.</p>
 
-      <p>Roughly a hundred times weaker, at <strong>10⁻²</strong> (about 1/137), is <strong>Electromagnetism</strong>,
-        carried by the <strong>photon</strong> (a particle of light). It acts between all electrically charged particles, binds electrons to
-        nuclei, and underlies the whole of chemistry; its range is <strong>infinite</strong>. It was unified into a
+      <p>Roughly a hundred times weaker, at <strong>10⁻²</strong>, is <strong>Electromagnetism</strong>, carried by the
+        <strong>photon</strong> (a particle of light) over <strong>infinite range</strong>. It acts on everything
+        electrically charged: it binds electrons to nuclei and so underlies the whole of chemistry — every chemical
+        bond, light itself, magnetism, and the electrical signals firing along your nerves. It was unified into a
         single theory of electricity and magnetism in <strong>1864 by James Clerk Maxwell</strong>, building on
-        <strong>Hans Christian Ørsted's 1820</strong> discovery that an electric current deflects a compass needle. Its
-        reach includes light itself, every chemical bond, magnetism, and even the electrical signals firing along your
-        nerves.</p>
+        <strong>Hans Christian Ørsted's 1820</strong> discovery that an electric current deflects a compass needle.</p>
 
       <p>Weaker still, at about <strong>10⁻⁶</strong>, is the <strong>Weak Nuclear Force</strong>, carried by the heavy
-        <strong>W⁺, W⁻, and Z bosons</strong>. Unlike the others it can <strong>change the "flavour"</strong> of quarks
-        and leptons (a family of lightweight particles that includes the electron) — turning one kind of particle into another — and it acts only over an extraordinarily short range,
-        about 10⁻¹⁸ metres (a thousandth the width of a proton). It was first described in <strong>1934 by Enrico
-        Fermi</strong> in his theory of beta decay (a common type of radioactive decay). It drives radioactive decay and the formation of radioactive
-        isotopes (unstable forms of atoms that slowly break down), and it powers the crucial first step of the fusion that powers stars, in which a proton converts into a neutron.</p>
+        <strong>W⁺, W⁻, and Z bosons</strong> over a minuscule 10⁻¹⁸ metres (a thousandth the width of a proton).
+        Uniquely, it <strong>transforms particles</strong> — turning one kind into another, as in beta decay (a common
+        type of radioactive decay), first described by <strong>Enrico Fermi in 1934</strong>. It drives radioactivity
+        and the crucial first step of the fusion that powers stars — converting a proton into a neutron — which is
+        where the story of <a href={subPath("1.3")}>§1.3</a> begins.</p>
 
-      <p>Feeblest by far, at just <strong>10⁻³⁹</strong>, is <strong>Gravity</strong> — so weak that a small magnet
-        lifts a paperclip against the pull of the entire Earth. In quantum terms (at the scale of individual particles) it is imagined to be carried by an
-        as-yet-undetected <strong>graviton</strong>. Massive objects attract one another with a strength that falls off
-        as 1/r² (twice as far apart means only a quarter of the pull), a law set down by <strong>Isaac Newton in 1687</strong> (the <em>Principia</em>) and recast in
-        <strong>1915 by Albert Einstein</strong> as the curvature of spacetime (the combined fabric of space and time) itself in general relativity. Despite its
-        weakness, gravity has <strong>infinite range</strong> and pulls on everything with mass or energy, so across
-        cosmic distances it dominates — shaping planetary orbits, ocean tides, black holes, and the large-scale
-        structure of galaxies.</p>
+      <p>Feeblest by far, at just <strong>10⁻³⁹</strong> (compared between two protons), is <strong>Gravity</strong> —
+        so weak that a small magnet lifts a paperclip against the pull of the entire Earth. Its conjectured carrier,
+        the <strong>graviton</strong>, has never been detected. Massive objects attract one another with a strength
+        that falls off as 1/r² (twice as far apart means a quarter of the pull) — a law set down by <strong>Isaac
+        Newton in 1687</strong> (the <em>Principia</em>) and recast in <strong>1915 by Albert Einstein</strong> as the
+        curvature of spacetime (the combined fabric of space and time). Yet gravity has <strong>infinite range</strong>,
+        only attracts, and never cancels out, so across cosmic distances it dominates — shaping planetary orbits, ocean
+        tides, black holes, and the structure of every galaxy.</p>
 
-      <h2 id="carriers">Why We Exist</h2>
-      <p>Our existence depends entirely on these specific strengths and roles. Without gravity, the Earth would not hold
-        an atmosphere, nor would the Sun and Solar System have formed. Without electromagnetism, electrons would not bind
-        to nuclei — atoms, molecules, and solid matter would disintegrate. Without the strong force, nuclei would fly
-        apart under electric repulsion, preventing the existence of any element heavier than hydrogen. Without the weak
-        force, the nuclear fusion that powers the Sun could not even begin, nor would heavy elements be dispersed through
-        supernovae (the explosions of dying stars).</p>
-
-      <p>In modern physics, a force is not merely a "push" or "pull" but the mechanism by which the Universe manages the
-        distribution of energy. At the quantum level, forces are exchanges of momentum (the push a moving particle carries) mediated by the
-        <strong>carrier particles</strong> — the bosons named above — that create fields permeating space and storing
-        potential energy. Just as a ball rolls down a hill to minimise its gravitational potential energy, particles are
-        "pushed" by forces toward states of lower potential energy.</p>
+      <p>Strip away any one of the four and we vanish. Without gravity, the Sun and Solar System would never have
+        formed and the Earth would hold no atmosphere; without electromagnetism, electrons would not bind to nuclei and
+        atoms, molecules, and solid matter would disintegrate; without the strong force, no nucleus heavier than
+        hydrogen could exist; without the weak force, the Sun's fusion could not even begin. And at the deepest level a
+        force is more than a push or a pull: it is how the Universe manages its energy. The carrier bosons create
+        fields that permeate space and store potential energy, and particles are forever nudged toward states of lower
+        energy — like a ball rolling downhill — which is what every push and pull ultimately is.</p>
 
       <hr />
 

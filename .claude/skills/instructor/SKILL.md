@@ -104,9 +104,25 @@ fonts, keyboard arrows always work, wheel/pinch in fullscreen only.
 - Hero tease and body paragraphs share `text-[1.05em] leading-[1.74]`.
 - The lesson **Hero tease is a literal string** in `<Hero tease="…" />`,
   not a `course-nav` lookup.
-- Math via **Unicode glyphs** (mc², 10⁻⁴³, W⁺, ⁻²²) in `.astro`/`.tsx`;
-  longer formulas via `katex.renderToString(latex,{throwOnError:false})`.
-  No `$…$` — it won't render outside the KaTeX islands.
+- Math in **prose** (`.astro` body text): Unicode glyphs (mc², 10⁻⁴³,
+  W⁺) are fine — the body font renders them cleanly. No `$…$` — it
+  won't render outside the KaTeX islands.
+- Math in **figures** (`.tsx`): Unicode superscript glyphs render
+  unevenly in the mono/SVG fonts (the 1.1.a "broken superscripts" bug,
+  2026-06-10) — typeset them instead:
+  - **SVG `<text>`** → the `SegTspans` helper from `1.1/figures.tsx`:
+    real `<tspan>` superscripts (entering sup = **negative** `dy`
+    ≈ −0.38 em, 0.66× size; cumulative dy, so reset on exit).
+  - **HTML in figures** (detail boxes, stat lines, captions) → the `M`
+    component: `katex.renderToString(t,{throwOnError:false})` in a
+    span, e.g. `<M t="10^{-43}\,\mathrm{s}" />`. `FigurePanel`'s
+    `caption` accepts a ReactNode, so captions can carry `<M/>` too.
+    Never put KaTeX inside an `uppercase`-transformed element without
+    a `normal-case` span (units would capitalize).
+    KaTeX survives fullscreen via a `global.css` exception — the
+    blanket `.is-fs .figure-stub * { overflow:hidden }` clips KaTeX's
+    vlist superscripts, so `.katex, .katex *` are reset to
+    `overflow:visible` (1.1.a fullscreen-caption bug, 2026-06-10).
 
 ### 7. Never push
 `git push` to `main` is a live deploy (no staging). Build and preview
@@ -194,6 +210,21 @@ patterns below come from those).
   ```
   (1.2 StandardModel keyboard bug.) HTML pills and native range sliders
   work directly.
+- **↑/↓ work too (since 2026-06-10):** FigureFrame also routes
+  ArrowUp/ArrowDown to `data-shortcut="ArrowUp"/"ArrowDown"` buttons when
+  a figure provides them — additive (it only `preventDefault`s page
+  scroll when the buttons exist, so other figures are unaffected). Use it
+  for 2-D controls like the 1.4 CMB-map magnifier pan (`step(dx, dy)`
+  over four hidden srOnly buttons).
+- **All-four-arrows scheme for multi-selectable figures (1.1.a):** when
+  a figure has more selectables than its visual rows (e.g. 3 trunk eras
+  + 4 force rows = 7), don't rely on the automatic pill-walk — provide
+  explicit srOnly `ArrowLeft`/`ArrowRight` buttons stepping ALL
+  selectables in **story order** (resolution rule 1 overrides the pills,
+  and the fullscreen wheel follows automatically), plus
+  `ArrowUp`/`ArrowDown` buttons moving through the **vertical list**
+  (from a non-list selection, ↓ enters at the top, ↑ at the bottom).
+  Keep the numeric pill set (`1`–`N`, `.is-active`) for direct jumps.
 - **three.js / Canvas / any per-figure wheel listener: gate zoom/pan to
   fullscreen** or it hijacks page scroll in normal mode (the 0.4 EM-wave
   bug). Key off `.is-fs` on the `[data-figure-frame]` ancestor — 0.3
@@ -212,7 +243,62 @@ patterns below come from those).
 - **On-figure numbers human-readable** — no machine `toExponential`
   ("1.5e+1"); use "15", "8,200", clean powers of ten ("≈ 10²² Hz"), or
   Unicode/KaTeX. Gloss every on-figure symbol/label on first use.
+  **Gotcha:** `text-transform: uppercase` turns lowercase μ into Μ —
+  visually "M" (mega) — so a "μK" label reads as "MK"; wrap μ units in a
+  `text-transform: none` span (1.4.c colorbar).
+- **Real images (photos / maps): download into `public/images/media/`,
+  convert to `.webp`, reference via `withBase("/images/media/…")` — never
+  hotlink, never AI-generate.** For a zoomable image (1.4.c Planck map):
+  measure the IMAGE's box + offset with a `ResizeObserver`, draw a lens
+  div with px-derived `backgroundSize`/`backgroundPosition` that follows
+  the cursor on hover and pans via four arrow buttons; in fullscreen the
+  wrapper fills `.fig-viz` and the img uses `max-width/height:100%` +
+  `object-fit:contain` so the whole image fits, uncropped.
+- **Log-scale sliders for wide-range quantities (1.4.b):** when a value
+  spans orders of magnitude, make the slider a 0–1 fraction and derive
+  the value logarithmically (`a = MAX^frac`), mapping any schematic (wave
+  cycle count, etc.) linearly in `frac` — so the figure changes evenly
+  across the whole track instead of bunching at one end and freezing.
 - Prefer SVG + small canvas. **No new dependencies** without asking.
+
+### Annotated-diagram standard (1.1.a is the worked reference, 2026-06-10)
+
+The user's explicit ask: 1.1.a "sets a new standard for this kind of
+figure that the whole site can follow." For schematic SVG diagrams
+(trees, timelines, flow charts):
+
+- **Reserved-slot layout grid.** Every text element gets its own
+  x/y band in the viewBox, computed from shared constants (axis rows,
+  header row, sub-label row, per-row line slots) — overlap becomes
+  *impossible by construction*, at any size. Sketch the slot table in a
+  comment atop the component (see `1.1/figures.tsx`).
+- **Labels must track the physics.** A label is a claim — e.g. the
+  1.1.a trunk is labeled by what is *still united* (SUPERFORCE → GUT →
+  ELECTROWEAK with "all four united" → "three still united" → "two
+  still united"); the original labels were off by one epoch, a real
+  factual error a student would absorb.
+- **Every named region is selectable.** If the diagram names a thing
+  (an era, a band, a row), clicking it opens the shared detail box —
+  readers click what they're curious about. Give thin/awkward regions
+  a fat transparent hit-rect. Distinct selection visuals per kind
+  (era → outline rect; force → freeze-out ring on the trunk).
+- **Z-order: data bands first, labels/outlines after**, so text and
+  selection chrome stay legible where bands cross.
+- **The detail box is constant-height.** Concise bodies (≤ ~140 chars,
+  same line count) + an em-based `minHeight` (~6.3 em) per field — so
+  switching selection never resizes viz/panel/caption (em scales with
+  the fullscreen `sz()` base automatically). Verify by measuring the
+  box height across every selection (see Verify).
+- **Captions are ~3 lines**: what the figure is, the one rule for
+  reading it, the controls. Narrative belongs in the prose and the
+  detail boxes (user feedback: "the caption is too long", 2026-06-10).
+- **Theme-aware gradients/highlights**: build from
+  `rgb(var(--c-text-rgb) / α)` stops, never white — white tints vanish
+  on the light theme.
+- **Detail content with per-selection field labels** (`fields:
+  {label, body}[]`) lets epochs ("What it is / The theory / What
+  happened") and forces ("How it works / Discovered / Where you meet
+  it") share one constant-size panel.
 
 ---
 
@@ -353,6 +439,30 @@ Prefer **headless-Chrome screenshots in both themes + fullscreen +
 mobile** for visual confirmation; the user also iterates from
 screenshots, so end by inviting one.
 
+**Bundled CDP harness** (no deps — Node ≥ 22 global WebSocket +
+`google-chrome`), in this skill's `scripts/` dir:
+
+```bash
+# Screenshot: url, out.png, [setupJS], [w], [h]; CLIP='<selector>'
+# clips to an element, FRAC='x,y,w,h' (fractions) zooms a region.
+CLIP='[data-figure-frame]' node scripts/shot.mjs \
+  "http://localhost:4322/courses/ast100/chapter/1/1.1" out.png \
+  "document.querySelector('[data-figure-frame]').scrollIntoView({block:'center'})" 1600 1200
+# Evaluate JS in the live page (returns the value) — drive keyboard,
+# click .figure-frame-fs-btn for fullscreen, measure element heights:
+node scripts/eval.mjs "<url>" "(async()=>{ … })()"
+```
+
+Proven recipes: dispatch `new KeyboardEvent('keydown',{key:'ArrowRight',
+bubbles:true})` **on the frame element** (the listener is scoped to the
+frame, not document) to test arrows; click every hidden pill and record
+`getBoundingClientRect().height` of the detail box to prove
+constant-height; set `data-theme` on `<html>` for the light theme.
+If clicks/keys silently do nothing, suspect the stale-HMR hydration
+failure → restart the dev server with `node_modules/.vite` cleared
+(use a self-excluding pattern like `pkill -f "[a]stro dev"` — plain
+`pkill -f "astro dev"` kills your own shell).
+
 ---
 
 ## Self-improvement (every session)
@@ -406,11 +516,11 @@ A rule without its WHY is brittle — always record the reason.
 
 | Thing | Path |
 |---|---|
-| Gold-standard lessons | `src/pages/chapter/0/0.1.astro`, `0.2.astro`; `chapter/1/1.1.astro`, `1.2.astro`, `1.3.astro` |
+| Gold-standard lessons | `src/pages/chapter/0/0.1.astro`, `0.2.astro`; `chapter/1/1.1.astro`, `1.2.astro`, `1.3.astro`, `1.4.astro` |
 | Gold-standard overview (`N.0`) | `src/pages/chapter/0/0.0.astro` (`ChapterOverviewLayout`) |
 | Chapter card-grid (`/chapter/N`) | `src/pages/chapter/[num]/index.astro` (no-prose, 5-box deck — usually just flip `live`) |
 | Gold-standard Hero (tease prop) | `src/components/scenes/0.1/Hero.tsx` |
-| Gold-standard figures + helpers | `0.2/figures.tsx` (FigurePanel), `0.4/figures.tsx` (largest), `1.1/figures.tsx` (sibling detail box), `1.2`/`1.3/figures.tsx` (`useFs`, `sz()`, `srOnly`, colormap, staged animation) |
+| Gold-standard figures + helpers | `0.2/figures.tsx` (FigurePanel), `0.4/figures.tsx` (largest), `1.1/figures.tsx` (**annotated-diagram standard**: reserved-slot grid, 7 selectables, constant-height detail box, `SegTspans` SVG superscripts, KaTeX `M` component, all-4-arrows scheme), `1.2`/`1.3/figures.tsx` (`useFs`, `sz()`, `srOnly`, colormap, staged animation), `1.4/figures.tsx` (real-image hover-magnifier + 4-way arrow pan, log-scale slider, colorbar) |
 | FigureFrame (global navigator) | `src/components/shared/FigureFrame.astro` |
 | Course nav + helpers | `src/data/course-nav.ts` |
 | Lesson runtime (fade + dropcap) | `src/scripts/chapter-runtime.ts` |
@@ -418,8 +528,12 @@ A rule without its WHY is brittle — always record the reason.
 | Canonical source | `knowledgebase/2026-spring/raw_html/` (`pN_M.html`, `chN.html`); media in `media/` |
 | Deep convention doc (reference) | `LECTURE-AUTHORING.md` (repo root) — defer to this SKILL where they differ |
 
-**Chapter 0 (esp. `0.4`) and chapter 1 lessons 1.1–1.3 are the worked
-references.** 1.2 and 1.3 carry the freshest patterns: two-part
-structure, cross-references, uniform fullscreen font scaling, real-button
-keyboard nav, staged reduced-motion-safe animations, and agent-verified
-science. Read them before building or reviewing.
+**Chapter 0 (esp. `0.4`) and chapter 1 lessons 1.1–1.4 are the worked
+references.** 1.1–1.4 carry the freshest patterns: the annotated-diagram
+standard (1.1.a — reserved-slot grid, every-region-selectable,
+constant-height detail box, typeset superscripts, all-4-arrows),
+two-part structure, cross-references, uniform fullscreen font scaling,
+real-button keyboard nav (←/→ + ↑/↓), staged reduced-motion-safe
+animations, a real-image hover-magnifier (1.4.c), a log-scale slider
+(1.4.b), and agent-verified science. Read them before building or
+reviewing.
