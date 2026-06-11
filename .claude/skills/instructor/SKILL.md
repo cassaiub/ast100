@@ -88,9 +88,15 @@ fonts, keyboard arrows always work, wheel/pinch in fullscreen only.
 ### 5. Lesson shape & cross-references
 - Sections are `<h2 id="…">` whose ids match `RAIL_ANCHORS["N.M"]` in
   `course-nav.ts`. When the user asks to rework a lesson "as a whole,"
-  the standing shape is **two parts, two figures each** (per 1.2/1.3) —
-  but follow the source's natural structure for a fresh port unless
-  told otherwise.
+  the standing shape is **exactly two parts — regardless of figure
+  count** (1.2–1.4 carry two figures per part; 1.1 is two parts around
+  a single figure, 2026-06-10). Merge old sections by *meaning*, not by
+  concatenation (1.1: force/energy primer + Superforce + freeze-out →
+  part one; hierarchy + why-we-exist → part two), tighten the prose
+  (~20% shorter) while keeping every quiz-source fact, weave the
+  figure's explanation through BOTH parts, and trim the rail to the two
+  new ids. For a fresh port, follow the source's natural structure
+  unless told otherwise.
 - **Cross-reference sibling lessons instead of repeating** — link back
   to covered material and forward to what's coming with
   `<a href={subPath("N.M")}>§N.M</a>` (import `subPath` from
