@@ -552,22 +552,22 @@ export function EnergyRateDensityPanel() {
   const plotH = H - PAD_T - PAD_B;
 
   const N = ERD_POINTS.length;
-  /* Both axes are logarithmic — that is the whole point.
-     x: log10(years since the Big Bang), 10^3 → ~10^10.2 (a hair past today,
-        so "Society" keeps a small margin from the right frame).
+  /* Log-linear plot:
+     x: LINEAR time in billions of years (Gyr) after the Big Bang, 0 → 14.
      y: log10(energy rate density in W/kg), 10^-4 → 10^3.
-     On a real log-time axis the baseline runs flat for six decades, then the
-     recent stages pile into the last sliver at the right — the sudden,
-     near-vertical rise of complexity. The bunched stages are read one at a
-     time via the slider/arrows + the detail panel, so they never need
-     separate on-plot labels. */
+     On a linear time axis the baseline runs flat for the first ~9 Gyr —
+     through galaxies and stars — then the recent stages climb steeply and
+     pile into the last sliver at the right: the sudden rise of complexity.
+     The two pre-galaxy stages (1,000 yr and 1 Myr) are far below 1 Gyr, so
+     they sit together at the far left near t=0. The bunched stages are read
+     one at a time via the slider/arrows + the detail panel, so they never
+     need separate on-plot labels. */
   const Y_MIN = -4.4;
   const Y_MAX = 3.2;
-  const X_MIN_L = 3;
-  const X_MAX_L = Math.log10(1.6e10);
-  const NOW = 1.4e10;
+  const X_MIN_G = 0;
+  const X_MAX_G = 14;
   const toX = (t: number) =>
-    PAD_L + ((Math.log10(t) - X_MIN_L) / (X_MAX_L - X_MIN_L)) * plotW;
+    PAD_L + ((t / 1e9 - X_MIN_G) / (X_MAX_G - X_MIN_G)) * plotW;
   const toY = (logE: number) =>
     PAD_T + plotH - ((logE - Y_MIN) / (Y_MAX - Y_MIN)) * plotH;
 
@@ -618,12 +618,7 @@ export function EnergyRateDensityPanel() {
   })();
 
   const Y_TICKS = [-4, -3, -2, -1, 0, 1, 2, 3];
-  const X_DECADES = [3, 4, 5, 6, 7, 8, 9, 10];
-  const X_WORDS: { t: number; label: string }[] = [
-    { t: 1e3, label: "a thousand" },
-    { t: 1e6, label: "a million" },
-    { t: 1e9, label: "a billion" },
-  ];
+  const X_TICKS = [0, 2, 4, 6, 8, 10, 12, 14]; // billions of years, linear
   const supDigit: Record<string, string> = {
     "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
     "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "-": "⁻",
@@ -677,7 +672,7 @@ export function EnergyRateDensityPanel() {
     <FigurePanel
       idx="0.2.c"
       kicker="Energy Rate Density · Cosmic History"
-      caption="Eric Chaisson's measure of complexity: the energy flowing through each kilogram of a thing every second (W/kg). Both axes are logarithmic, so time runs from a thousand years after the Big Bang to today — the flow stays flat through galaxies and stars, then rockets up more than a millionfold to a modern society. Use your arrow keys, or click a point, to step through the stages."
+      caption="Eric Chaisson's measure of complexity: the energy flowing through each kilogram of a thing every second (W/kg). Time runs linearly across the 14 billion years since the Big Bang, while the vertical scale stays logarithmic. The flow holds flat for the first nine billion years — through galaxies and stars — then rockets up more than a millionfold to a modern society in the final few. Use your arrow keys, or click a point, to step through the stages."
     >
       <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
@@ -728,55 +723,42 @@ export function EnergyRateDensityPanel() {
             strokeWidth="0.9"
           />
 
-          {/* X-axis: real logarithmic time. A minor tick at every power of
-             ten; friendly word-labels at a thousand / a million / a billion
-             years; a "now" mark at 14 Gyr (today). */}
-          {X_DECADES.map((k) => {
-            const x = toX(Math.pow(10, k));
+          {/* X-axis: linear time in billions of years. A tick every two
+             billion years; the final tick (14 Gyr) is "now" — today. */}
+          {X_TICKS.map((g) => {
+            const x = toX(g * 1e9);
+            const isNow = g === 14;
             return (
-              <line
-                key={`xt-${k}`}
-                x1={x}
-                x2={x}
-                y1={H - PAD_B}
-                y2={H - PAD_B + 4}
-                stroke="rgb(var(--c-text-rgb) / 0.4)"
-                strokeWidth="0.8"
-              />
+              <g key={`xt-${g}`}>
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={H - PAD_B}
+                  y2={H - PAD_B + 4}
+                  stroke={
+                    isNow
+                      ? "rgb(var(--c-accent-rgb) / 0.55)"
+                      : "rgb(var(--c-text-rgb) / 0.4)"
+                  }
+                  strokeWidth={isNow ? 1 : 0.8}
+                />
+                <text
+                  x={x}
+                  y={H - PAD_B + 17}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontFamily="var(--font-mono)"
+                  fill={
+                    isNow
+                      ? "rgb(var(--c-accent-rgb) / 0.78)"
+                      : "rgb(var(--c-text-rgb) / 0.6)"
+                  }
+                >
+                  {isNow ? "now" : g}
+                </text>
+              </g>
             );
           })}
-          {X_WORDS.map((w, i) => (
-            <text
-              key={`xw-${w.label}`}
-              x={toX(w.t)}
-              y={H - PAD_B + 17}
-              textAnchor={i === 0 ? "start" : "middle"}
-              fontSize="10"
-              fontFamily="var(--font-mono)"
-              fill="rgb(var(--c-text-rgb) / 0.6)"
-            >
-              {w.label}
-            </text>
-          ))}
-          {/* "now" — today, at 14 billion years */}
-          <line
-            x1={toX(NOW)}
-            x2={toX(NOW)}
-            y1={H - PAD_B - 6}
-            y2={H - PAD_B}
-            stroke="rgb(var(--c-accent-rgb) / 0.5)"
-            strokeWidth="1"
-          />
-          <text
-            x={toX(NOW)}
-            y={H - PAD_B + 17}
-            textAnchor="end"
-            fontSize="10"
-            fontFamily="var(--font-mono)"
-            fill="rgb(var(--c-text-rgb) / 0.6)"
-          >
-            now
-          </text>
           <text
             x={(PAD_L + W - PAD_R) / 2}
             y={H - PAD_B + 34}
@@ -786,7 +768,7 @@ export function EnergyRateDensityPanel() {
             fontFamily="var(--font-mono)"
             fill="rgb(var(--c-text-rgb) / 0.55)"
           >
-            TIME SINCE THE BIG BANG · YEARS (LOG SCALE)
+            BILLIONS OF YEARS AFTER THE BIG BANG
           </text>
 
           {/* Y ticks + labels */}
