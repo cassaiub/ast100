@@ -193,6 +193,7 @@ export const TOP_MENU_ORDER: Array<
   | { kind: "chapters" }
 > = [
   { kind: "link", href: "/", label: "Home" },
+  { kind: "link", href: "/outline", label: "Outline" },
   { kind: "chapters" },
   { kind: "link", href: "/timeline", label: "TL" },
   { kind: "link", href: "/mid", label: "MID" },

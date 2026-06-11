@@ -1,103 +1,68 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { CHAPTERS, chapterPath, withBase } from "../data/course-nav";
+import FigureFrame from "../components/shared/FigureFrame.astro";
+import { EnergyRateDensityPanel } from "../components/scenes/0.2/figures";
+import { chapterPath, withBase } from "../data/course-nav";
 
-interface OutlineRow {
-  ch: string;
-  title: string;
-  weeks: string;
-  href?: string;
-  emphasis?: boolean;
-}
-
-const outline: OutlineRow[] = [
-  ...CHAPTERS.slice(0, 4).map((c) => ({
-    ch: String(c.num),
-    title: c.title,
-    weeks: c.weeks,
-    href: chapterPath(c.num),
-  })),
+const thinkers = [
   {
-    ch: "Mid",
-    title: "Midterm Project — Astrophotography",
-    weeks: "7",
-    href: withBase("/mid"),
-    emphasis: true,
+    name: "Eric Chaisson",
+    idea: "Cosmic Evolution",
+    tag: "energy rate density · Φₘ",
+    body: "He gave complexity a single number — the energy that flows through every gram of a thing each second — and watched it climb, age after age, from galaxies to plants to brains to the modern world.",
   },
-  ...CHAPTERS.slice(4).map((c) => ({
-    ch: String(c.num),
-    title: c.title,
-    weeks: c.weeks,
-    href: chapterPath(c.num),
-  })),
   {
-    ch: "Fin",
-    title: "Final Project — Mission Design",
-    weeks: "13",
-    href: withBase("/fin"),
-    emphasis: true,
+    name: "David Christian",
+    idea: "Big History",
+    tag: "thresholds of complexity",
+    body: "He told the whole past as one continuous account — refusing the old wall between natural science and human history — as the Universe crosses threshold after threshold into ever-greater complexity.",
   },
 ];
 
-const assessment = [
-  { label: "Attendance", value: 10, note: "Weekly participation" },
-  { label: "Quizzes", value: 15, note: "Class-based, weekly" },
-  { label: "Classwork", value: 15, note: "In-session exercises" },
-  {
-    label: "Midterm",
-    value: 30,
-    note: "15 report · 15 presentation",
-    href: withBase("/mid"),
-  },
-  {
-    label: "Final",
-    value: 30,
-    note: "15 report · 15 presentation",
-    href: withBase("/fin"),
-  },
+const proof = [
+  { label: "Students", value: "200", note: "Summer 2026 · IUB" },
+  { label: "Sections", value: "5", note: "Parallel cohorts" },
+  { label: "Per section", value: "40", note: "Students each" },
 ];
 
-const habits = [
+const doors = [
   {
-    title: "Engage with the images",
-    body: "This course is visual — spend time with every figure on every page.",
+    label: "Outline",
+    title: "The full plan",
+    note: "Seven ages, thirteen weeks, two projects.",
+    href: withBase("/outline"),
   },
   {
-    title: "Connect the ages",
-    body: "Each chapter builds on the previous one. The Chemical Age only makes sense if you understood the Stellar Age.",
+    label: "Chapter 0",
+    title: "Start the story",
+    note: "The panoramic view — Big Bang to brain.",
+    href: chapterPath(0),
   },
   {
-    title: "Use the NotebookLM",
-    body: "A curated Google NotebookLM is available for self-paced learning and question answering.",
-    link: {
-      label: "Open NotebookLM →",
-      href: "https://notebooklm.google.com/notebook/00f567bd-531c-4844-b7c3-988166939c25",
-    },
-  },
-  {
-    title: "Tell a story with your projects",
-    body: "For projects, prioritize storytelling over technical detail. Your strength is communication — use it.",
-  },
-  {
-    title: "Attend every class",
-    body: "The quizzes are weekly and based directly on class discussions.",
-  },
-  {
-    title: "Start projects early",
-    body: "Both projects require research and group coordination that cannot be done the night before.",
+    label: "Timeline",
+    title: "The cosmic timeline",
+    note: "The whole story on a single scroll.",
+    href: withBase("/timeline"),
   },
 ];
 ---
 
 <Layout
   title="AST 100 — Our Cosmic History"
-  description="A fourteen-billion-year story — from the Big Bang to the emergence of life and culture. Co-offered with PHY 100."
+  description="Fourteen billion years. One continuous story — and you are its newest chapter. An immersive, scroll-driven introduction to AST 100."
   current="/"
   showBackdrop={true}
 >
+  {/* Cinematic cool→warm scroll backdrop, over the global starfield. */}
+  <div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
+    <div id="mood-l1" class="mood-layer mood-l-1" style="opacity: 1"></div>
+    <div id="mood-l2" class="mood-layer mood-l-2" style="opacity: 0"></div>
+    <div id="mood-l3" class="mood-layer mood-l-3" style="opacity: 0"></div>
+    <div id="mood-l4" class="mood-layer mood-l-4" style="opacity: 0"></div>
+  </div>
+
   {/* ─────────────────────────────  Hero  ───────────────────────────── */}
   <section class="relative isolate overflow-hidden -mt-[72px]">
-    {/* Subtle vignette over the global starfield — no hero image. */}
     <div class="absolute inset-0 -z-10 pointer-events-none">
       <div
         class="absolute inset-0"
@@ -128,13 +93,7 @@ const habits = [
         style="--delay: 220ms"
         class="title-gradient font-serif font-medium tracking-tight leading-[1.02]"
       >
-        <span class="block" style="font-size: clamp(3rem, 8vw, 6.8rem);">
-          AST&thinsp;100
-        </span>
-        <span
-          class="block italic font-light"
-          style="font-size: clamp(2rem, 5.6vw, 4.4rem); color: var(--c-text-soft);"
-        >
+        <span class="block" style="font-size: clamp(2.8rem, 7.6vw, 6.6rem);">
           Our Cosmic History
         </span>
       </h1>
@@ -142,11 +101,10 @@ const habits = [
       <p
         data-fade
         style="--delay: 420ms; color: var(--c-text-soft);"
-        class="mt-10 max-w-[62ch] text-[17px] md:text-[19px] leading-[1.65]"
+        class="mt-10 max-w-[60ch] text-[18px] md:text-[21px] leading-[1.6] font-serif italic"
       >
-        A journey from the Big Bang to the emergence of life and culture —
-        rebuilt as a cinematic, scroll-driven web experience. Co-offered with
-        PHY 100: Physics for the Next Generation.
+        Fourteen billion years. One continuous story — and you are its newest
+        chapter.
       </p>
 
       <div
@@ -159,12 +117,8 @@ const habits = [
             class="inline-block w-2 h-2 rounded-full"
             style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"
           ></span>
-           8 chapters · 32 sections
+           From the Big Bang to brains, minds & culture
         </span>
-        <span style="color: var(--c-text-ghost);">·</span>
-        <span>13.8 Gyr</span>
-        <span style="color: var(--c-text-ghost);">·</span>
-        <span>2 projects</span>
       </div>
 
       <div data-fade style="--delay: 820ms" class="mt-14 flex flex-wrap gap-3">
@@ -176,11 +130,11 @@ const habits = [
           Begin · Chapter 0 →
         </a>
         <a
-          href="#assessment"
+          href="#idea"
           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[11px] tracking-[0.22em] uppercase transition-colors"
           style="border: 1px solid var(--c-border-strong); color: var(--c-text-soft);"
         >
-          Assessment
+          The story →
         </a>
       </div>
 
@@ -192,43 +146,80 @@ const habits = [
     </div>
   </section>
 
-  {/* ──────────────────────  Course introduction  ──────────────────── */}
-  <section class="relative px-6 md:px-10 py-24 md:py-32">
+  {/* ───────────────────────  § 01 · The idea  ──────────────────────── */}
+  <section
+    id="idea"
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
     <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
       <div data-fade>
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 01 · About
+          § 01 · The idea
         </div>
         <h2
           class="font-serif font-medium leading-tight"
           style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
         >
-          A story told in light.
+          It is all one story.
         </h2>
       </div>
-      <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
-        <p>
-          AST 100 is co-offered with PHY 100: Physics for the Next Generation.
-          It explores the grand narrative of the Universe — from its origins
-          to the emergence of life and our cosmic future. Designed to be
-          accessible, the curriculum avoids complex mathematics, instead
-          utilizing sight, sound, telescopes, and imagery to help students
-          discover their place in the cosmos.
-        </p>
-        <p>
-          To cultivate students as <em>citizens of the Universe</em>, the
-          course integrates astrophotography as an art form. Using archival
-          data from the world's largest telescopes across all wavelengths,
-          students process and present images to forge a personal connection
-          with the cosmos.
-        </p>
+      <div>
+        <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
+          <p>
+            For most of history we kept the Universe in separate drawers:
+            physics in one, chemistry in another, biology and human history in
+            others still. The idea at the heart of this course is that there are
+            no drawers. Stars, planets, living cells, thinking minds, and whole
+            civilizations are not separate subjects — they are chapters of a
+            single fourteen-billion-year story, each one built from the matter
+            and the lessons of the chapter before.
+          </p>
+          <p>
+            Two thinkers drew that line most clearly, and this course follows
+            where they pointed.
+          </p>
+        </div>
+
+        <div class="mt-10 grid sm:grid-cols-2 gap-3">
+          {
+            thinkers.map((t, i) => (
+              <div data-fade style={`--delay: ${180 + i * 120}ms`} class="surface-card">
+                <div
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {t.name}
+                </div>
+                <div
+                  class="font-serif font-medium mt-2 leading-none"
+                  style="font-size: clamp(1.7rem, 3.2vw, 2.1rem); color: var(--c-text-strong);"
+                >
+                  {t.idea}
+                </div>
+                <div
+                  class="mt-2 font-mono text-[11px] tracking-[0.12em]"
+                  style="color: var(--c-text-faint);"
+                >
+                  {t.tag}
+                </div>
+                <p
+                  class="mt-3 text-[14px] font-sans leading-[1.55]"
+                  style="color: var(--c-text-soft);"
+                >
+                  {t.body}
+                </p>
+              </div>
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>
 
-  {/* ─────────────────────────  Rationale  ─────────────────────────── */}
+  {/* ───────────────────────  § 02 · The need  ──────────────────────── */}
   <section
     class="relative px-6 md:px-10 py-24 md:py-32"
     style="border-top: 1px solid var(--c-border);"
@@ -238,106 +229,171 @@ const habits = [
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 02 · Rationale
+          § 02 · The need
         </div>
         <h2
           class="font-serif font-medium leading-tight"
           style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
         >
-          The Universe has a history.
+          Science for citizens of the Universe.
         </h2>
       </div>
       <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
         <p>
-          That history is not just physics — it is chemistry, biology,
-          culture, and ultimately the story of who we are and where we come
-          from. AST 100 treats the cosmos as one continuous narrative told
-          across <strong>14 billion years</strong> and{" "}
-          <strong>seven distinct ages</strong>, each building on the last.
+          You do not need calculus to belong to the cosmos — you need the story.
+          AST 100 is built for students of business, the humanities, and the
+          social sciences: people who will lead, write, vote, and create, and
+          who deserve to do it as <em>citizens of the Universe</em> rather than
+          tourists passing through it.
         </p>
         <p>
-          A student who completes this course will never look at the night
-          sky the same way again.
+          So we trade equations for perspective. Where a number truly matters we
+          say it in plain words and real units; everywhere else we lean on
+          sight, scale, and story to show you where — and when — you stand in
+          fourteen billion years.
         </p>
       </div>
     </div>
   </section>
 
-  {/* ─────────────────────  Course outline (table)  ────────────────── */}
+  {/* ──────────────────────  § 03 · The method  ─────────────────────── */}
   <section
-    id="outline"
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
+      <div data-fade>
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 03 · The method
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          An impossible course, made possible.
+        </h2>
+      </div>
+      <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
+        <p>
+          This course could not have been built a year ago. Beginning in the
+          spring of 2026, Claude — Anthropic's AI, at claude.ai — laid down the
+          skeleton of this website. Then Claude Code, running the Opus model,
+          went through it lesson by lesson: rewriting every page in plain
+          language and rebuilding the flat diagrams of a textbook as living,
+          interactive figures you can take hold of yourself.
+        </p>
+        <p>
+          The result is something new — a textbook that <em>moves</em>,
+          assembled at a speed and a depth that simply were not possible before.
+        </p>
+        <div
+          class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10px] tracking-[0.28em] uppercase"
+          style="color: var(--c-text-faint);"
+        >
+          <span>Spring 2026</span>
+          <span style="color: var(--c-text-ghost);">·</span>
+          <span>claude.ai</span>
+          <span style="color: var(--c-text-ghost);">·</span>
+          <span>Opus</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ────────────────────  § 04 · The guarantee  ────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
+      <div data-fade>
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 04 · The guarantee
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Harnessed by a human expert.
+        </h2>
+      </div>
+      <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
+        <p>
+          None of this ran on autopilot. Every lesson and every figure was
+          guided by an expert astrophysicist — years of research and university
+          teaching beyond the PhD — who checked the facts and, just as
+          carefully, checked that each interactive figure faithfully reflects
+          the real science it depicts.
+        </p>
+        <blockquote
+          class="mt-7 pl-5 font-serif italic text-[18px] leading-[1.5]"
+          style="border-left: 2px solid var(--c-accent); color: var(--c-text-soft);"
+        >
+          The AI did the building. A human expert decided what was true — and
+          what was worth showing.
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  {/* ───────────────────  § 05 · The experience  ────────────────────── */}
+  <section
     class="relative px-6 md:px-10 py-24 md:py-32"
     style="border-top: 1px solid var(--c-border);"
   >
     <div class="max-w-[1100px] mx-auto">
-      <div data-fade class="mb-10 flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <div
-            class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
-          >
-            § 03 · Outline
-          </div>
-          <h2
-            class="font-serif font-medium leading-tight"
-            style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
-          >
-            Seven ages, thirteen weeks.
-          </h2>
+      <div data-fade class="mb-10 max-w-[68ch]">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 05 · The experience
         </div>
-        <p class="text-[13px] max-w-[36ch] mt-1" style="color: var(--c-text-faint);">
-          Two project weeks bookend the second half of the course.
-        </p>
+        <h2
+          class="font-serif font-medium leading-tight mb-6"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Every figure is alive.
+        </h2>
+        <div class="prose-cosmic max-w-[68ch]">
+          <p>
+            Here is one of those figures — live on this page, not a screenshot.
+            It shows Eric Chaisson's measure of complexity: the energy that
+            flows through every gram of a thing each second (measured in watts
+            per kilogram, W/kg — a watt is simply a unit of power, like the
+            rating printed on a lightbulb). Step through cosmic history and
+            watch the number climb by a factor of a billion, from the first
+            galaxies to a modern jet engine.
+          </p>
+          <p style="color: var(--c-text-faint);">
+            Drag the slider, hover the points, or open it fullscreen and use
+            your arrow keys.
+          </p>
+        </div>
       </div>
 
-      <div data-fade style="--delay: 180ms; border: 1px solid var(--c-border);" class="overflow-hidden rounded-xl">
-        <table class="w-full text-left font-sans text-[14px]">
-          <thead>
-            <tr
-              class="font-mono text-[10px] tracking-[0.22em] uppercase"
-              style="color: var(--c-text-faint); background: var(--c-bg-soft); border-bottom: 1px solid var(--c-border);"
-            >
-              <th class="py-3 px-4 w-[80px]">Ch</th>
-              <th class="py-3 px-4">Title</th>
-              <th class="py-3 px-4 w-[100px]">Weeks</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              outline.map((row, i) => (
-                <tr
-                  style={`border-top: 1px solid var(--c-border); ${row.emphasis ? "background: rgb(var(--c-accent-rgb) / 0.04);" : ""}`}
-                  class="transition-colors hover:bg-[rgb(var(--c-accent-rgb)/0.04)]"
-                >
-                  <td class="py-3 px-4 font-mono text-[12px]" style={`color: ${row.emphasis ? "var(--c-accent)" : "var(--c-text-soft)"};`}>
-                    {row.ch}
-                  </td>
-                  <td class="py-3 px-4" style="color: var(--c-text);">
-                    {row.href ? (
-                      <a
-                        href={row.href}
-                        class="hover:text-[var(--c-accent)] transition-colors"
-                      >
-                        {row.title}
-                      </a>
-                    ) : (
-                      row.title
-                    )}
-                  </td>
-                  <td class="py-3 px-4 font-mono text-[12px]" style="color: var(--c-text-faint);">
-                    {row.weeks}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
+      <div class="home-figure" data-fade style="--delay: 120ms">
+        <FigureFrame label="Energy rate density">
+          <EnergyRateDensityPanel client:visible />
+        </FigureFrame>
+      </div>
+
+      <div data-fade class="mt-10 prose-cosmic max-w-[68ch]">
+        <p>
+          Every figure works two ways. In the lecture hall, the professor drives
+          it on the big screen, narrating each step. At home, you take the
+          controls yourself — replaying, pausing, and poking at it until it
+          clicks.
+        </p>
       </div>
     </div>
   </section>
 
-  {/* ──────────────────────────  Assessment  ───────────────────────── */}
+  {/* ───────────────────────  § 06 · The proof  ─────────────────────── */}
   <section
-    id="assessment"
     class="relative px-6 md:px-10 py-24 md:py-32"
     style="border-top: 1px solid var(--c-border);"
   >
@@ -346,58 +402,40 @@ const habits = [
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 04 · Assessment
+          § 06 · The proof
         </div>
         <h2
           class="font-serif font-medium leading-tight"
           style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
         >
-          How the 100% adds up.
+          Proven with 200 students.
         </h2>
       </div>
 
-      <div
-        data-fade
-        style="--delay: 180ms"
-        class="grid grid-cols-2 md:grid-cols-5 gap-3"
-      >
+      <div data-fade style="--delay: 180ms" class="grid grid-cols-3 gap-3">
         {
-          assessment.map((row) => {
-            const baseClasses = "surface-card";
-            const body = (
-              <>
-                <div
-                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
-                  style="color: var(--c-text-faint);"
-                >
-                  {row.label}
-                </div>
-                <div
-                  class="font-serif font-medium mt-3 leading-none"
-                  style="font-size: clamp(2.4rem, 5vw, 3.6rem); color: var(--c-text-strong);"
-                >
-                  {row.value}
-                  <span
-                    class="font-mono text-[14px] align-top ml-0.5"
-                    style="color: var(--c-accent);"
-                  >
-                    %
-                  </span>
-                </div>
-                <div
-                  class="mt-2 text-[12px] font-sans"
-                  style="color: var(--c-text-soft);"
-                >
-                  {row.note}
-                </div>
-              </>
-            );
-            return row.href ? (
-              <a href={row.href} class={`${baseClasses} is-link`}>{body}</a>
-            ) : (
-              <div class={baseClasses}>{body}</div>
-            );
-          })
+          proof.map((row) => (
+            <div class="surface-card">
+              <div
+                class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                style="color: var(--c-text-faint);"
+              >
+                {row.label}
+              </div>
+              <div
+                class="font-serif font-medium mt-3 leading-none"
+                style="font-size: clamp(2rem, 5vw, 3.6rem); color: var(--c-text-strong);"
+              >
+                {row.value}
+              </div>
+              <div
+                class="mt-2 text-[12px] font-sans"
+                style="color: var(--c-text-soft);"
+              >
+                {row.note}
+              </div>
+            </div>
+          ))
         }
       </div>
 
@@ -406,78 +444,15 @@ const habits = [
         style="--delay: 380ms; color: var(--c-text-faint);"
         class="mt-8 text-[13px] font-sans max-w-[64ch]"
       >
-        Quizzes are weekly, classwork is in-session. Both projects are group
-        deliverables — see the{" "}
-        <a href={withBase("/mid")} class="text-[var(--c-accent)] hover:underline">Mid</a> and{" "}
-        <a href={withBase("/fin")} class="text-[var(--c-accent)] hover:underline">Fin</a> pages
-        for project briefs and grading.
+        In the summer of 2026 the course runs at IUB across five sections of
+        forty — two hundred students learning the cosmos the same immersive way:
+        surrounded by living figures in the lecture hall, and exploring them
+        again on their own screens at home.
       </p>
     </div>
   </section>
 
-  {/* ─────────────────────  How to do well  ────────────────────────── */}
-  <section
-    class="relative px-6 md:px-10 py-24 md:py-32"
-    style="border-top: 1px solid var(--c-border);"
-  >
-    <div class="max-w-[1100px] mx-auto">
-      <div data-fade class="mb-10 flex items-end justify-between flex-wrap gap-3">
-        <div>
-          <div
-            class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
-          >
-            § 05 · Practice
-          </div>
-          <h2
-            class="font-serif font-medium leading-tight"
-            style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
-          >
-            How to do well in AST 100.
-          </h2>
-        </div>
-      </div>
-
-      <ol class="grid md:grid-cols-2 gap-3">
-        {
-          habits.map((h, i) => (
-            <li data-fade style={`--delay: ${i * 70}ms`} class="surface-card">
-              <div
-                class="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
-                style="color: var(--c-accent);"
-              >
-                {String(i + 1).padStart(2, "0")}
-              </div>
-              <div
-                class="font-serif font-medium leading-tight mb-1"
-                style="font-size: 1.18rem; color: var(--c-text-strong);"
-              >
-                {h.title}
-              </div>
-              <p
-                class="text-[14px] font-sans leading-[1.55]"
-                style="color: var(--c-text-soft);"
-              >
-                {h.body}
-              </p>
-              {h.link && (
-                <a
-                  href={h.link.href}
-                  target="_blank"
-                  rel="noopener"
-                  class="mt-3 inline-flex items-center gap-1 text-[12px] font-mono tracking-[0.16em] uppercase"
-                  style="color: var(--c-accent);"
-                >
-                  {h.link.label}
-                </a>
-              )}
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  {/* ─────────────────────  Quick chapter access  ──────────────────── */}
+  {/* ─────────────────────────────  CTA  ────────────────────────────── */}
   <section
     class="relative px-6 md:px-10 py-24 md:py-32"
     style="border-top: 1px solid var(--c-border);"
@@ -487,7 +462,7 @@ const habits = [
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 06 · Chapters
+          § 07 · Begin
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -495,44 +470,44 @@ const habits = [
         >
           Start anywhere. The story holds.
         </h2>
+        <p class="mt-3 text-[15px] max-w-[52ch]" style="color: var(--c-text-soft);">
+          Three doors into fourteen billion years — each one opens on the whole.
+        </p>
       </div>
 
-      <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="grid md:grid-cols-3 gap-3">
         {
-          CHAPTERS.map((ch, i) => {
-            const isLive = ch.subs.some((s) => s.live) || ch.num === 0;
-            return (
-              <li>
-                <a
-                  href={chapterPath(ch.num)}
-                  data-fade
-                  style={`--delay: ${i * 60}ms`}
-                  class="surface-card is-link block h-full"
-                >
-                  <div
-                    class="font-mono text-[10px] tracking-[0.22em] uppercase"
-                    style="color: var(--c-accent);"
-                  >
-                    Ch {ch.num} · {ch.age}
-                  </div>
-                  <div
-                    class="font-serif font-medium mt-2"
-                    style="font-size: 1.25rem; color: var(--c-text-strong);"
-                  >
-                    {ch.title}
-                  </div>
-                  <div
-                    class="mt-2 text-[12px] font-mono tracking-[0.18em] uppercase"
-                    style={`color: ${isLive ? "var(--c-accent)" : "var(--c-text-faint)"};`}
-                  >
-                    {isLive ? "● live" : "coming soon"}
-                  </div>
-                </a>
-              </li>
-            );
-          })
+          doors.map((d, i) => (
+            <a
+              href={d.href}
+              data-fade
+              style={`--delay: ${i * 80}ms`}
+              class="surface-card is-link block h-full"
+            >
+              <div
+                class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                style="color: var(--c-accent);"
+              >
+                {d.label}
+              </div>
+              <div
+                class="font-serif font-medium mt-2"
+                style="font-size: 1.25rem; color: var(--c-text-strong);"
+              >
+                {d.title}
+              </div>
+              <div
+                class="mt-2 text-[13px] font-sans leading-[1.5]"
+                style="color: var(--c-text-soft);"
+              >
+                {d.note}
+              </div>
+            </a>
+          ))
         }
-      </ol>
+      </div>
     </div>
   </section>
+
+  <script src="../scripts/mood-arc.ts"></script>
 </Layout>

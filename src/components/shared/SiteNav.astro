@@ -162,6 +162,12 @@ const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
     >
       Home
     </a>
+    <a
+      href={withBase("/outline")}
+      class={`group-head${current === "/outline" ? " is-active" : ""}`}
+    >
+      Outline
+    </a>
     <div class="mobile-chapters-head">Chapters</div>
     <ul>
       {

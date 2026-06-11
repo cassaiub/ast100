@@ -407,6 +407,13 @@ figure.figure-stub > figcaption .figure-title {
   }
 }
 
+/* Home page has no lesson Rail, so undo the Rail-clearance offset and
+   simply center the embedded figure within its section column. */
+.home-figure .figure-frame {
+  width: min(1040px, calc(100vw - 48px));
+  margin-inline: auto;
+}
+
 .figure-frame-inner {
   position: relative;
   border-radius: 10px;
@@ -1721,30 +1728,15 @@ a.rail-item:hover .rail-dot {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
+  text-align: center;
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgb(var(--c-text-rgb) / 0.55);
-}
-.site-footer-left,
-.site-footer-right {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.site-footer .sep {
-  color: rgb(var(--c-text-rgb) / 0.25);
-}
-.site-footer .heart {
-  color: rgb(220 60 90);
-  font-size: 13px;
-  margin: 0 3px;
-  letter-spacing: 0;
 }
 .site-footer strong {
   color: var(--c-text);
