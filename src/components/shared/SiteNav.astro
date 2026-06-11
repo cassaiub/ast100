@@ -169,47 +169,62 @@ const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
       Outline
     </a>
     <div class="mobile-chapters-head">Chapters</div>
-    <ul>
+    <ul class="mobile-chapters">
       {
         CHAPTERS.map((ch) => {
           const chLogical = `/chapter/${ch.num}`;
           const overviewLogical = `/chapter/${ch.num}/${ch.num}.0`;
+          /* Collapsed by default; the chapter you're currently in starts open
+             so the active lesson is visible without a tap. */
+          const chActive = isActiveChapter(ch.num);
           return (
-            <li>
-              <a
-                href={chapterPath(ch.num)}
-                class={`mobile-chapter-head${current === chLogical ? " is-active" : ""}`}
-              >
-                <span class="mobile-chapter-num">{ch.num}</span>
-                <span class="mobile-chapter-title">{ch.title}</span>
-              </a>
-              <ul>
-                <li>
-                  <a
-                    href={overviewPath(ch.num)}
-                    class={`sub-link${current === overviewLogical ? " is-active" : ""}${ch.overviewLive ? "" : " opacity-50"}`}
-                    aria-disabled={ch.overviewLive ? undefined : "true"}
-                  >
-                    {ch.num}.0 &nbsp; Overview
-                    {!ch.overviewLive && <span class="opacity-60"> · soon</span>}
-                  </a>
-                </li>
-                {ch.subs.map((s) => {
-                  const subLogical = `/chapter/${s.id.split(".")[0]}/${s.id}`;
-                  return (
-                    <li>
-                      <a
-                        href={subPath(s.id)}
-                        class={`sub-link${current === subLogical ? " is-active" : ""}${s.live ? "" : " opacity-50"}`}
-                        aria-disabled={s.live ? undefined : "true"}
-                      >
-                        {s.id} &nbsp; {s.title}
-                        {!s.live && <span class="opacity-60"> · soon</span>}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
+            <li class={`mobile-chapter${chActive ? " is-open" : ""}`}>
+              <div class="mobile-chapter-row">
+                <a
+                  href={chapterPath(ch.num)}
+                  class={`mobile-chapter-head${current === chLogical ? " is-active" : ""}`}
+                >
+                  <span class="mobile-chapter-num">{ch.num}</span>
+                  <span class="mobile-chapter-title">{ch.title}</span>
+                </a>
+                <button
+                  type="button"
+                  class="mobile-chapter-caret"
+                  aria-expanded={chActive ? "true" : "false"}
+                  aria-label={`Toggle Chapter ${ch.num} lessons`}
+                >
+                  <span class="caret">▾</span>
+                </button>
+              </div>
+              <div class="mobile-chapter-subs">
+                <ul>
+                  <li>
+                    <a
+                      href={overviewPath(ch.num)}
+                      class={`sub-link${current === overviewLogical ? " is-active" : ""}${ch.overviewLive ? "" : " opacity-50"}`}
+                      aria-disabled={ch.overviewLive ? undefined : "true"}
+                    >
+                      {ch.num}.0 &nbsp; Overview
+                      {!ch.overviewLive && <span class="opacity-60"> · soon</span>}
+                    </a>
+                  </li>
+                  {ch.subs.map((s) => {
+                    const subLogical = `/chapter/${s.id.split(".")[0]}/${s.id}`;
+                    return (
+                      <li>
+                        <a
+                          href={subPath(s.id)}
+                          class={`sub-link${current === subLogical ? " is-active" : ""}${s.live ? "" : " opacity-50"}`}
+                          aria-disabled={s.live ? undefined : "true"}
+                        >
+                          {s.id} &nbsp; {s.title}
+                          {!s.live && <span class="opacity-60"> · soon</span>}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             </li>
           );
         })
@@ -293,6 +308,19 @@ const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
           document.body.style.overflow = "";
         }
       });
+
+      /* Per-chapter accordion: caret toggles its panel; collapsed by default. */
+      mobile
+        .querySelectorAll<HTMLButtonElement>(".mobile-chapter-caret")
+        .forEach((caret) => {
+          caret.addEventListener("click", (e) => {
+            e.preventDefault();
+            const li = caret.closest(".mobile-chapter");
+            if (!li) return;
+            const open = li.classList.toggle("is-open");
+            caret.setAttribute("aria-expanded", String(open));
+          });
+        });
     }
   })();
 </script>

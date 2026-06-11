@@ -1336,6 +1336,65 @@ a.rail-item:hover .rail-dot {
   border-left-color: var(--c-accent);
 }
 
+/* Collapsible per-chapter accordion (mobile sheet). Each chapter's lessons
+   are hidden until its caret is tapped — only the chapter heads show by
+   default, so the sheet is short and navigable. */
+.site-nav-mobile .mobile-chapter:not(:last-child) {
+  border-bottom: 1px solid rgb(var(--c-text-rgb) / 0.06);
+}
+.site-nav-mobile .mobile-chapter-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.site-nav-mobile .mobile-chapter-row .mobile-chapter-head {
+  flex: 1;
+  min-width: 0;
+}
+.site-nav-mobile .mobile-chapter-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -8px -8px -8px 0;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--c-text-faint);
+  cursor: pointer;
+}
+.site-nav-mobile .mobile-chapter-caret .caret {
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 280ms var(--ease);
+}
+.site-nav-mobile .mobile-chapter.is-open .mobile-chapter-caret {
+  color: var(--c-accent);
+}
+.site-nav-mobile .mobile-chapter.is-open .mobile-chapter-caret .caret {
+  transform: rotate(180deg);
+}
+.site-nav-mobile .mobile-chapter-subs {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms var(--ease);
+}
+.site-nav-mobile .mobile-chapter.is-open .mobile-chapter-subs {
+  grid-template-rows: 1fr;
+}
+.site-nav-mobile .mobile-chapter-subs > ul {
+  overflow: hidden;
+  min-height: 0;
+  padding-bottom: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-nav-mobile .mobile-chapter-subs,
+  .site-nav-mobile .mobile-chapter-caret .caret {
+    transition: none;
+  }
+}
+
 /* ============================================================
    CHAPTER 0 OVERVIEW additions (mood arc, river map, timeline,
    big-bang ignition, mobile nav, river modal, live counter)
