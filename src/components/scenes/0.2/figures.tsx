@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { mulberry32 } from "../../../data/chapter-0-events";
 
 /* ── Shared figure frame ─────────────────────────────────────────────── */
@@ -445,68 +452,84 @@ export function EntropyIslandPanel() {
 
 /* ── Energy Rate Density ──────────────────────────────────────────────
    Chaisson's complexity metric Φₘ: free energy flowing through every
-   kilogram of a system, every second. Plotted against cosmic time it
-   forms a steeply rising curve from the first proto-galaxies to a
-   modern jet engine — nine orders of magnitude in 13.8 billion years. */
+   kilogram of a system, every second (W/kg). Plotted against real cosmic
+   time on a log–log grid, it stays flat at the baseline through galaxies
+   and stars, then turns almost straight up in the last sliver of time —
+   planets, plants, animals, brains, society. About five-million-fold from
+   the cosmic baseline to a modern society, across ~14 billion years.
+     t    — years since the Big Bang (10^3 → 1.4×10^10 = today)
+     erd  — energy rate density in W/kg
+   The first two points anchor the flat baseline; the rest are the seven
+   named stages of the original Chaisson diagram. */
 const ERD_POINTS: {
   name: string;
   t: number;
   erd: number;
+  tLabel: string;
   note: string;
 }[] = [
   {
-    name: "First galaxies",
-    t: 0.5,
-    erd: 1e-5,
-    note: "Primordial hydrogen-helium clumps assembling — feeble luminous matter at the cosmic dawn.",
+    name: "Radiation era",
+    t: 1e3,
+    erd: 1e-4,
+    tLabel: "1 thousand years after the Big Bang",
+    note: "A thousand years in, the cosmos is a smooth, blazing fog of particles and light — no stars, no structure. Energy streams through it at a flat baseline.",
   },
   {
-    name: "Sun ignites",
-    t: 9.2,
+    name: "First atoms",
+    t: 1e6,
+    erd: 1e-4,
+    tLabel: "1 million years after the Big Bang",
+    note: "By a million years the fog has cooled enough for the first atoms to form and light to fly free — the glow we still see as the cosmic microwave background. The baseline holds.",
+  },
+  {
+    name: "Galaxies",
+    t: 1e9,
+    erd: 1e-4,
+    tLabel: "1 billion years after the Big Bang",
+    note: "Around a billion years, gravity gathers gas into the first galaxies. Vast structures — yet the energy through each kilogram is still near the cosmic baseline.",
+  },
+  {
+    name: "Stars",
+    t: 9e9,
     erd: 2e-4,
-    note: "An ordinary star like our Sun — only a trickle of energy when you average its huge mass over its slow-burning core.",
+    tLabel: "9 billion years after the Big Bang",
+    note: "Stars like our Sun fuse hydrogen in their cores. Immense in total power, but spread over so much mass that the flow per kilogram barely lifts off the baseline.",
   },
   {
-    name: "Earth forms",
-    t: 9.3,
-    erd: 7.5e-3,
-    note: "A rocky planet, warmed from within by its own radioactive rocks and from without by sunlight — a richer flow than the star that lights it.",
+    name: "Planets",
+    t: 9.5e9,
+    erd: 1e-3,
+    tLabel: "9.5 billion years after the Big Bang",
+    note: "Rocky planets churn with inner heat, weather, and chemistry — the energy through each kilogram climbs a full step above the stars that made them.",
   },
   {
-    name: "First life",
-    t: 10.3,
-    erd: 5e-2,
-    note: "The first single cells — the moment plain chemistry became living metabolism, a self-sustaining flow of energy.",
+    name: "Plants",
+    t: 1.1e10,
+    erd: 1e-2,
+    tLabel: "11 billion years after the Big Bang",
+    note: "Living things capture sunlight and run intricate chemistry to stay alive. A leaf pushes far more energy through each kilogram than any rock or star.",
   },
   {
-    name: "Land plants",
-    t: 13.3,
-    erd: 0.7,
-    note: "Plants on land, capturing sunlight directly — many times more energy per gram than the average living world.",
+    name: "Animals",
+    t: 1.35e10,
+    erd: 1e-1,
+    tLabel: "13.5 billion years after the Big Bang",
+    note: "Moving, sensing, warm-blooded animals burn fuel constantly — another sharp step up the ladder of complexity.",
   },
   {
-    name: "Mammals",
-    t: 13.6,
-    erd: 4,
-    note: "Warm-blooded animals, which must burn fuel constantly just to hold their body heat — a steep step up in energy flow.",
+    name: "Brains",
+    t: 1.3998e10,
+    erd: 1e1,
+    tLabel: "almost 14 billion years after the Big Bang",
+    note: "The human brain is the densest kilogram nature has built — a small organ that draws about a fifth of the body's entire energy.",
   },
   {
-    name: "Human brain",
-    t: 13.799,
-    erd: 15,
-    note: "About 20 watts running through 1.4 kg of neurons — the richest energy flow of any living thing we know of.",
-  },
-  {
-    name: "Modern society",
-    t: 13.7999,
-    erd: 50,
-    note: "Industrial, electrified civilisation — the energy each person commands, spread over their share of the machines that serve them.",
-  },
-  {
-    name: "Jet engine",
-    t: 13.79999,
-    erd: 8200,
-    note: "A modern jet turbofan — the most concentrated, sustained energy flow humans have ever engineered.",
+    name: "Society",
+    t: 1.4e10,
+    erd: 5e2,
+    tLabel: "14 billion years — today",
+    note: "A modern society — its cities, grids, and machines — drives more energy through each kilogram than anything that came before it.",
   },
 ];
 
@@ -522,26 +545,35 @@ export function EnergyRateDensityPanel() {
   const W = 720;
   const H = 360;
   const PAD_L = 64;
-  const PAD_R = 34;
+  const PAD_R = 40;
   const PAD_T = 30;
   const PAD_B = 48;
   const plotW = W - PAD_L - PAD_R;
   const plotH = H - PAD_T - PAD_B;
 
   const N = ERD_POINTS.length;
-  const Y_MIN = -5;
-  const Y_MAX = 4;
-  /* x is ORDINAL: the nine stages are spread evenly across the plot so none
-     bunch up at "today" and the curve only ever climbs up and to the right.
-     The real ages live in the detail panel + readout below the plot.
-     y: log10(erd in W/kg), (−5 → 4). */
-  const toX = (i: number) => PAD_L + (i / (N - 1)) * plotW;
+  /* Both axes are logarithmic — that is the whole point.
+     x: log10(years since the Big Bang), 10^3 → ~10^10.2 (a hair past today,
+        so "Society" keeps a small margin from the right frame).
+     y: log10(energy rate density in W/kg), 10^-4 → 10^3.
+     On a real log-time axis the baseline runs flat for six decades, then the
+     recent stages pile into the last sliver at the right — the sudden,
+     near-vertical rise of complexity. The bunched stages are read one at a
+     time via the slider/arrows + the detail panel, so they never need
+     separate on-plot labels. */
+  const Y_MIN = -4.4;
+  const Y_MAX = 3.2;
+  const X_MIN_L = 3;
+  const X_MAX_L = Math.log10(1.6e10);
+  const NOW = 1.4e10;
+  const toX = (t: number) =>
+    PAD_L + ((Math.log10(t) - X_MIN_L) / (X_MAX_L - X_MIN_L)) * plotW;
   const toY = (logE: number) =>
     PAD_T + plotH - ((logE - Y_MIN) / (Y_MAX - Y_MIN)) * plotH;
 
-  const points = ERD_POINTS.map((p, i) => ({
+  const points = ERD_POINTS.map((p) => ({
     ...p,
-    x: toX(i),
+    x: toX(p.t),
     y: toY(Math.log10(p.erd)),
   }));
 
@@ -585,7 +617,13 @@ export function EnergyRateDensityPanel() {
     return parts.join(" ");
   })();
 
-  const Y_TICKS = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4];
+  const Y_TICKS = [-4, -3, -2, -1, 0, 1, 2, 3];
+  const X_DECADES = [3, 4, 5, 6, 7, 8, 9, 10];
+  const X_WORDS: { t: number; label: string }[] = [
+    { t: 1e3, label: "a thousand" },
+    { t: 1e6, label: "a million" },
+    { t: 1e9, label: "a billion" },
+  ];
   const supDigit: Record<string, string> = {
     "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
     "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "-": "⁻",
@@ -599,15 +637,65 @@ export function EnergyRateDensityPanel() {
   const sel = ERD_POINTS[selected];
   const selPt = points[selected];
 
+  const srOnly: CSSProperties = {
+    position: "absolute", width: 1, height: 1, padding: 0, margin: -1,
+    overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap", border: 0,
+  };
+  const step = (d: number) =>
+    setSelected((s) => Math.min(N - 1, Math.max(0, s + d)));
+
+  /* Detail box: a fixed-size inset pinned to the empty top-left of the plot,
+     with a leader arrow to the selected point. Fixed size + clipped overflow
+     keep the text "perfectly within" the box for every stage. */
+  const BOX = { x: PAD_L + 8, y: PAD_T + 6, w: 258, h: 128 };
+  /* Where the leader meets the box: the point on the box border crossed by
+     the segment from the selected dot to the box centre (the dot is always
+     outside the box, so there is exactly one such crossing). */
+  const boxAnchor = (() => {
+    const cx = BOX.x + BOX.w / 2;
+    const cy = BOX.y + BOX.h / 2;
+    const dx = cx - selPt.x;
+    const dy = cy - selPt.y;
+    const ts: number[] = [];
+    if (dx !== 0)
+      for (const ex of [BOX.x, BOX.x + BOX.w]) {
+        const t = (ex - selPt.x) / dx;
+        const y = selPt.y + t * dy;
+        if (t > 0 && t < 1 && y >= BOX.y && y <= BOX.y + BOX.h) ts.push(t);
+      }
+    if (dy !== 0)
+      for (const ey of [BOX.y, BOX.y + BOX.h]) {
+        const t = (ey - selPt.y) / dy;
+        const x = selPt.x + t * dx;
+        if (t > 0 && t < 1 && x >= BOX.x && x <= BOX.x + BOX.w) ts.push(t);
+      }
+    const t = ts.length ? Math.min(...ts) : 1;
+    return { x: selPt.x + t * dx, y: selPt.y + t * dy };
+  })();
+
   return (
     <FigurePanel
       idx="0.2.c"
       kicker="Energy Rate Density · Cosmic History"
-      caption="Astrophysicist Eric Chaisson's measure of complexity: how much energy flows through every kilogram of a thing, each second. Across 13.8 billion years it climbs by a factor of a billion — from the first galaxies to a modern jet engine."
-      fitFs
+      caption="Eric Chaisson's measure of complexity: the energy flowing through each kilogram of a thing every second (W/kg). Both axes are logarithmic, so time runs from a thousand years after the Big Bang to today — the flow stays flat through galaxies and stars, then rockets up more than a millionfold to a modern society. Use your arrow keys, or click a point, to step through the stages."
     >
       <div className="fig-viz relative w-full overflow-hidden rounded-md">
         <svg viewBox={`0 0 ${W} ${H}`} className="block w-full h-auto">
+          <defs>
+            {/* Arrowhead for the leader from the selected dot to the inset */}
+            <marker
+              id="erd-arrow"
+              viewBox="0 0 8 8"
+              refX="6.5"
+              refY="4"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto"
+            >
+              <path d="M0 0 L8 4 L0 8 z" fill="rgb(var(--c-accent-rgb) / 0.8)" />
+            </marker>
+          </defs>
+
           {/* Y-axis gridlines — the meaningful decade lines */}
           {Y_TICKS.map((e) => (
             <line
@@ -621,17 +709,6 @@ export function EnergyRateDensityPanel() {
               strokeDasharray="2 4"
             />
           ))}
-
-          {/* Faint guide from the selected stage down to the time axis */}
-          <line
-            x1={selPt.x}
-            x2={selPt.x}
-            y1={selPt.y}
-            y2={H - PAD_B}
-            stroke="rgb(var(--c-accent-rgb) / 0.28)"
-            strokeWidth="0.8"
-            strokeDasharray="2 3"
-          />
 
           {/* Axis frame */}
           <line
@@ -651,17 +728,65 @@ export function EnergyRateDensityPanel() {
             strokeWidth="0.9"
           />
 
-          {/* X-axis label — ordinal cosmic time, earliest at left */}
+          {/* X-axis: real logarithmic time. A minor tick at every power of
+             ten; friendly word-labels at a thousand / a million / a billion
+             years; a "now" mark at 14 Gyr (today). */}
+          {X_DECADES.map((k) => {
+            const x = toX(Math.pow(10, k));
+            return (
+              <line
+                key={`xt-${k}`}
+                x1={x}
+                x2={x}
+                y1={H - PAD_B}
+                y2={H - PAD_B + 4}
+                stroke="rgb(var(--c-text-rgb) / 0.4)"
+                strokeWidth="0.8"
+              />
+            );
+          })}
+          {X_WORDS.map((w, i) => (
+            <text
+              key={`xw-${w.label}`}
+              x={toX(w.t)}
+              y={H - PAD_B + 17}
+              textAnchor={i === 0 ? "start" : "middle"}
+              fontSize="10"
+              fontFamily="var(--font-mono)"
+              fill="rgb(var(--c-text-rgb) / 0.6)"
+            >
+              {w.label}
+            </text>
+          ))}
+          {/* "now" — today, at 14 billion years */}
+          <line
+            x1={toX(NOW)}
+            x2={toX(NOW)}
+            y1={H - PAD_B - 6}
+            y2={H - PAD_B}
+            stroke="rgb(var(--c-accent-rgb) / 0.5)"
+            strokeWidth="1"
+          />
+          <text
+            x={toX(NOW)}
+            y={H - PAD_B + 17}
+            textAnchor="end"
+            fontSize="10"
+            fontFamily="var(--font-mono)"
+            fill="rgb(var(--c-text-rgb) / 0.6)"
+          >
+            now
+          </text>
           <text
             x={(PAD_L + W - PAD_R) / 2}
-            y={H - PAD_B + 30}
+            y={H - PAD_B + 34}
             textAnchor="middle"
             fontSize="9"
             letterSpacing="3"
             fontFamily="var(--font-mono)"
             fill="rgb(var(--c-text-rgb) / 0.55)"
           >
-            COSMIC TIME · BIG BANG → TODAY
+            TIME SINCE THE BIG BANG · YEARS (LOG SCALE)
           </text>
 
           {/* Y ticks + labels */}
@@ -714,18 +839,10 @@ export function EnergyRateDensityPanel() {
             }}
           />
 
-          {/* Data points. Only the SELECTED point carries a name label, so
-             the plot stays clean and labels can never overlap — every stage
-             is named in the detail panel below as you step through them. */}
+          {/* Data points. Names live in the inset, so the plot stays clean —
+             the selected dot just brightens and grows. */}
           {points.map((p, i) => {
             const isOn = selected === i;
-            /* Place the single active label in clear space: above-left of the
-               dot, tucked below for the top point and right for the first. */
-            const topZone = p.y < PAD_T + plotH * 0.16;
-            const leftZone = i === 0;
-            const lx = leftZone ? p.x + 10 : p.x - 10;
-            const ly = topZone ? p.y + 20 : p.y - 11;
-            const anchor: "start" | "end" = leftZone ? "start" : "end";
             return (
               <g
                 key={p.name}
@@ -746,80 +863,97 @@ export function EnergyRateDensityPanel() {
                       "r 200ms var(--ease), filter 200ms var(--ease)",
                   }}
                 />
-                {isOn && (
-                  <text
-                    x={lx}
-                    y={ly}
-                    textAnchor={anchor}
-                    fontSize="13"
-                    fontFamily="var(--font-sans)"
-                    fontWeight={500}
-                    fill="rgb(var(--c-accent-rgb))"
-                  >
-                    {p.name}
-                  </text>
-                )}
                 {/* Invisible hover/click catcher */}
                 <circle cx={p.x} cy={p.y} r={16} fill="transparent" />
               </g>
             );
           })}
+
+          {/* Leader arrow from the selected dot to the inset box. */}
+          <line
+            x1={selPt.x}
+            y1={selPt.y}
+            x2={boxAnchor.x}
+            y2={boxAnchor.y}
+            stroke="rgb(var(--c-accent-rgb) / 0.6)"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+            markerEnd="url(#erd-arrow)"
+          />
+
+          {/* Fixed-size detail inset, HTML via <foreignObject> so it scales
+             with the viewBox (sharp + proportional in fullscreen) and wraps
+             its text. overflow:hidden keeps every stage's text inside. */}
+          <foreignObject x={BOX.x} y={BOX.y} width={BOX.w} height={BOX.h}>
+            <div
+              style={{
+                boxSizing: "border-box",
+                width: "100%",
+                height: "100%",
+                padding: "9px 11px",
+                borderRadius: "7px",
+                overflow: "hidden",
+                background: "rgb(var(--c-bg-rgb) / 0.82)",
+                border: "1px solid rgb(var(--c-accent-rgb) / 0.35)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "4px",
+                fontFamily: "var(--font-sans)",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "10px",
+                  letterSpacing: "1.4px",
+                  textTransform: "uppercase",
+                  color: "var(--c-accent)",
+                }}
+              >
+                {sel.name}
+              </div>
+              <div
+                style={{
+                  fontSize: "11px",
+                  lineHeight: 1.35,
+                  color: "rgb(var(--c-text-rgb) / 0.9)",
+                }}
+              >
+                {sel.note}
+              </div>
+              <div
+                style={{
+                  marginTop: "auto",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "9.5px",
+                  color: "rgb(var(--c-text-rgb) / 0.6)",
+                }}
+              >
+                {sel.tLabel} · ≈ {fmtWkg(sel.erd)} W/kg
+              </div>
+            </div>
+          </foreignObject>
         </svg>
       </div>
 
-      {/* Detail panel — full width BELOW the plot so it never covers the
-          axes. Fixed min-height keeps the layout steady as you step through
-          stages (no vertical shift = no fullscreen hover-flip). */}
-      <div
-        className="mt-4 p-3 md:p-4 rounded-md text-[13px] leading-[1.6]"
-        style={{
-          background: "rgb(var(--c-text-rgb) / 0.04)",
-          border: "1px solid rgb(var(--c-text-rgb) / 0.1)",
-          minHeight: "5.2em",
-        }}
-      >
-        <span className="text-plasma font-mono tracking-[0.14em]">
-          {sel.name.toUpperCase()}
-        </span>
-        <span className="mx-2 text-white/35">/</span>
-        <span className="text-white/85">{sel.note}</span>
-        <div className="font-mono text-[11px] text-white/55 mt-1">
-          ≈ {sel.t.toFixed(1)} Gyr after the Big Bang · energy flow ≈{" "}
-          {fmtWkg(sel.erd)} W/kg
-        </div>
-      </div>
-
-      {/* Slider — the figure's discrete control, so FigureFrame's global
-          navigator (← / → keys, mouse-wheel in fullscreen) steps the
-          stages. Stepping it also moves the highlight on the plot. */}
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-2">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55">
-            step through cosmic history
-          </label>
-          <span className="font-mono text-[10px] text-plasma/85">
-            {selected + 1} / {N}
-          </span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={N - 1}
-          step={1}
-          value={selected}
-          onChange={(e) => setSelected(parseInt(e.target.value, 10))}
-          className="cosmic-slider"
-          aria-label="Cosmic-history stage"
-        />
-      </div>
-
-      <div className="mt-4 text-[13px] text-white/75 leading-[1.6] max-w-[64ch]">
-        Each step up the vertical axis is another factor of ten — the energy
-        flowing through every gram of a thing, each second. A whole star sits
-        near the bottom; a warm-blooded animal, a brain, and a city all sit far
-        higher. Complexity isn't about being big — it's about how much energy
-        you push through each gram of yourself.
-      </div>
+      {/* The figure's discrete control is now a pair of hidden buttons, so
+          FigureFrame's navigator (← / → keys, and the mouse-wheel in
+          fullscreen) steps the stages. Real <button>s — FigureFrame fires
+          them via .click(), which SVG elements don't implement. */}
+      <button
+        aria-hidden
+        tabIndex={-1}
+        data-shortcut="ArrowLeft"
+        onClick={() => step(-1)}
+        style={srOnly}
+      />
+      <button
+        aria-hidden
+        tabIndex={-1}
+        data-shortcut="ArrowRight"
+        onClick={() => step(1)}
+        style={srOnly}
+      />
     </FigurePanel>
   );
 }

@@ -1,5 +1,5 @@
 # Apache rules for the AST 100 immersive site, served at
-# cassa.site/courses/ast100/. Astro builds to dist/ with the default
+# cassa.bd/courses/ast100/. Astro builds to dist/ with the default
 # `build.format: "directory"`, emitting dist/<page>/index.html.
 
 Options -Indexes -MultiViews

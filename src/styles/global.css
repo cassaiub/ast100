@@ -413,6 +413,15 @@ figure.figure-stub > figcaption .figure-title {
   width: min(1040px, calc(100vw - 48px));
   margin-inline: auto;
 }
+/* The figure block fades in via OPACITY ONLY. A transform here (the default
+   `[data-fade]` translateY) would make `.home-figure` the containing block
+   for the figure's `position: fixed` fullscreen, pinning it to this div
+   instead of the viewport — so fullscreen "doesn't work" from the home page.
+   Dropping the transform keeps the entrance and frees fullscreen. */
+.home-figure[data-fade],
+.home-figure[data-fade].is-in {
+  transform: none;
+}
 
 .figure-frame-inner {
   position: relative;

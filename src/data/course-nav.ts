@@ -4,7 +4,7 @@
    marked "coming soon" in the dropdown UI. */
 
 /* Prepend the configured Astro `base:` to a logical path so the URL
-   resolves correctly under a subpath deploy (e.g. cassa.site/courses/ast100).
+   resolves correctly under a subpath deploy (e.g. cassa.bd/courses/ast100).
    Empty string passes through so the `current=""` default stays a no-op.
    `withBase("/")` (the home link) returns the bare base — never
    `<base>/` — because the site is configured with trailingSlash:'never'. */

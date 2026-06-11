@@ -1,4 +1,4 @@
-name: Deploy to Bluehost — cassa.site/courses/ast100
+name: Deploy to Bluehost — cassa.bd/courses/ast100
 
 on:
   push:

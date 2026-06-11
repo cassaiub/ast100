@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **AST 100 — Our Cosmic History** is the interactive lecture site for an undergraduate astronomy course at IUB. It is an **Astro 6 + React 19 + Tailwind 4** static site whose defining feature is a set of scientifically-grounded, fullscreen-ready, keyboard-operable interactive figures.
 
-- **Live at** `cassa.site/courses/ast100`. Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs `npm ci && npm run build` and rsyncs `dist/` to Bluehost. **There is no staging — a push to `main` is a live deploy.** Don't push without an explicit request.
+- **Live at** `cassa.bd/courses/ast100`. Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs `npm ci && npm run build` and rsyncs `dist/` to Bluehost. **There is no staging — a push to `main` is a live deploy.** Don't push without an explicit request.
 - **Content state:** chapters **0 and 1 are fully live** (and are both the gold-standard reference); chapters **2–7 are placeholders** (`live: false` / `overviewLive: false` in `src/data/course-nav.ts`).
 
 ## Commands

@@ -15,7 +15,7 @@ referring back to this doc for the deep rules.
 - This is an Astro 6 + React 19 + Tailwind 4 + MDX static site.
 - Currently **live: chapters 0 and 1.** Chapters 2–7 still to author.
 - Page output is in `dist/`; the GitHub Action rsyncs it to Bluehost at
-  `cassa.site/courses/ast100/` on every push to `main`.
+  `cassa.bd/courses/ast100/` on every push to `main`.
 - Source content for each lesson is already scraped verbatim in
   `knowledgebase/2026-spring/raw_html/pN_M.html` (subpages) and
   `knowledgebase/2026-spring/raw_html/chN.html` (chapter overviews).
@@ -55,7 +55,7 @@ ast100/
 
 The Astro `src/` and the static `knowledgebase/` are **two separate
 build targets.** `src/` produces the polished interactive site at
-`cassa.site/courses/ast100`. `knowledgebase/` is the verbatim plain-HTML
+`cassa.bd/courses/ast100`. `knowledgebase/` is the verbatim plain-HTML
 fallback site (separate URL, separate spec — see
 `knowledgebase/2026-spring/SPEC.md`). They share the same source content
 but render it very differently. Don't mix the two design systems.

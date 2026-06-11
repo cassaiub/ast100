@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://cassa.site',
+  site: 'https://cassa.bd',
   base: '/courses/ast100',
   trailingSlash: 'never',
   build: {
