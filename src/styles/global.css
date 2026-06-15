@@ -579,11 +579,13 @@ figure.figure-stub > figcaption .figure-title {
    own the fullscreen view, so the caption stays compact instead of the
    enlarged default and the side padding tightens — the `.fig-viz` (which
    already flex-grows) then claims nearly the whole screen. */
-.figure-frame.is-fs .figure-stub.is-img-zoom {
+.figure-frame.is-fs .figure-stub.is-img-zoom,
+.figure-frame.is-fs .figure-stub.is-fs-fill {
   padding: 10px clamp(10px, 1.1vw, 16px) !important;
   gap: 6px;
 }
-.figure-frame.is-fs .figure-stub.is-img-zoom > figcaption {
+.figure-frame.is-fs .figure-stub.is-img-zoom > figcaption,
+.figure-frame.is-fs .figure-stub.is-fs-fill > figcaption {
   font-size: clamp(11px, 1.35vh, 15px);
   line-height: 1.5;
   max-height: 19vh;
