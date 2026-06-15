@@ -1,0 +1,29 @@
+---
+import { subPath, chapterPath } from "../../../data/course-nav";
+
+interface SubLink { id: string; title: string; href: string; }
+interface Props { prev?: SubLink | null; next?: SubLink | null; sourceUrl?: string; }
+const {
+  prev = { id: "1.4", title: "Cosmic Microwave Background", href: subPath("1.4") },
+  next = { id: "2.2", title: "Types of Galaxies (coming soon)", href: chapterPath(2) },
+  sourceUrl = "cassa.bd/abekta/courses/ast100/2.1",
+} = Astro.props;
+---
+<footer class="relative border-t border-white/[0.07] mt-20">
+  <div class="max-w-[1100px] mx-auto px-6 md:px-10 py-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+    {prev ? (
+      <a href={prev.href} class="group flex flex-col gap-1 text-left text-white/70 hover:text-white transition-colors duration-500">
+        <span class="font-mono text-[10px] tracking-[0.28em] uppercase text-white/40">← previous</span>
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">{prev.id}</span>
+        <span class="font-serif text-white/90 group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.4rem, 2.4vw, 2rem);">{prev.title}</span>
+      </a>
+    ) : (<span />)}
+    {next && (
+      <a href={next.href} class="group flex flex-col gap-1 text-right md:items-end text-white/70 hover:text-white transition-colors duration-500">
+        <span class="font-mono text-[10px] tracking-[0.28em] uppercase text-white/40">next →</span>
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">{next.id}</span>
+        <span class="font-serif text-white/90 group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.4rem, 2.4vw, 2rem);">{next.title}</span>
+      </a>
+    )}
+  </div>
+</footer>

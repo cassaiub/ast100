@@ -575,6 +575,20 @@ figure.figure-stub > figcaption .figure-title {
   max-height: 30vh;
   overflow: hidden;
 }
+/* Hover-zoom image panels (HoverZoomImage: 1.4.c, 2.1.b) want the IMAGE to
+   own the fullscreen view, so the caption stays compact instead of the
+   enlarged default and the side padding tightens — the `.fig-viz` (which
+   already flex-grows) then claims nearly the whole screen. */
+.figure-frame.is-fs .figure-stub.is-img-zoom {
+  padding: 10px clamp(10px, 1.1vw, 16px) !important;
+  gap: 6px;
+}
+.figure-frame.is-fs .figure-stub.is-img-zoom > figcaption {
+  font-size: clamp(11px, 1.35vh, 15px);
+  line-height: 1.5;
+  max-height: 19vh;
+  padding-top: 8px;
+}
 /* Figure body wrapper — whatever the panel returns, single child div.
    Flex-grows to fill remaining height; becomes a flex-column itself so
    its own children (.fig-viz, controls, text) can be distributed. */

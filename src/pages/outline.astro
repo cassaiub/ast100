@@ -8,7 +8,18 @@ interface OutlineRow {
   weeks: string;
   href?: string;
   emphasis?: boolean;
+  quiz?: string;
+  progress?: string;
 }
+
+/* Quizzes and project progress-reports land on the chapter blocks that
+   close out weeks 4, 5 and 6 (Ch1→wk4, Ch2→wk5, Ch3→wk6); the midterm
+   week (7) carries Quiz 4 alongside the midterm itself. Keyed by ch num. */
+const cadence: Record<string, { quiz?: string; progress?: string }> = {
+  "1": { quiz: "Quiz 1", progress: "Progress report 1" },
+  "2": { quiz: "Quiz 2", progress: "Progress report 2" },
+  "3": { quiz: "Quiz 3", progress: "Progress report 3" },
+};
 
 const outline: OutlineRow[] = [
   ...CHAPTERS.slice(0, 4).map((c) => ({
@@ -16,6 +27,7 @@ const outline: OutlineRow[] = [
     title: c.title,
     weeks: c.weeks,
     href: chapterPath(c.num),
+    ...cadence[String(c.num)],
   })),
   {
     ch: "Mid",
@@ -23,6 +35,7 @@ const outline: OutlineRow[] = [
     weeks: "7",
     href: withBase("/mid"),
     emphasis: true,
+    quiz: "Quiz 4",
   },
   ...CHAPTERS.slice(4).map((c) => ({
     ch: String(c.num),
@@ -113,46 +126,38 @@ const habits = [
     </div>
 
     <div
-      class="relative max-w-[1100px] mx-auto px-6 md:px-10 pt-[160px] md:pt-[200px] pb-32 md:pb-40"
+      class="relative max-w-[1100px] mx-auto px-6 md:px-10 pt-[120px] md:pt-[136px] pb-14 md:pb-16"
     >
       <div
         data-fade
-        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-7 flex items-center gap-3"
+        class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-6 flex items-center gap-3"
       >
         <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
-         The course
+         AST&thinsp;100 · Our Cosmic History
       </div>
 
       <h1
         data-fade
-        style="--delay: 220ms"
-        class="title-gradient font-serif font-medium tracking-tight leading-[1.02]"
+        style="--delay: 220ms; font-size: clamp(2.6rem, 6.5vw, 4.6rem);"
+        class="title-gradient font-serif font-medium tracking-tight leading-[1.04]"
       >
-        <span class="block" style="font-size: clamp(3rem, 8vw, 6.8rem);">
-          AST&thinsp;100
-        </span>
-        <span
-          class="block italic font-light"
-          style="font-size: clamp(2rem, 5.6vw, 4.4rem); color: var(--c-text-soft);"
-        >
-          Our Cosmic History
-        </span>
+        Course Outline
       </h1>
 
       <p
         data-fade
         style="--delay: 420ms; color: var(--c-text-soft);"
-        class="mt-10 max-w-[62ch] text-[17px] md:text-[19px] leading-[1.65]"
+        class="mt-6 max-w-[60ch] text-[16px] md:text-[18px] leading-[1.6]"
       >
-        A journey from the Big Bang to the emergence of life and culture —
-        rebuilt as a cinematic, scroll-driven web experience. Co-offered with
+        Eight chapters across thirteen weeks — from the Big Bang to the
+        emergence of life and culture, plus two projects. Co-offered with
         PHY 100: Physics for the Next Generation.
       </p>
 
       <div
         data-fade
         style="--delay: 620ms"
-        class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
+        class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-text-faint)]"
       >
         <span class="flex items-center gap-2">
           <span
@@ -166,100 +171,6 @@ const habits = [
         <span style="color: var(--c-text-ghost);">·</span>
         <span>2 projects</span>
       </div>
-
-      <div data-fade style="--delay: 820ms" class="mt-14 flex flex-wrap gap-3">
-        <a
-          href={chapterPath(0)}
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[11px] tracking-[0.22em] uppercase transition-colors"
-          style="background: rgb(var(--c-accent-rgb) / 0.12); border: 1px solid rgb(var(--c-accent-rgb) / 0.45); color: var(--c-accent);"
-        >
-          Begin · Chapter 0 →
-        </a>
-        <a
-          href="#assessment"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[11px] tracking-[0.22em] uppercase transition-colors"
-          style="border: 1px solid var(--c-border-strong); color: var(--c-text-soft);"
-        >
-          Assessment
-        </a>
-      </div>
-
-      <div
-        class="absolute left-1/2 -translate-x-1/2 bottom-10 scroll-cue font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--c-text-faint)]"
-      >
-        scroll
-      </div>
-    </div>
-  </section>
-
-  {/* ──────────────────────  Course introduction  ──────────────────── */}
-  <section class="relative px-6 md:px-10 py-24 md:py-32">
-    <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
-      <div data-fade>
-        <div
-          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
-        >
-          § 01 · About
-        </div>
-        <h2
-          class="font-serif font-medium leading-tight"
-          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
-        >
-          A story told in light.
-        </h2>
-      </div>
-      <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
-        <p>
-          AST 100 is co-offered with PHY 100: Physics for the Next Generation.
-          It explores the grand narrative of the Universe — from its origins
-          to the emergence of life and our cosmic future. Designed to be
-          accessible, the curriculum avoids complex mathematics, instead
-          utilizing sight, sound, telescopes, and imagery to help students
-          discover their place in the cosmos.
-        </p>
-        <p>
-          To cultivate students as <em>citizens of the Universe</em>, the
-          course integrates astrophotography as an art form. Using archival
-          data from the world's largest telescopes across all wavelengths,
-          students process and present images to forge a personal connection
-          with the cosmos.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  {/* ─────────────────────────  Rationale  ─────────────────────────── */}
-  <section
-    class="relative px-6 md:px-10 py-24 md:py-32"
-    style="border-top: 1px solid var(--c-border);"
-  >
-    <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
-      <div data-fade>
-        <div
-          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
-        >
-          § 02 · Rationale
-        </div>
-        <h2
-          class="font-serif font-medium leading-tight"
-          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
-        >
-          The Universe has a history.
-        </h2>
-      </div>
-      <div data-fade style="--delay: 180ms" class="prose-cosmic max-w-[68ch]">
-        <p>
-          That history is not just physics — it is chemistry, biology,
-          culture, and ultimately the story of who we are and where we come
-          from. AST 100 treats the cosmos as one continuous narrative told
-          across <strong>14 billion years</strong> and{" "}
-          <strong>seven distinct ages</strong>, each building on the last.
-        </p>
-        <p>
-          A student who completes this course will never look at the night
-          sky the same way again.
-        </p>
-      </div>
     </div>
   </section>
 
@@ -267,7 +178,6 @@ const habits = [
   <section
     id="outline"
     class="relative px-6 md:px-10 py-24 md:py-32"
-    style="border-top: 1px solid var(--c-border);"
   >
     <div class="max-w-[1100px] mx-auto">
       <div data-fade class="mb-10 flex items-end justify-between flex-wrap gap-3">
@@ -275,7 +185,7 @@ const habits = [
           <div
             class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
           >
-            § 03 · Outline
+            § 01 · Outline
           </div>
           <h2
             class="font-serif font-medium leading-tight"
@@ -289,16 +199,18 @@ const habits = [
         </p>
       </div>
 
-      <div data-fade style="--delay: 180ms; border: 1px solid var(--c-border);" class="overflow-hidden rounded-xl">
-        <table class="w-full text-left font-sans text-[14px]">
+      <div data-fade style="--delay: 180ms; border: 1px solid var(--c-border);" class="overflow-x-auto rounded-xl">
+        <table class="w-full min-w-[720px] text-left font-sans text-[14px]">
           <thead>
             <tr
               class="font-mono text-[10px] tracking-[0.22em] uppercase"
               style="color: var(--c-text-faint); background: var(--c-bg-soft); border-bottom: 1px solid var(--c-border);"
             >
-              <th class="py-3 px-4 w-[80px]">Ch</th>
+              <th class="py-3 px-4 w-[72px]">Ch</th>
               <th class="py-3 px-4">Title</th>
-              <th class="py-3 px-4 w-[100px]">Weeks</th>
+              <th class="py-3 px-4 w-[84px]">Weeks</th>
+              <th class="py-3 px-4 w-[92px]">Quiz</th>
+              <th class="py-3 px-4 w-[152px]">Progress</th>
             </tr>
           </thead>
           <tbody>
@@ -326,6 +238,12 @@ const habits = [
                   <td class="py-3 px-4 font-mono text-[12px]" style="color: var(--c-text-faint);">
                     {row.weeks}
                   </td>
+                  <td class="py-3 px-4 font-mono text-[12px]" style={`color: ${row.quiz ? "var(--c-text-soft)" : "var(--c-text-ghost)"};`}>
+                    {row.quiz ?? "—"}
+                  </td>
+                  <td class="py-3 px-4 text-[13px]" style={`color: ${row.progress ? "var(--c-text-soft)" : "var(--c-text-ghost)"};`}>
+                    {row.progress ?? "—"}
+                  </td>
                 </tr>
               ))
             }
@@ -346,7 +264,7 @@ const habits = [
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 04 · Assessment
+          § 02 · Assessment
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -426,7 +344,7 @@ const habits = [
           <div
             class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
           >
-            § 05 · Practice
+            § 03 · Practice
           </div>
           <h2
             class="font-serif font-medium leading-tight"

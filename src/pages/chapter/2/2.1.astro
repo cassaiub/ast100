@@ -1,0 +1,101 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/2.1/Hero";
+import PrevNext from "../../../components/scenes/2.1/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  MilkyWayAnatomyPanel,
+  MilkyWayBandPanel,
+} from "../../../components/scenes/2.1/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="2.1 — The Milky Way · AST 100"
+  description="Our home galaxy from two angles: its anatomy — disk, bulge and bar, spiral arms, and halo, with the Sun two-thirds of the way out — and the view from inside, the hazy band of the Milky Way arching across a dark night sky."
+  activeId="2.1" chapter={2} current="/chapter/2/2.1">
+  <Hero
+    tease="We live two-thirds of the way out in a barred spiral a hundred thousand light-years wide — a flattened disk of a few hundred billion stars, wrapped in a faint spherical halo, turning once every 220 million years. Yet no one has ever seen it from outside: trapped within, we read its shape from light. From our seat in the disk, the whole Galaxy is the hazy band that crosses a dark night sky."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="anatomy">Our Galaxy's Anatomy</h2>
+      <p>Everything in the last chapter — the four forces, the first atoms, the
+        afterglow of the Big Bang (<a href={subPath("1.4")}>§1.4</a>) — set the stage. Now
+        structure assembles, and the first great structures to form were galaxies. Our home
+        address among them is the <strong>Milky Way</strong>: a galaxy is a vast, gravity-bound
+        island of stars, gas, and dust, and ours holds a few hundred billion stars. Seen edge-on
+        it is a startlingly flat pancake about <strong>100,000 light-years</strong> across (a
+        light-year is the distance light travels in a year, about 9.5 trillion kilometres) yet
+        only about <strong>1,000 light-years</strong> thick — proportionally thinner than a sheet
+        of paper. That bright, flat layer is the <strong>thin disk</strong>, where gas keeps
+        collapsing into new stars; it sits inside an older, fainter <strong>thick disk</strong> a
+        few times deeper, whose stars have been jostled out of the plane over billions of years.</p>
+
+      <p>At the centre swells the <strong>bulge</strong>, a dense, football-shaped crowd of the
+        Galaxy's oldest stars, drawn out into an elongated <strong>bar</strong> about 25,000
+        light-years long — which is why the Milky Way is classed as a <em>barred spiral</em>.
+        Buried at the very centre is a <strong>supermassive black hole</strong>, Sagittarius A*,
+        weighing about 4 million Suns; tracking the stars that whip around it won the 2020 Nobel
+        Prize in Physics. Wrapping the whole disk is the <strong>halo</strong>, a vast, thinly
+        populated sphere of ancient stars on randomly tilted orbits, studded with about 150
+        <strong>globular clusters</strong> — tight balls of up to a million of the oldest stars known.</p>
+
+      <p>Seen face-on, the disk resolves into a magnificent pinwheel. <strong>Spiral arms</strong> —
+        bright lanes of gas, dust, and short-lived blue stars — wind outward from the ends of the
+        bar; counting the old stars, two main arms stand out (Scutum–Centaurus and Perseus), though
+        tracing the gas reveals more. Our Sun is not at the centre of any of this. It sits about
+        two-thirds of the way out, roughly <strong>27,000 light-years</strong> from the centre, on a
+        minor spur called the Orion Spur — a fact first established in <strong>1918</strong>, when
+        Harlow Shapley mapped the globular clusters and found they circle a point far from us, toward
+        the constellation Sagittarius (his Galaxy was right, though several times too big). From that
+        suburban perch the whole Solar System sweeps around the centre at about <strong>230
+        kilometres per second</strong>, taking some <strong>220 million years</strong> to finish one
+        lap — a single "galactic year," of which the Sun has lived only about twenty. The diagram
+        below lays all of this out, from two angles at once; click any part, or step through with the
+        arrow keys.</p>
+
+      <FigureFrame label="Anatomy of the Milky Way">
+        <MilkyWayAnatomyPanel client:visible />
+      </FigureFrame>
+
+      <h2 id="inside">The View from Inside</h2>
+      <p>There is a catch in everything just described: <strong>no one has ever seen the Milky Way
+        from outside</strong>. We are stuck within the disk, 27,000 light-years from the centre, and
+        cannot travel even a thousandth of the way out to look back. So the face-on pinwheel and
+        edge-on pancake above are not photographs — they are <strong>models</strong>, painstakingly
+        reconstructed by surveying the positions and motions of stars, gas, and dust in several kinds
+        of light at once (visible, infrared, and radio — see <a href={subPath("0.4")}>§0.4</a>), and
+        by comparing our Galaxy with the countless others we <em>can</em> see from the outside, the
+        subject of the lessons ahead.</p>
+
+      <p>What we see directly, on a dark and moonless night far from city lights, is the Galaxy
+        edge-on from within: a hazy, irregular band of light arching from horizon to horizon. That
+        glow is the merged light of countless stars too faint and far to separate by eye, and the
+        dark rifts running through it are not gaps but clouds of interstellar <strong>dust</strong>
+        blocking the starlight behind them. The band is brightest and most swollen toward the
+        constellation Sagittarius — because that is the direction of the crowded Galactic centre. The
+        panorama below is exactly this view; hover to magnify the star clouds and dust lanes.</p>
+
+      <FigureFrame label="The Milky Way from inside">
+        <MilkyWayBandPanel client:visible />
+      </FigureFrame>
+
+      <p>Because Earth circles the Sun, the slice of the disk we face at night shifts through the
+        year. On summer nights the band blazes overhead and thickens toward the centre in
+        Sagittarius; in spring it lies flat along the horizon, leaving the overhead sky clear so that
+        we gaze straight up <em>out</em> of the disk, toward the near-empty space between the
+        galaxies. It is a strange vantage point from which to take stock: a single quiet star,
+        two-thirds of the way out one arm of one barred spiral, reading the shape of its entire
+        galaxy from the light washing over it from inside.</p>
+
+      <hr />
+
+      <p><em>One galaxy, two views — and we live inside the picture. Next we step outside it, to see
+        how our Milky Way compares with the billions of other galaxies that fill the Universe.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

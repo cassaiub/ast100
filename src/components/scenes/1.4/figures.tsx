@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { withBase } from "../../../data/course-nav";
+import { HoverZoomImage } from "../../../components/shared/HoverZoomImage";
 
 /* Shared figure shell — mirrors the 0.4 / 1.2 / 1.3 pattern. */
 function FigurePanel({
@@ -8,15 +9,17 @@ function FigurePanel({
   caption,
   children,
   fitFs = false,
+  imgZoom = false,
 }: {
   idx: string;
   kicker: string;
   caption: ReactNode;
   children: ReactNode;
   fitFs?: boolean;
+  imgZoom?: boolean;
 }) {
   return (
-    <figure data-fade className={`figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}`}>
+    <figure data-fade className={`figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}${imgZoom ? " is-img-zoom" : ""}`}>
       <div className="figure-body">{children}</div>
       <figcaption>
         <span className="figure-tag">Fig. {idx}</span>
@@ -43,21 +46,6 @@ function useFs(ref: { current: Element | null }) {
   }, []);
   return fs;
 }
-
-const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
-
-/* Off-screen real <button> for keyboard hooks FigureFrame drives via .click(). */
-const srOnly: CSSProperties = {
-  position: "absolute",
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: "hidden",
-  clip: "rect(0,0,0,0)",
-  whiteSpace: "nowrap",
-  border: 0,
-};
 
 const PHOTON = "rgb(var(--c-accent-rgb))";
 const HOT = "rgb(var(--c-solar-rgb))";
@@ -279,121 +267,32 @@ const CMB_SCALE =
   "linear-gradient(90deg, rgb(40 90 200) 0%, rgb(90 160 230) 24%, rgb(228 231 235) 50%, rgb(236 150 70) 76%, rgb(200 55 40) 100%)";
 
 export function CmbMapPanel() {
-  const [hover, setHover] = useState<{ fx: number; fy: number } | null>(null);
-  const [pan, setPan] = useState({ x: 0.5, y: 0.5 }); // keyboard lens position; mouse hover overrides
-  const [box, setBox] = useState({ w: 0, h: 0, ox: 0, oy: 0 }); // rendered image box within the wrapper
-  const vizRef = useRef<HTMLDivElement>(null);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const fs = useFs(vizRef);
-  const sz = (r: number) => (fs ? `calc(clamp(16px, 2.1vh, 27px) * ${r})` : undefined);
-
-  /* Measure the IMAGE's rendered box (and its offset inside the wrapper) so the
-     lens stays aligned whether the image is width- or height-limited — which is
-     what lets the whole map fit, uncropped, in fullscreen. */
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    const img = imgRef.current;
-    if (!wrap || !img) return;
-    const measure = () => setBox({ w: img.clientWidth, h: img.clientHeight, ox: img.offsetLeft, oy: img.offsetTop });
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(wrap);
-    ro.observe(img);
-    if (!img.complete) img.addEventListener("load", measure, { once: true });
-    return () => ro.disconnect();
-  }, []);
-
-  const step = (dx: -1 | 0 | 1, dy: -1 | 0 | 1) =>
-    setPan((p) => ({ x: clamp01(p.x + dx * 0.08), y: clamp01(p.y + dy * 0.08) }));
-  const pt = hover ?? { fx: pan.x, fy: pan.y };
-  const { w, h, ox, oy } = box;
-  const zoom = 3;
-  const D = Math.max(120, Math.min(fs ? 360 : 210, Math.round((fs ? 0.46 : 0.4) * h)));
-  const cxpx = pt.fx * w;
-  const cypx = pt.fy * h;
-
-  const onMove = (e: ReactMouseEvent) => {
-    const img = imgRef.current;
-    if (!img) return;
-    const r = img.getBoundingClientRect();
-    setHover({ fx: clamp01((e.clientX - r.left) / r.width), fy: clamp01((e.clientY - r.top) / r.height) });
-  };
-
-  const lensStyle: CSSProperties = {
-    position: "absolute",
-    width: D,
-    height: D,
-    left: ox + cxpx - D / 2,
-    top: oy + cypx - D / 2,
-    borderRadius: "9999px",
-    backgroundImage: `url(${CMB_IMG})`,
-    backgroundRepeat: "no-repeat",
-    backgroundSize: `${w * zoom}px ${h * zoom}px`,
-    backgroundPosition: `${-(cxpx * zoom - D / 2)}px ${-(cypx * zoom - D / 2)}px`,
-    boxShadow: "0 0 0 2px rgb(var(--c-accent-rgb)), 0 8px 28px rgb(0 0 0 / 0.55)",
-    pointerEvents: "none",
-    transition: hover ? "none" : "left 200ms var(--ease), top 200ms var(--ease)",
-  };
-
   return (
     <FigurePanel
       idx="1.4.c"
       kicker="The Baby Picture — Planck's All-Sky CMB Map"
-      caption="The oldest light in the Universe, mapped by ESA's Planck satellite: every point is a photon released ~380,000 years after the Big Bang and stretched a thousand-fold on its 13.8-billion-year journey. Hover anywhere to magnify the faint ripples; the arrow keys pan the magnifier. On the colour scale the deepest blues are about a few hundred millionths of a degree (a few hundred μK) cooler and denser than the 2.725 K average — the seeds of galaxies — and the deepest reds are that much hotter and thinner. Credit: ESA / Planck Collaboration."
+      imgZoom
+      caption="The oldest light in the Universe, mapped by ESA's Planck satellite: every point is a photon released ~380,000 years after the Big Bang and stretched a thousand-fold on its 13.8-billion-year journey. Switch on Zoom (the button below, or press z) and hover to magnify the faint ripples; the arrow keys pan. On the colour scale the deepest blues are about a few hundred millionths of a degree (a few hundred μK) cooler and denser than the 2.725 K average — the seeds of galaxies — and the deepest reds are that much hotter and thinner. Credit: ESA / Planck Collaboration."
     >
-      <div ref={vizRef} className="fig-viz relative w-full overflow-hidden rounded-md flex items-center justify-center">
-        <div
-          ref={wrapRef}
-          className="relative flex items-center justify-center"
-          style={{ width: "100%", height: fs ? "100%" : "auto", lineHeight: 0, cursor: "crosshair" }}
-          onMouseMove={onMove}
-          onMouseLeave={() => setHover(null)}
-        >
-          <img
-            ref={imgRef}
-            src={CMB_IMG}
-            alt="ESA Planck satellite all-sky map of the Cosmic Microwave Background: a mottled oval of blue and red specks on a 2.725 K background. Blue patches are slightly cooler and denser, red patches slightly hotter and thinner — the seeds of every galaxy."
-            decoding="async"
-            style={{
-              display: "block",
-              width: fs ? "auto" : "100%",
-              height: "auto",
-              maxWidth: "100%",
-              maxHeight: fs ? "100%" : undefined,
-              objectFit: "contain",
-              borderRadius: "6px",
-              border: "1px solid var(--c-border)",
-            }}
-          />
-          {w > 0 && <div style={lensStyle} aria-hidden="true" />}
-        </div>
-      </div>
-
-      {/* Colour scale — blue (cooler/denser) ↔ red (hotter/thinner), with the
-         magnitude at each end — plus the hover/keyboard hint. */}
-      <div className="mt-4" style={{ flexShrink: 0 }}>
-        <div
-          className="w-full rounded-full"
-          style={{ height: fs ? "clamp(12px, 1.6vh, 22px)" : "11px", background: CMB_SCALE, border: "1px solid rgb(var(--c-text-rgb) / 0.12)" }}
-        />
-        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.16em] uppercase text-white/55 mt-1.5" style={{ fontSize: sz(0.58) }}>
-          <span>a few hundred <span style={{ textTransform: "none" }}>μK</span> cooler</span>
-          <span className="text-white/45">2.725 K</span>
-          <span>a few hundred <span style={{ textTransform: "none" }}>μK</span> hotter</span>
-        </div>
-        <div className="font-mono text-[9px] tracking-[0.16em] uppercase text-white/40 text-center mt-2" style={{ fontSize: sz(0.56) }}>
-          hover to magnify · arrow keys pan the lens
-        </div>
-      </div>
-
-      {/* Hidden keyboard hooks: all four arrows pan the magnifier across the sky.
-         FigureFrame routes ←/→ (via stepFrame) and ↑/↓ (its vertical branch) to
-         these buttons; mouse hover overrides. */}
-      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowLeft" onClick={() => step(-1, 0)} style={srOnly}>pan left</button>
-      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowRight" onClick={() => step(1, 0)} style={srOnly}>pan right</button>
-      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowUp" onClick={() => step(0, -1)} style={srOnly}>pan up</button>
-      <button type="button" aria-hidden="true" tabIndex={-1} data-shortcut="ArrowDown" onClick={() => step(0, 1)} style={srOnly}>pan down</button>
+      <HoverZoomImage
+        src={CMB_IMG}
+        zoom={3}
+        hintOff="explore the ripples up close"
+        alt="ESA Planck satellite all-sky map of the Cosmic Microwave Background: a mottled oval of blue and red specks on a 2.725 K background. Blue patches are slightly cooler and denser, red patches slightly hotter and thinner — the seeds of every galaxy."
+        footer={(fs, sz) => (
+          <div className="mt-3" style={{ flexShrink: 0 }}>
+            <div
+              className="w-full rounded-full"
+              style={{ height: fs ? "clamp(12px, 1.6vh, 22px)" : "11px", background: CMB_SCALE, border: "1px solid rgb(var(--c-text-rgb) / 0.12)" }}
+            />
+            <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.16em] uppercase text-white/55 mt-1.5" style={{ fontSize: sz(0.58) }}>
+              <span>a few hundred <span style={{ textTransform: "none" }}>μK</span> cooler</span>
+              <span className="text-white/45">2.725 K</span>
+              <span>a few hundred <span style={{ textTransform: "none" }}>μK</span> hotter</span>
+            </div>
+          </div>
+        )}
+      />
     </FigurePanel>
   );
 }

@@ -106,8 +106,20 @@ export const CHAPTERS: Chapter[] = [
     weeks: "4–5",
     overviewLive: false,
     subs: [
-      { id: "2.1", title: "The Milky Way", live: false },
-      { id: "2.2", title: "Types of Galaxies", live: false },
+      {
+        id: "2.1",
+        title: "The Milky Way",
+        live: true,
+        tease:
+          "Our home galaxy, mapped from two angles. Face-on it is a barred spiral 100,000 light-years wide; edge-on, a paper-thin disk wrapped in a halo of ancient stars, with the Sun riding two-thirds of the way out. Yet trapped inside it, we know its shape only from the hazy band of light that crosses a dark night sky.",
+      },
+      {
+        id: "2.2",
+        title: "Types of Galaxies",
+        live: true,
+        tease:
+          "Every galaxy fits onto Hubble's tuning fork — smooth ellipticals, hinge-point lenticulars, and spiral prongs both plain and barred — shapes forged over eleven billion years of mergers. A rare few turn 'active', outshining all their stars from a black-hole engine whose name (Seyfert, quasar, blazar) depends only on the angle we view it from.",
+      },
       { id: "2.3", title: "Formation and Evolution of Galaxies", live: false },
       { id: "2.4", title: "Hubble's Law", live: false },
     ],
@@ -194,10 +206,6 @@ export const TOP_MENU_ORDER: Array<
 > = [
   { kind: "link", href: "/", label: "Home" },
   { kind: "link", href: "/outline", label: "Outline" },
-  { kind: "chapters" },
-  { kind: "link", href: "/timeline", label: "TL" },
-  { kind: "link", href: "/mid", label: "MID" },
-  { kind: "link", href: "/fin", label: "FIN" },
   /* External sibling site — `href` is an absolute URL, so it bypasses
      withBase() and opens in a new tab (flagged `external`). */
   {
@@ -206,6 +214,10 @@ export const TOP_MENU_ORDER: Array<
     label: "Kriterion",
     external: true,
   },
+  { kind: "chapters" },
+  { kind: "link", href: "/timeline", label: "TL" },
+  { kind: "link", href: "/mid", label: "MID" },
+  { kind: "link", href: "/fin", label: "FIN" },
 ];
 
 /* Helpers return with-base URLs ready to drop into href=. Use the matching
@@ -292,6 +304,15 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
   "1.4": [
     { id: "fog", label: "The Fog Lifts" },
     { id: "map", label: "The Baby Picture" },
+  ],
+  /* Chapter 2 */
+  "2.1": [
+    { id: "anatomy", label: "Galaxy Anatomy" },
+    { id: "inside", label: "View from Inside" },
+  ],
+  "2.2": [
+    { id: "tuning-fork", label: "Tuning Fork" },
+    { id: "active", label: "Active Galaxies" },
   ],
 };
 

@@ -1,0 +1,96 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/2.2/Hero";
+import PrevNext from "../../../components/scenes/2.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  TuningForkPanel,
+  AgnUnifiedPanel,
+  CenAImagePanel,
+} from "../../../components/scenes/2.2/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="2.2 — Types of Galaxies · AST 100"
+  description="How astronomers sort galaxies: Hubble's tuning fork of ellipticals, lenticulars, and spirals, and how those shapes emerged over cosmic time — plus active galaxies, where one feeding black hole wears many names depending on our viewing angle."
+  activeId="2.2" chapter={2} current="/chapter/2/2.2">
+  <Hero
+    tease="Sort the galaxies and they fall onto Edwin Hubble's tuning fork — smooth elliptical balls, flat lenticulars, and grand spirals plain and barred. But those tidy shapes are the calm endpoint of eleven billion years of collisions. And a rare few blaze with a light no stars can explain: a giant black hole feeding at the centre, wearing a different name — Seyfert, quasar, blazar — depending only on the angle we happen to view it from."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="tuning-fork">The Hubble Tuning Fork</h2>
+      <p>The Milky Way (<a href={subPath("2.1")}>§2.1</a>) is one galaxy among perhaps two trillion, and they are not all
+        alike. Almost all of them, though, fall onto a single diagram Edwin Hubble drew in 1936 — the
+        <strong>tuning fork</strong>. Its handle holds the <strong>ellipticals</strong> (<strong>E</strong>): smooth,
+        featureless balls of mostly old, reddish stars, with little cold gas left to forge new ones. They are labelled
+        <strong>E0</strong> (round) through <strong>E7</strong> (cigar-shaped) by how squashed they merely <em>look</em>
+        on the sky — a number about appearance, not true 3-D shape.</p>
+
+      <p>Where the fork splits sit the <strong>lenticulars</strong> (<strong>S0</strong>): they have the central bulge and
+        flat disk of a spiral, but smooth and gas-poor like an elliptical — "transitional" in looks, not a stage a galaxy
+        passes through. The two prongs are the <strong>spirals</strong>. Ordinary spirals run <strong>Sa</strong> to
+        <strong>Sc</strong> — from a fat central bulge with tightly wound arms, toward a small bulge with loose, open arms
+        and far more gas and young blue stars. The lower prong, <strong>SBa–SBc</strong>, are <strong>barred
+        spirals</strong>: the same, but with a straight bar of stars across the core that the arms trail from. Bars are
+        no curiosity — roughly two in three disk galaxies have one, our own Milky Way included.</p>
+
+      <p>One caution about the fork: astronomers call the ellipticals "early-type" and the spirals "late-type," but those
+        are just names for <em>where a galaxy sits on the diagram</em> — borrowed long ago from how stars were sorted.
+        They say nothing about age, and no galaxy slides along the fork as it grows. The tidy shapes are instead the calm
+        result of some <strong>eleven billion years</strong> of upheaval. The early universe was full of small, gas-rich,
+        clumpy fragments crashing together; mergers piled some of them into ellipticals, while disks slowly cooled and
+        settled into spirals. (Modern telescopes like JWST do find a few orderly disks surprisingly early, so the young
+        universe was not <em>pure</em> chaos — but clumpy, colliding galaxies grow steadily more common the further back
+        we look.) Drag the time slider below and watch the whole fork dissolve into its turbulent past.</p>
+
+      <FigureFrame label="The Hubble tuning fork across cosmic time">
+        <TuningForkPanel client:visible />
+      </FigureFrame>
+
+      <h2 id="active">Active Galaxies</h2>
+      <p>Most galaxies are "normal": their light is simply the sum of their stars. But a small fraction pour out more
+        energy than all their stars combined, from a region no bigger than our Solar System — an <strong>active galactic
+        nucleus</strong>, or <strong>AGN</strong>. The engine is a <strong>supermassive black hole</strong>, millions to
+        billions of times the Sun's mass, devouring gas through a blazing-hot <strong>accretion disk</strong> spiralling
+        in. Gas whirling close to the hole moves fast and dense, smearing its light into <strong>broad emission
+        lines</strong>; gas drifting farther out moves slowly, giving sharp <strong>narrow lines</strong>. A thick,
+        doughnut-shaped <strong>torus</strong> of dust rings the disk, and many AGN fire twin <strong>jets</strong> of
+        particles out along their poles at nearly the speed of light.</p>
+
+      <p>Here is the twist that ties it together. The zoo of names — Seyfert, quasar, blazar — is largely
+        <strong>one kind of object seen from different angles</strong>. Peer over the rim of the torus at the naked disk
+        and you catch both broad and narrow lines: a <strong>Type 1</strong> active galaxy (a Seyfert if modest, a
+        <strong>quasar</strong> if blindingly luminous). View it edge-on and the dusty torus hides the disk and the
+        broad-line gas, leaving only the narrow lines: a <strong>Type 2</strong>. Look straight down a jet and its
+        beamed glare drowns everything else: a <strong>blazar</strong>. The 3-D model below lets you fly around a single
+        AGN and watch its type flip as your viewing angle alone changes.</p>
+
+      <FigureFrame label="The AGN unified model in 3D">
+        <AgnUnifiedPanel client:visible />
+      </FigureFrame>
+
+      <p>Two honest caveats. Only about one active galaxy in ten actually launches the powerful jets drawn above — most
+        are "radio-quiet," with weak jets or none — so the jet belongs to a minority of these objects. And the
+        viewing-angle picture, powerful as it is, is not the whole truth: real AGN also differ in how fast they feed, the
+        dusty torus is clumpy rather than a smooth doughnut, and a few stubborn galaxies refuse to fit at all. Treat
+        orientation as the leading explanation, not the last word. To see how violent these objects really are, it helps
+        to look at one across many kinds of light at once (<a href={subPath("0.4")}>§0.4</a>) — as in the portrait of
+        Centaurus A below.</p>
+
+      <FigureFrame label="Centaurus A — the nearest active galaxy">
+        <CenAImagePanel client:visible />
+      </FigureFrame>
+
+      <hr />
+
+      <p><em>From a single fork of shapes to a single black-hole engine in many disguises — the galaxies are sorted. Next
+        we ask how they were built and how they grow, and then how their motions revealed that the whole Universe is
+        expanding.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

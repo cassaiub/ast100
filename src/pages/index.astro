@@ -45,6 +45,37 @@ const doors = [
     href: withBase("/timeline"),
   },
 ];
+
+/* § 08 — what Kriterion does. Each claim is backed by the Kriterion repo
+   (CASSA's evaluation system): anti-cheat quizzes, AI+human report grading,
+   CSV/AI question banks, WebAuthn attendance, versioned weighted grading,
+   and a real-time classroom. */
+const kriterionFeatures = [
+  {
+    label: "Anti-cheat quizzes",
+    note: "Timed, proctored quizzes with per-attempt forensics — every warning and tab-switch is logged.",
+  },
+  {
+    label: "AI + human grading",
+    note: "Written reports scored by AI against a rubric, then confirmed by a faculty evaluator.",
+  },
+  {
+    label: "Question banks",
+    note: "Reusable banks built from a CSV upload or generated with AI.",
+  },
+  {
+    label: "Attendance",
+    note: "Per-session check-in, including passkey (WebAuthn) sign-in.",
+  },
+  {
+    label: "Weighted grading",
+    note: "Versioned grade scales and weighted components roll up into a final grade.",
+  },
+  {
+    label: "Live classroom",
+    note: "Real-time chat, notices, and live faculty monitoring for every cohort.",
+  },
+];
 ---
 
 <Layout
@@ -534,6 +565,88 @@ const doors = [
             </a>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  {/* ──────────────────────  § 08 · Kriterion  ───────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10 max-w-[68ch]">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 08 · Kriterion
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight mb-6"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Learn here. Assessed on Kriterion.
+        </h2>
+        <div class="prose-cosmic max-w-[68ch]">
+          <p>
+            This site is where you <em>learn</em> the cosmos. Where your work is
+            <em>measured</em> is <strong>Kriterion</strong> — CASSA's in-house
+            learning-management system (LMS) and assessment platform, built for
+            Independent University, Bangladesh, and shared by every CASSA course,
+            AST 100 among them.
+          </p>
+          <p>
+            Each semester a course opens on Kriterion with its own roster,
+            quizzes, reports, and grade book, across three roles — admin,
+            faculty, and student. You sign in with your{" "}
+            <span class="font-mono">@iub.edu.bd</span> Google account, and the
+            quizzes and progress reports you see in the course outline all run
+            there.
+          </p>
+        </div>
+      </div>
+
+      <div data-fade style="--delay: 180ms" class="grid md:grid-cols-3 gap-3">
+        {
+          kriterionFeatures.map((f) => (
+            <div class="surface-card">
+              <div
+                class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                style="color: var(--c-accent);"
+              >
+                {f.label}
+              </div>
+              <div
+                class="mt-2 text-[13px] font-sans leading-[1.5]"
+                style="color: var(--c-text-soft);"
+              >
+                {f.note}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div
+        data-fade
+        style="--delay: 380ms"
+        class="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3"
+      >
+        <a
+          href="https://kriterion.cassa.bd"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-mono text-[11px] tracking-[0.22em] uppercase transition-colors"
+          style="background: rgb(var(--c-accent-rgb) / 0.12); border: 1px solid rgb(var(--c-accent-rgb) / 0.45); color: var(--c-accent);"
+        >
+          Open Kriterion →
+        </a>
+        <span
+          class="font-mono text-[10px] tracking-[0.28em] uppercase"
+          style="color: var(--c-text-faint);"
+        >
+          Sign in with @iub.edu.bd
+        </span>
       </div>
     </div>
   </section>
