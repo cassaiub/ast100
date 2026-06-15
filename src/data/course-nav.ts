@@ -189,7 +189,7 @@ export const CHAPTERS: Chapter[] = [
    compared against an unprefixed `current` prop; consumers wrap with
    withBase() when emitting the actual <a href>. */
 export const TOP_MENU_ORDER: Array<
-  | { kind: "link"; href: string; label: string }
+  | { kind: "link"; href: string; label: string; external?: boolean }
   | { kind: "chapters" }
 > = [
   { kind: "link", href: "/", label: "Home" },
@@ -198,6 +198,14 @@ export const TOP_MENU_ORDER: Array<
   { kind: "link", href: "/timeline", label: "TL" },
   { kind: "link", href: "/mid", label: "MID" },
   { kind: "link", href: "/fin", label: "FIN" },
+  /* External sibling site — `href` is an absolute URL, so it bypasses
+     withBase() and opens in a new tab (flagged `external`). */
+  {
+    kind: "link",
+    href: "https://kriterion.cassa.bd",
+    label: "Kriterion",
+    external: true,
+  },
 ];
 
 /* Helpers return with-base URLs ready to drop into href=. Use the matching

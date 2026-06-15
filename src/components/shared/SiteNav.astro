@@ -8,18 +8,14 @@ import {
   withBase,
 } from "../../data/course-nav";
 import ThemeToggle from "./ThemeToggle";
-import MuteToggle from "./MuteToggle";
 
 interface Props {
   /** Logical path of the current page (without the deploy base), used to
    *  highlight the active nav item. Pass e.g. "/", "/mid", "/chapter/0",
    *  "/chapter/0/0.1". Comparisons below all operate in logical-path-land. */
   current?: string;
-  /** Mute toggle is only rendered when the layout owns the ambient audio.
-   *  Defaults to true; pass false on layouts that init audio themselves. */
-  showMute?: boolean;
 }
-const { current = "", showMute = true } = Astro.props;
+const { current = "" } = Astro.props;
 
 /* Comparisons operate on logical paths (no base); render hrefs use the
    helpers from course-nav which return with-base URLs. */
@@ -46,12 +42,14 @@ const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
       {
         TOP_MENU_ORDER.map((item) => {
           if (item.kind === "link") {
-            const active = isActiveLink(item.href);
+            const active = item.external ? false : isActiveLink(item.href);
             return (
               <li>
                 <a
-                  href={withBase(item.href)}
+                  href={item.external ? item.href : withBase(item.href)}
                   class={`site-nav-link${active ? " is-active" : ""}`}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
                 >
                   {item.label}
                 </a>
@@ -126,7 +124,6 @@ const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
     </ul>
 
     <div class="site-nav-actions">
-      {showMute && <MuteToggle client:load />}
       <ThemeToggle client:load />
       <button
         type="button"
@@ -247,6 +244,14 @@ const chaptersActive = CHAPTERS.some((c) => isActiveChapter(c.num));
       class={`group-head${current === "/fin" ? " is-active" : ""}`}
     >
       FIN — Final Project
+    </a>
+    <a
+      href="https://kriterion.cassa.bd"
+      class="group-head"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Kriterion
     </a>
   </div>
 </nav>
