@@ -1,0 +1,109 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/2.0/Hero";
+import PrevNext from "../../../components/scenes/2.0/PrevNext.astro";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="2.0 — Galactic Age · AST 100"
+  description="From roughly one million to four billion years after the Big Bang — how a dark fog of hydrogen became a sky full of galaxies. Four lessons and seven milestones woven into one story: the first stars light the dark, galaxies merge into the Milky Way and its kin, black holes blaze as quasars, gravity spins the cosmic web, and the whole expanding sky becomes our time machine."
+  activeId="2.0"
+  chapter={2}
+  current="/chapter/2/2.0"
+>
+  <Hero
+    tease="The Universe spent its first 380,000 years making atoms; it spends the next four billion making galaxies. The Galactic Age opens in darkness — cold hydrogen and helium, not one star alight — and ends with a sky strewn with spirals and ellipticals along a glowing cosmic web, quasars blazing at their hearts, the whole structure flying apart. Four lessons and seven milestones trace a single story: how the dark gas became the galaxies."
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="out-of-dark">Out of the Dark</h2>
+      <p>The <strong>Galactic Age</strong> — Chapter 2 of <em>Our Cosmic History</em> — runs from about a million years
+        after the Big Bang to roughly four billion, and across <strong>four lessons</strong> and <strong>seven
+        milestones</strong> it tells how a dark, featureless fog of gas became a sky full of galaxies. It begins where the
+        Particle Age left off (<a href={subPath("1.4")}>§1.4</a>): the first atoms have formed, but there is not yet a
+        single star. For its first two hundred million years the cosmos stays dark — the <strong>Cosmic Dark Ages</strong> —
+        while gravity quietly works the cold hydrogen and helium into ever-denser clumps.</p>
+      <p>Then the densest clumps catch fire. The first massive stars and infant galaxies switch on at <strong>Cosmic
+        Dawn</strong>, and their fierce ultraviolet light strips the electrons back off the surrounding gas
+        (<strong>reionization</strong>), clearing the fog and ending the dark for good. Those infant galaxies promptly
+        begin to collide and merge — <strong>hierarchical merging</strong>, building big galaxies from small ones — and out
+        of that bottom-up assembly comes a galaxy like our own <strong>Milky Way</strong>, a barred spiral whose halo of
+        ancient stars is the fossil wreckage of its own making.</p>
+      <a
+        href={subPath("2.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">2.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">The Milky Way</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="shapes">A Family of Shapes</h2>
+      <p>Merger by merger, galaxies settle into a family of forms — the smooth <strong>ellipticals</strong>, the
+        hinge-point lenticulars, and the broad <strong>spirals</strong>, plain and barred, of Hubble's tuning fork
+        (<a href={subPath("2.2")}>§2.2</a>). A few are not content to merely shine. At the heart of many sits a
+        <strong> supermassive black hole</strong>, and gas spiralling inward heats until it blazes: for a few hundred
+        million years the core alone can outshine every star in the galaxy at once, a <strong>quasar</strong>. During the
+        <strong> peak quasar epoch</strong>, roughly two to three billion years in, these engines burn brightest across the
+        sky — then the fuel thins, the fireworks fade, and most settle into the quiet, dormant giants lurking at the
+        centres of ordinary galaxies today, only a rare few still flaring as &ldquo;active.&rdquo;</p>
+      <a
+        href={subPath("2.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">2.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Types of Galaxies</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="web">The Cosmic Web</h2>
+      <p>All the while, on the largest scale, the same gravity is at work on the galaxies themselves. It draws them along
+        the faint density ripples left by the Big Bang into a vast <strong>cosmic web</strong> — luminous filaments,
+        sheets, and clusters strung around enormous dark <strong>voids</strong>. This <strong>large-scale structure</strong>
+        is the grandest pattern in nature, and galaxies grow fastest where its threads run densest, crash together, and
+        pile up. None of these chapters happens strictly after the last; the dark ages, the mergers, the quasars, and the
+        weaving of the web all overlap, the emphasis simply shifting as the cosmos ages. It is that whole bottom-up
+        story — from the first clumps in the dark to today's grand-design spirals and giant ellipticals — that
+        <a href={subPath("2.3")}>§2.3</a> follows.</p>
+      <a
+        href={subPath("2.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">2.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Formation and Evolution of Galaxies</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="expanding">The Expanding Stage</h2>
+      <p>Every part of this drama plays out on a stage that is itself stretching. <strong>Hubble's law</strong>
+        (<a href={subPath("2.4")}>§2.4</a>) — the farther a galaxy lies, the faster it flees — was the discovery that
+        space itself is expanding, and its tools are how we date and map the whole era: pulsating <strong>Cepheid</strong>
+        stars give a galaxy's distance, the <strong>redshift</strong> of its light gives its speed. And because looking far
+        across space is looking far back in time, that same redshift turns a telescope into a time machine — letting us
+        watch the Dark Ages, Cosmic Dawn, and the quasar era unfold for real.</p>
+      <p>By about four billion years in, generations of exploding stars had laced the galactic disks with heavy elements,
+        and a fresh wave of element-rich <strong>Population&nbsp;I</strong> stars — the kind enriched enough to cradle
+        rocky planets — began to form. With them the Galactic Age hands off to the <strong>Stellar Age</strong>, where
+        Chapter 3 takes up the story.</p>
+      <a
+        href={subPath("2.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">2.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Hubble's Law</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <hr />
+
+      <blockquote><p>The Particle Age built the atoms; the Galactic Age built the great structures that hold them.
+        Everything still to come — every star, every planet, every living thing — will form inside one of the galaxies
+        assembled here.</p></blockquote>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

@@ -104,7 +104,7 @@ export const CHAPTERS: Chapter[] = [
     title: "Galactic Age",
     telescope: "Hubble",
     weeks: "4–5",
-    overviewLive: false,
+    overviewLive: true,
     subs: [
       {
         id: "2.1",
@@ -120,8 +120,20 @@ export const CHAPTERS: Chapter[] = [
         tease:
           "Every galaxy fits onto Hubble's tuning fork — smooth ellipticals, hinge-point lenticulars, and spiral prongs both plain and barred — shapes forged over eleven billion years of mergers. A rare few turn 'active', outshining all their stars from a black-hole engine whose name (Seyfert, quasar, blazar) depends only on the angle we view it from.",
       },
-      { id: "2.3", title: "Formation and Evolution of Galaxies", live: false },
-      { id: "2.4", title: "Hubble's Law", live: false },
+      {
+        id: "2.3",
+        title: "Formation and Evolution of Galaxies",
+        live: true,
+        tease:
+          "Gravity worked on the faint ripples left by the Big Bang for billions of years, drawing matter into a cosmic web of glowing filaments and clusters strung around dark voids. Galaxies lit up where the threads ran densest — then grew from the bottom up, by collision and merger, building today's spirals and ellipticals one crash at a time.",
+      },
+      {
+        id: "2.4",
+        title: "Hubble's Law",
+        live: true,
+        tease:
+          "Edwin Hubble measured how far galaxies lie, using pulsating Cepheid stars, and how fast they recede, from the redshift of their light — and found a stunningly simple rule: the farther a galaxy, the faster it flees. Its slope dates the Universe at 14 billion years; its meaning is that space itself is expanding.",
+      },
     ],
   },
   {
@@ -306,6 +318,12 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
     { id: "map", label: "The Baby Picture" },
   ],
   /* Chapter 2 */
+  "2.0": [
+    { id: "out-of-dark", label: "Out of the Dark" },
+    { id: "shapes", label: "A Family of Shapes" },
+    { id: "web", label: "The Cosmic Web" },
+    { id: "expanding", label: "The Expanding Stage" },
+  ],
   "2.1": [
     { id: "anatomy", label: "Galaxy Anatomy" },
     { id: "inside", label: "View from Inside" },
@@ -313,6 +331,14 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
   "2.2": [
     { id: "tuning-fork", label: "Tuning Fork" },
     { id: "active", label: "Active Galaxies" },
+  ],
+  "2.3": [
+    { id: "cosmic-web", label: "The Cosmic Web" },
+    { id: "evolution", label: "How Galaxies Grow" },
+  ],
+  "2.4": [
+    { id: "rulers", label: "Distance & Speed" },
+    { id: "law", label: "Hubble's Law" },
   ],
 };
 

@@ -1,0 +1,145 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/2.4/Hero";
+import PrevNext from "../../../components/scenes/2.4/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  CepheidPanel,
+  RedshiftPanel,
+  HubbleDiagramPanel,
+  ExpandingUniversePanel,
+} from "../../../components/scenes/2.4/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="2.4 — Hubble's Law · AST 100"
+  description="How Edwin Hubble proved the Universe is expanding: measuring galaxy distances with pulsating Cepheid stars and galaxy speeds from the redshift of their light, finding the simple proportional law between them, reading off the age of the Universe, and showing that space itself is expanding — the long echo of the Big Bang."
+  activeId="2.4" chapter={2} current="/chapter/2/2.4">
+  <Hero
+    tease="At the end of the last lesson we found almost every galaxy racing away from us. Edwin Hubble explained why. By measuring galaxies' distances with pulsating Cepheid stars, and their speeds from the redshift of their light, he uncovered a stunningly simple rule — the farther a galaxy, the faster it flees — and read from it both the age of the Universe and the expansion of space itself, the long echo of the Big Bang."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="rulers">Distance and Speed</h2>
+      <p>At the end of the last lesson (<a href={subPath("2.3")}>§2.3</a>) we left a loose thread: almost every galaxy in
+        the sky is rushing away from us. That single fact rewrote our picture of the cosmos — but pinning it down meant
+        measuring two stubbornly difficult things for every galaxy: exactly <em>how far away</em> it is, and exactly
+        <em> how fast</em> it is moving. Edwin Hubble, working at California's Mount Wilson Observatory in the 1920s with
+        the largest telescope on Earth, found a way to measure both — and from enough galaxies, a breathtakingly simple
+        pattern falls out.</p>
+
+      <p>Start with distance — and it sounds impossible, because we cannot stretch a tape measure across space. The trick
+        is a <strong>standard candle</strong>: an object whose <em>true</em> brightness we know in advance. A lamp of known
+        wattage looks dimmer the farther off it is, in a precise way — four times farther away makes it one-quarter as
+        bright — so comparing how bright something <em>truly</em> is with how bright it merely <em>looks</em> gives its
+        distance at once. The whole problem becomes: how do you know a star's true brightness without already knowing how
+        far away it is?</p>
+
+      <p>The answer came from <strong>Henrietta Leavitt</strong>, an astronomer at Harvard, who in 1912 studied a class of
+        pulsating stars called <strong>Cepheids</strong> — giant stars that swell and shrink in a steady rhythm,
+        brightening and dimming over days to weeks. Studying Cepheids in a nearby satellite galaxy, the Small Magellanic
+        Cloud, Leavitt found something remarkable: the slower a Cepheid pulses, the brighter it truly is, and the
+        relationship is exact. So you simply <em>time</em> a Cepheid's blink, and its period tells you its true
+        luminosity — its real wattage. It is a candle that announces its own brightness. Drag the slider in the figure
+        below to time a Cepheid and watch its true brightness, and its distance, follow.</p>
+
+      <FigureFrame label="A Cepheid's pulse reveals its true brightness and distance">
+        <CepheidPanel client:visible />
+      </FigureFrame>
+
+      <p>Hubble pointed the great 100-inch telescope at the faint smudge then known as the Andromeda Nebula and found
+        Cepheids inside it. Reading their periods gave their true brightness; their faintness gave the distance — and the
+        answer was staggering. Even Hubble's rough first estimate in 1925 (about 900,000 light-years, which we now know
+        was an underestimate) placed Andromeda far outside our own <a href={subPath("2.1")}>Milky Way</a>, whose disk is
+        only some 100,000 light-years across. Andromeda was not a cloud <em>within</em> our galaxy at all, but a separate
+        galaxy of its own — an "island universe," in the language of the day. Modern measurements put it at 2.5 million
+        light-years. At a stroke, the known universe grew from a single galaxy to a sky strewn with billions of
+        them (<a href={subPath("2.2")}>§2.2</a>).</p>
+
+      <p>The second number — how fast a galaxy moves — is hidden in its light. Recall from <a href={subPath("0.4")}>§0.4</a>
+        that the colour of light is set by its <em>wavelength</em>, the tiny distance between one wave crest and the next,
+        and that starlight spread into a spectrum is crossed by dark lines at fixed wavelengths — the chemical fingerprints
+        of the elements in the star. Those lines are the key.</p>
+
+      <p>You already know the effect by ear. When a train or ambulance races past, its pitch drops the instant it passes:
+        rushing toward you, its sound waves are squeezed shorter and the pitch rises; rushing away, they are stretched
+        longer and the pitch falls. This is the <strong>Doppler effect</strong>, and light does the same. A galaxy moving
+        away has its light waves stretched to longer wavelengths — shifted toward the red end of the spectrum — and the
+        faster it recedes, the bigger the shift. Astronomers call it the galaxy's <strong>redshift</strong>. Find the
+        fingerprint lines in a galaxy's spectrum, measure how far they have slid toward red, and you have its speed. Slide
+        the control in the figure below to send a galaxy racing away and watch its spectrum redden.</p>
+
+      <FigureFrame label="A receding galaxy's spectrum shifts toward the red">
+        <RedshiftPanel client:visible />
+      </FigureFrame>
+
+      <p>One subtlety matters, and we will return to it: a galaxy's redshift is not <em>really</em> the train-whistle
+        Doppler effect. The galaxies are not so much speeding <em>through</em> space as being carried apart <em>by</em>
+        space — which stretches every light wave crossing it. The train is a good first picture; the truth is stranger,
+        and it is exactly where this lesson is headed.</p>
+
+      <h2 id="law">The Expanding Universe</h2>
+      <p>By 1929 Hubble had both numbers — distance and speed — for a few dozen galaxies, and he did the obvious thing: he
+        plotted one against the other. The result is one of the most consequential graphs ever drawn. The points did not
+        scatter at random; they fell along a straight line through the origin. The farther a galaxy, the faster it
+        recedes — and not vaguely, but in exact proportion: a galaxy twice as far away flees twice as fast. This is
+        <strong> Hubble's law</strong>. Tilt the line yourself in the figure below to find the slope that fits the galaxies,
+        and read off what that slope implies.</p>
+
+      <FigureFrame label="Hubble's diagram — speed rises in step with distance">
+        <HubbleDiagramPanel client:visible />
+      </FigureFrame>
+
+      <p>The steepness of that line — how much extra speed you gain for each extra step of distance — is the
+        <strong> Hubble constant</strong>, written H₀. Its value is about 21 kilometres per second for every million
+        light-years: a galaxy a million light-years away recedes at roughly 21 km/s, one two million light-years off at
+        twice that, and so on outward. (Pinning the exact figure down is famously hard — today's best measurements
+        disagree by a few percent, an open puzzle astronomers call the <em>Hubble tension</em>.) Hubble was not quite
+        first to the idea: the Belgian priest-astronomer <strong>Georges Lemaître</strong> had derived the same expanding
+        universe two years earlier, in 1927, and Vesto Slipher had measured many of the redshifts Hubble leaned on. But it
+        was Hubble's graph that made the law undeniable, and his name it carries.</p>
+
+      <p>The Hubble constant hides a clock. If the galaxies have been drifting apart at a steady rate, then running the
+        film backward they were all crammed together at one moment in the past — and the constant tells you how long ago.
+        That number, one divided by H₀, comes out to about <strong>14 billion years</strong>. It is only a rough figure —
+        the expansion has not, in truth, been perfectly steady — yet it lands remarkably close to the carefully measured
+        age of the Universe, 13.8 billion years. The slope of a line on a graph of galaxies turns out to be the age of
+        everything.</p>
+
+      <p>Now the question that trips everyone: if every galaxy flies away from <em>us</em>, are we at the centre? No — and
+        seeing why is the deepest idea in this lesson. The galaxies are not racing <em>through</em> space from some central
+        point; rather, <strong>space itself is expanding</strong>, swelling everywhere at once and carrying the galaxies
+        along like raisins in rising bread. We met this picture as a balloon back in <a href={subPath("0.3")}>§0.3</a>,
+        before we had redshift or recession to give it meaning; the figure below draws the same expansion as a stretching
+        grid, with each galaxy's speed shown as an arrow.</p>
+
+      <FigureFrame label="On an expanding balloon, every galaxy sees the same law">
+        <ExpandingUniversePanel client:visible />
+      </FigureFrame>
+
+      <p>As space stretches, every galaxy moves away from every other and the farthest apart separate fastest — Hubble's
+        law once more — yet none sits at the centre: stand on any galaxy and the view is identical, everyone else fleeing,
+        you apparently at the middle. Every observer in the cosmos sees their own Hubble's law. Two cautions: the grid's
+        flat sheet stands in for three-dimensional space, and the galaxies themselves — bound tight by their own
+        gravity — do not swell; only the empty space <em>between</em> them grows.</p>
+
+      <p>Wind that expansion backward far enough and you reach Lemaître's conclusion: if space has grown for 14 billion
+        years, then long ago it was unimaginably small, hot, and dense — everything pressed together before it began to
+        expand. We met that fiery beginning at the start of the course (<a href={subPath("0.2")}>§0.2</a>) and read its
+        afterglow in the cosmic microwave background (<a href={subPath("1.4")}>§1.4</a>); Hubble's law is the evidence for
+        it, written across the sky. The flight of the galaxies is no explosion <em>in</em> space, hurling matter from a
+        centre — it is the swelling <em>of</em> space itself, the expansion that began with the Big Bang and is under way
+        tonight, in every direction you can look.</p>
+
+      <hr />
+
+      <p><em>With Hubble's law we close the Galactic Age: we have found not only what galaxies are and how they form, but
+        that the whole sky of them is in motion, expanding from a common origin. From here the course turns inward — from
+        the galaxies to the engines that light them: the stars.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

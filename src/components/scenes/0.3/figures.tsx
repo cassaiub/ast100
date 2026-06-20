@@ -9,15 +9,24 @@ function FigurePanel({
   kicker,
   caption,
   children,
+  sidebar = false,
+  rail,
 }: {
   idx: string;
   kicker: string;
   caption: ReactNode;
   children: ReactNode;
+  /** Figure-left / caption-right fullscreen layout (see global.css). */
+  sidebar?: boolean;
+  /** Controls/detail for sidebar Tier 2 — a sibling `.fig-rail` lifted into
+      the right column in fullscreen; a plain block in normal flow. */
+  rail?: ReactNode;
 }) {
+  const cls = `figure-stub my-12 rounded-md p-4 md:p-6${sidebar ? " is-fs-sidebar" : ""}`;
   return (
-    <figure data-fade className="figure-stub my-12 rounded-md p-4 md:p-6">
+    <figure data-fade className={cls}>
       {children}
+      {rail && <div className="fig-rail">{rail}</div>}
       <figcaption>
         <span className="figure-tag">Fig. {idx}</span>
         <span className="figure-title"> — {kicker}.</span>{" "}
@@ -25,6 +34,23 @@ function FigurePanel({
       </figcaption>
     </figure>
   );
+}
+
+/* Tracks `.is-fs` on the enclosing FigureFrame so HTML control text scales up
+   and the balloon canvas can fill the left column in fullscreen. Same
+   MutationObserver pattern as 1.3 / 2.4 figures.tsx. */
+function useFs(ref: { current: Element | null }) {
+  const [fs, setFs] = useState(false);
+  useEffect(() => {
+    const frame = ref.current?.closest("[data-figure-frame]");
+    if (!frame) return;
+    const sync = () => setFs(frame.classList.contains("is-fs"));
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(frame, { attributes: true, attributeFilter: ["class"] });
+    return () => mo.disconnect();
+  }, []);
+  return fs;
 }
 
 /* ── Cosmic Scale: 27-object distance ladder ─────────────────────────
@@ -711,6 +737,8 @@ export function BalloonAnalogyPanel() {
   const [observer, setObserver] = useState(0);
   const [reduced, setReduced] = useState(false);
   const canvasWrapRef = useRef<HTMLDivElement | null>(null);
+  const fs = useFs(canvasWrapRef);
+  const sz = (r: number) => (fs ? `calc(clamp(16px, 2.1vh, 27px) * ${r})` : undefined);
 
   useEffect(() => {
     const m = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -761,71 +789,39 @@ export function BalloonAnalogyPanel() {
   return (
     <FigurePanel
       idx="0.3.b"
+      sidebar
       kicker="Balloon Analogy · The Cosmological Principle"
       caption={
         <>
-          The Universe&apos;s expansion is not things flying <em>through</em>{" "}
-          space — it is space itself stretching. Picture the cosmos as the
-          skin of a balloon (a picture Arthur Eddington made famous in 1933):
-          the galaxies are dots glued to the rubber. As you inflate it, every
-          dot drifts away from every other dot, yet no dot is doing the
-          pushing and no dot is the centre. <strong>Drag the slider (or use
-          ← / →) to inflate the universe; click any galaxy — or press 1–6 —
-          to stand on it</strong> and watch all the others rush away from you.
-          Now stand on a <em>different</em> galaxy: the view is exactly the
-          same. That sameness-from-everywhere is the{" "}
-          <em>cosmological principle</em> — the idea, going back to Einstein
-          in 1917, that the Universe has no special centre and looks much the
-          same from any galaxy in it.
-          <span className="block mt-1 text-white/45">
-            Drag to rotate the balloon · drag the slider (or ← / →) to expand
-            it · click a galaxy (or press 1–6) to switch which one is
-            &ldquo;you.&rdquo;
-          </span>
-          <span className="block mt-1 text-white/35">
-            For the curious: the slider is the cosmologists&apos; <em>scale
-            factor a(t)</em> (a = 1 today), and the displayed age comes from
-            the standard model of the cosmos (flat ΛCDM, Planck 2018:
-            Ω<sub>m</sub>=0.315, Ω<sub>Λ</sub>=0.685, 1/H<sub>0</sub>=14.5 Gyr).
-            The drawn radius grows as √a so that a 20-fold expansion still fits
-            on screen.
+          Galaxies are dots on an inflating balloon: as space stretches, every
+          dot drifts from every other and none is the centre — Eddington&apos;s
+          1933 picture of the <em>cosmological principle</em>.{" "}
+          <strong>Drag the slider (← / →) to inflate; click a galaxy (1–6) to
+          stand on it</strong> — the view is the same from every one.
+          <span className="block mt-1 text-white/40">
+            Slider = scale factor a(t); age assumes standard ΛCDM. Drag to
+            rotate.
           </span>
         </>
       }
-    >
-      <div
-        ref={canvasWrapRef}
-        className="fig-viz relative w-full"
-        style={{ height: 520 }}
-      >
-        {/* Slider inset — floats in the bottom-left corner so the
-           balloon claims the whole panel. The outer div lets pointer
-           events fall through to the canvas everywhere except the
-           inner control box (so dragging the balloon outside the inset
-           and clicking through dots both keep working). */}
-        <div className="absolute bottom-3 left-3 z-10 pointer-events-none w-[240px] max-w-[calc(100%-24px)]">
-          <div
-            className="pointer-events-auto rounded-md px-3 py-2"
-            style={{
-              background: "rgb(var(--c-bg-rgb) / 0.55)",
-              border: "1px solid rgb(255 255 255 / 0.08)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-            }}
-          >
+      rail={
+        <>
+          {/* scale-factor slider + age readout — right rail in fullscreen,
+             below the balloon in normal flow. */}
+          <div className="mt-4" style={{ flexShrink: 0 }}>
             <div className="flex items-baseline justify-between gap-2">
-              <label className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 shrink-0">
+              <label className="font-mono tracking-[0.22em] uppercase text-white/55 shrink-0" style={{ fontSize: sz(0.6) ?? "9px" }}>
                 a(t)
               </label>
-              <span className="font-mono text-[11px] text-plasma truncate text-right tabular-nums">
+              <span className="font-mono text-plasma text-right tabular-nums" style={{ fontSize: sz(0.72) ?? "11px" }}>
                 {scale.toFixed(2)}
               </span>
             </div>
             <div className="flex items-baseline justify-between gap-2 mb-1.5">
-              <label className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55 shrink-0">
+              <label className="font-mono tracking-[0.22em] uppercase text-white/55 shrink-0" style={{ fontSize: sz(0.6) ?? "9px" }}>
                 age
               </label>
-              <span className="font-mono text-[11px] text-white/85 truncate text-right tabular-nums">
+              <span className="font-mono text-white/85 text-right tabular-nums" style={{ fontSize: sz(0.72) ?? "11px" }}>
                 {ageLabel} <span className="text-white/45">· {epoch}</span>
               </span>
             </div>
@@ -839,13 +835,35 @@ export function BalloonAnalogyPanel() {
               className="cosmic-slider w-full"
               aria-label={`cosmic scale factor a(t) = ${scale.toFixed(2)}, universe age ${ageLabel}`}
             />
-            <div className="flex items-center justify-between font-mono text-[8px] tracking-[0.22em] uppercase text-white/40 mt-1">
+            <div className="flex items-center justify-between font-mono tracking-[0.22em] uppercase text-white/40 mt-1" style={{ fontSize: sz(0.5) ?? "8px" }}>
               <span>0 · big bang</span>
               <span>20 · far future</span>
             </div>
           </div>
-        </div>
 
+          {/* Hidden hooks for FigureFrame's data-shortcut handler — click a
+             dot on the balloon or press 1–6 to switch which galaxy is you. */}
+          <div style={{ display: "none" }} aria-hidden="true">
+            {BALLOON_NAMES.map((name, i) => (
+              <button
+                key={`sc-${name}`}
+                type="button"
+                tabIndex={-1}
+                onClick={() => setObserver(i)}
+                data-shortcut={String(i + 1)}
+              >
+                galaxy {name}
+              </button>
+            ))}
+          </div>
+        </>
+      }
+    >
+      <div
+        ref={canvasWrapRef}
+        className="fig-viz relative w-full"
+        style={{ height: fs ? "100%" : 520 }}
+      >
         <Canvas
           dpr={[1, 1.75]}
           camera={{
@@ -863,25 +881,6 @@ export function BalloonAnalogyPanel() {
             reduced={reduced}
           />
         </Canvas>
-      </div>
-
-      {/* Hidden hooks for FigureFrame's data-shortcut handler — the
-         visible galaxy-pill row was removed; users now click dots on the
-         balloon or press 1–6 to switch observer. Placed after the canvas
-         so the inset slider remains FigureFrame.firstFocusable() on
-         fullscreen entry (display:none buttons fail focus silently). */}
-      <div style={{ display: "none" }} aria-hidden="true">
-        {BALLOON_NAMES.map((name, i) => (
-          <button
-            key={`sc-${name}`}
-            type="button"
-            tabIndex={-1}
-            onClick={() => setObserver(i)}
-            data-shortcut={String(i + 1)}
-          >
-            galaxy {name}
-          </button>
-        ))}
       </div>
     </FigurePanel>
   );

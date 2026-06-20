@@ -8,16 +8,26 @@ function FigurePanel({
   caption,
   children,
   fitFs = false,
+  sidebar = false,
+  rail,
 }: {
   idx: string;
   kicker: string;
   caption: ReactNode;
   children: ReactNode;
   fitFs?: boolean;
+  /** Figure-left / caption-right fullscreen layout (see global.css). */
+  sidebar?: boolean;
+  /** Controls/detail for sidebar Tier 2 — a sibling `.fig-rail` (direct
+      child of the figure-stub) lifted into the right column in fullscreen;
+      a plain stacking block in normal flow. */
+  rail?: ReactNode;
 }) {
+  const cls = `figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}${sidebar ? " is-fs-sidebar" : ""}`;
   return (
-    <figure data-fade className={`figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}`}>
+    <figure data-fade className={cls}>
       <div className="figure-body">{children}</div>
+      {rail && <div className="fig-rail">{rail}</div>}
       <figcaption>
         <span className="figure-tag">Fig. {idx}</span>
         <span className="figure-title"> — {kicker}.</span>{" "}
@@ -454,10 +464,41 @@ export function HeliumRecipePanel() {
       idx="1.3.d"
       kicker="The Frozen Recipe — Why ≈25% Helium"
       caption="Helium needs neutrons, and neutrons are the scarce ingredient. Fusion pairs every 2 neutrons with 2 protons into one helium-4 (mass 4); the leftover protons stay as hydrogen. With about 7 protons per neutron, that works out to roughly three-quarters hydrogen and one-quarter helium by mass — and expansion then froze it there for good. Slide the proton-to-neutron ratio to see how it sets the mix; 7-to-1 is our Universe."
-      fitFs
+      sidebar
+      rail={
+        <>
+          <div className="mt-4 grid grid-cols-2 gap-4" style={{ flexShrink: 0 }}>
+            <div>
+              <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>hydrogen · by mass</div>
+              <div className="font-serif font-medium" style={{ fontSize: sz(1.7) ?? "1.7rem", color: PROTON, lineHeight: 1.1 }}>{Hh.toFixed(0)}%</div>
+            </div>
+            <div>
+              <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>helium · by mass</div>
+              <div className="font-serif font-medium" style={{ fontSize: sz(1.7) ?? "1.7rem", color: HE, lineHeight: 1.1 }}>{He.toFixed(0)}%</div>
+            </div>
+          </div>
+
+          <div className="mt-4" style={{ flexShrink: 0 }}>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.62) }}>
+                surviving protons per neutron
+              </label>
+              <span className="font-mono text-[10px]" style={{ color: isReal ? "var(--c-accent)" : "var(--c-text-soft)", fontSize: sz(0.62) }}>
+                {pPerN} : 1{isReal ? " · our Universe" : ""}
+              </span>
+            </div>
+            <input type="range" min={1} max={12} step={1} value={pPerN} onChange={(e) => setPPerN(parseInt(e.target.value))} className="cosmic-slider" />
+            <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1" style={{ fontSize: sz(0.56) }}>
+              <span>1 : 1 · all helium</span>
+              <span>7 : 1</span>
+              <span>12 : 1 · little helium</span>
+            </div>
+          </div>
+        </>
+      }
     >
       <div ref={vizRef} className="fig-viz relative w-full overflow-hidden rounded-md flex items-center justify-center">
-        <svg viewBox={`0 0 ${W} ${H2}`} className="block w-full h-auto" style={{ maxWidth: "360px" }}>
+        <svg viewBox={`0 0 ${W} ${H2}`} className="block w-full h-auto" style={{ maxWidth: fs ? "none" : "360px" }}>
           <path d={arcPath(0, Hh)} fill={PROTON} opacity="0.85" />
           <path d={arcPath(Hh, 100)} fill={HE} opacity="0.9" />
           <text x={cx} y={cy - 2} textAnchor="middle" fontSize="30" fontFamily="var(--font-serif)" fontWeight="500" fill={HE}>
@@ -467,34 +508,6 @@ export function HeliumRecipePanel() {
             HELIUM
           </text>
         </svg>
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-4" style={{ flexShrink: 0 }}>
-        <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>hydrogen · by mass</div>
-          <div className="font-serif font-medium" style={{ fontSize: sz(1.7) ?? "1.7rem", color: PROTON, lineHeight: 1.1 }}>{Hh.toFixed(0)}%</div>
-        </div>
-        <div>
-          <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.6) }}>helium · by mass</div>
-          <div className="font-serif font-medium" style={{ fontSize: sz(1.7) ?? "1.7rem", color: HE, lineHeight: 1.1 }}>{He.toFixed(0)}%</div>
-        </div>
-      </div>
-
-      <div className="mt-4" style={{ flexShrink: 0 }}>
-        <div className="flex items-center justify-between mb-1">
-          <label className="font-mono text-[10px] tracking-[0.22em] uppercase text-white/55" style={{ fontSize: sz(0.62) }}>
-            surviving protons per neutron
-          </label>
-          <span className="font-mono text-[10px]" style={{ color: isReal ? "var(--c-accent)" : "var(--c-text-soft)", fontSize: sz(0.62) }}>
-            {pPerN} : 1{isReal ? " · our Universe" : ""}
-          </span>
-        </div>
-        <input type="range" min={1} max={12} step={1} value={pPerN} onChange={(e) => setPPerN(parseInt(e.target.value))} className="cosmic-slider" />
-        <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em] uppercase text-white/40 mt-1" style={{ fontSize: sz(0.56) }}>
-          <span>1 : 1 · all helium</span>
-          <span>7 : 1</span>
-          <span>12 : 1 · little helium</span>
-        </div>
       </div>
     </FigurePanel>
   );

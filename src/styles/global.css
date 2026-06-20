@@ -726,6 +726,108 @@ figure.figure-stub > figcaption .figure-title {
   max-height: 24vh;
 }
 
+/* ── Sidebar fullscreen (opt-in via `.is-fs-sidebar` on the panel) ──────
+   Our screens are landscape, but the default fullscreen stacks the figure,
+   its controls/detail boxes and the caption in one vertical column — so a
+   tall caption can steal ~30vh and squeeze a square-ish visualization. In
+   sidebar mode the `.fig-viz` (and its body) take the FULL HEIGHT on the
+   LEFT, and the caption — plus, optionally, a `.fig-rail` of controls and
+   detail boxes — sit in a thin column on the RIGHT.
+
+     • Tier 1 — add only `.is-fs-sidebar`: the whole figure body owns the
+       left column; the caption becomes the right column.
+     • Tier 2 — also pass the controls/detail as a sibling `.fig-rail` div
+       (a *direct* child of the figure-stub, not nested in `.figure-body`):
+       the right column splits into the rail (top, scrolls if tall) and the
+       caption (bottom), leaving only the bare `.fig-viz` on the left.
+
+   This is a judgement call per figure — wide/landscape vizzes (timelines,
+   spectra, horizontal plots) and image-zoom panels stay full-width. Pure
+   CSS + `:has()`; no DOM node is moved, so the React islands are untouched. */
+.figure-frame.is-fs .figure-stub.is-fs-sidebar {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) clamp(270px, 26vw, 400px);
+  grid-template-rows: 100%;
+  grid-template-areas: "main rail";
+  gap: clamp(14px, 1.8vw, 26px);
+  align-items: stretch;
+}
+/* Everything that isn't the caption or the rail is the left "main" column
+   (a panel's `.figure-body`, or a bare `.fig-viz`, plus any hidden helpers). */
+.figure-frame.is-fs .figure-stub.is-fs-sidebar > :not(figcaption):not(.fig-rail) {
+  grid-area: main;
+  min-width: 0;
+  min-height: 0;
+}
+/* The caption lives in a narrow column here — size it a touch smaller than
+   the full-width fullscreen caption (`clamp(15px,1.95vh,26px)`) so even a
+   long caption fits the column without scrolling. */
+.figure-frame.is-fs .figure-stub.is-fs-sidebar > figcaption {
+  font-size: clamp(13px, 1.6vh, 19px);
+  line-height: 1.5;
+}
+/* Tier 1 (no rail): the caption fills the whole right column, vertically
+   centred, with a divider rule separating it from the figure. */
+.figure-frame.is-fs .figure-stub.is-fs-sidebar:not(:has(> .fig-rail)) > figcaption {
+  grid-area: rail;
+  align-self: stretch;
+  max-height: 100%;
+  margin-top: 0;
+  /* Top padding clears the floating ✕ Exit · ESC button (top:16px). */
+  padding: clamp(52px, 6.4vh, 66px) 0 12px clamp(16px, 1.7vw, 26px);
+  border-top: 0;
+  border-left: 1px solid rgb(var(--c-text-rgb) / 0.14);
+  /* Grid + min-content rows (not flex) so the lines can't compress and
+     overlap; centre the text in the spare height. */
+  display: grid;
+  grid-auto-rows: min-content;
+  align-content: safe center;
+  overflow-y: auto;
+}
+/* Tier 2 (has a rail): right column = rail (sized to its controls, on top)
+   + caption (fills ALL the remaining height, on the bottom). The rail row
+   is `auto` and the caption row is `1fr` so the caption claims every spare
+   pixel — it only scrolls when it genuinely can't fit, never while there's
+   whitespace left in the column. */
+.figure-frame.is-fs .figure-stub.is-fs-sidebar:has(> .fig-rail) {
+  grid-template-areas: "main rail" "main cap";
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.figure-frame.is-fs .figure-stub.is-fs-sidebar > .fig-rail {
+  grid-area: rail;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(8px, 1.4vh, 16px);
+  /* Top padding clears the floating ✕ Exit · ESC button (top:16px). */
+  padding-top: clamp(52px, 6.4vh, 66px);
+  padding-left: clamp(16px, 1.7vw, 26px);
+  border-left: 1px solid rgb(var(--c-text-rgb) / 0.14);
+}
+.figure-frame.is-fs .figure-stub.is-fs-sidebar:has(> .fig-rail) > figcaption {
+  grid-area: cap;
+  min-height: 0;
+  /* Fill the row (stretch is the grid default) so the left divider runs
+     full height, but cap at the row so a long caption scrolls instead of
+     overflowing. */
+  max-height: 100%;
+  margin-top: 0;
+  padding: 12px 0 12px clamp(16px, 1.7vw, 26px);
+  border-top: 1px solid rgb(var(--c-text-rgb) / 0.1);
+  border-left: 1px solid rgb(var(--c-text-rgb) / 0.14);
+  /* Centre the caption text so spare height is shared above and below it
+     (distributed). Use a GRID with `min-content` rows — unlike shrinking
+     flex items, min-content rows never compress the line boxes, so the
+     text can't overlap into gibberish when the column is short. `safe`
+     top-aligns + scrolls when the caption is genuinely taller than the row. */
+  display: grid;
+  grid-auto-rows: min-content;
+  align-content: safe center;
+  overflow-y: auto;
+}
+
 /* ── Sticky left rail ───────────────────────────────────────────────── */
 .rail-item .label {
   opacity: 0;

@@ -176,6 +176,20 @@ patterns below come from those).
   `fitFs` to `FigurePanel` (adds `.is-fs-fit`, capping the viz) so the
   detail and caption keep room. Keep selector cards name-only → one
   shared detail panel.
+- **Sidebar layout — figure-left / caption-right** (landscape screens):
+  pass `sidebar` to `FigurePanel` (adds `.is-fs-sidebar`) → the viz takes
+  the full height on the LEFT, caption on the RIGHT (Tier 1). Also pass a
+  `rail` ReactNode → it renders as a sibling `<div class="fig-rail">` that
+  fullscreen lifts into the right column ABOVE the caption, leaving only
+  the bare `.fig-viz` on the left (Tier 2 — move slider/readout boxes
+  here). Pure CSS (`.figure-frame.is-fs .figure-stub.is-fs-sidebar` +
+  `:has(> .fig-rail)`), no DOM moved, normal-flow layout unchanged. **Use
+  SPARINGLY** — only for radial/square vizzes with no horizontal story
+  (0.3.b balloon = Tier 1; 2.4.d expanding grid, 1.3.d helium donut =
+  Tier 2). Wide/landscape vizzes (ratio ≳ 1.6 — spectra, timelines, axis
+  plots, left-to-right narratives) KEEP full-width. Don't combine with
+  `fitFs`; lift any inline viz `maxWidth` cap in fullscreen so it fills
+  the left column. 2.4/1.3 FigurePanels are the reference signature.
 - **SVG text scales for free** with the `viewBox`; **fixed-px HTML text
   stays tiny and clashes.** So in fullscreen, scale every HTML
   control/detail/label from ONE responsive base, uniformly:

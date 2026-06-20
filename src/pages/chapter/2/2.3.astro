@@ -1,0 +1,124 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/2.3/Hero";
+import PrevNext from "../../../components/scenes/2.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  CosmicWebPanel,
+  MergerPanel,
+  AntennaeImagePanel,
+} from "../../../components/scenes/2.3/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="2.3 — Formation and Evolution of Galaxies · AST 100"
+  description="How the Universe built its galaxies: gravity sharpening the faint ripples of the Big Bang into the cosmic web of filaments, clusters, and voids — and then growing galaxies from the bottom up, by collision and merger, into the spirals and ellipticals we see today."
+  activeId="2.3" chapter={2} current="/chapter/2/2.3">
+  <Hero
+    tease="After the Big Bang the Universe was almost perfectly smooth — but not quite. Gravity seized on the faintest ripples and, over billions of years, drew matter into a vast cosmic web: glowing filaments and dense clusters strung around enormous dark voids. Galaxies lit up where the threads ran densest — and then kept growing by colliding and merging, building the grand spirals and ellipticals we see today, one crash at a time."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="cosmic-web">The Cosmic Web</h2>
+      <p>By the time the first atoms had formed and the afterglow of the Big Bang set out across space
+        (<a href={subPath("1.4")}>§1.4</a>), the Universe was filled with a thin, almost featureless gas —
+        hydrogen and helium spread nearly evenly in every direction. But <em>not perfectly</em> evenly. Faint
+        ripples ran through that gas, patches no more than one part in a hundred thousand denser than their
+        surroundings. Those whispers of unevenness were the seeds of everything that followed — the very same
+        ripples printed on the cosmic microwave background, the baby picture of §1.4.</p>
+
+      <p>Gravity is patient. In each slightly crowded patch, the extra pull of matter — most of it
+        <strong>dark matter</strong>, an invisible substance far more plentiful than ordinary matter that
+        betrays itself only through its gravity — drew in still more gas. The crowded spots grew denser while
+        the empty regions drained emptier, and over hundreds of millions of years the gas in the densest knots
+        collapsed under its own weight until it grew hot enough to ignite the first stars and assemble into the
+        first galaxies.</p>
+
+      <p>Run that process forward and something unexpected emerges: a <strong>cosmic web</strong>. The
+        <strong>Millennium Simulation</strong> — a landmark 2005 computer model built by Volker Springel and
+        the Virgo Consortium — followed a representative chunk of the young universe under nothing but gravity,
+        all the way to the present day. What grew was not an even sprinkle of galaxies but a sponge-like
+        network: bright <strong>filaments</strong> of galaxies meeting at dense <strong>clusters</strong>,
+        wrapped around vast, near-empty <strong>voids</strong>. Drag the time slider in the figure below to run
+        that same growth forward yourself, from a near-uniform haze to the web in full.</p>
+
+      <FigureFrame label="The cosmic web grows from the seeds">
+        <CosmicWebPanel client:visible />
+      </FigureFrame>
+
+      <p>This is no simulation's daydream. When astronomers charted the real positions of millions of galaxies
+        — first in the <strong>Sloan Digital Sky Survey</strong> and the <strong>2dF Galaxy Redshift
+        Survey</strong> — they found exactly this architecture: galaxies and clusters strung along
+        interconnected threads and sheets that curl around enormous voids. The largest of these features are
+        staggering. The <strong>Sloan Great Wall</strong>, a sheet of galaxies mapped in 2003, stretches about
+        <strong>1.4 billion light-years</strong> — a single connected structure reaching roughly a thousandth
+        of the way across the entire observable Universe.</p>
+
+      <p>The whole web is, in a sense, a magnified fossil of the infant Universe. Cosmologists trace its
+        blueprint back to microscopic <em>quantum fluctuations</em> — tiny, random variations in density —
+        present in the Universe's first split second. During a fleeting early burst of expansion called
+        <strong>inflation</strong>, those microscopic ripples were stretched to astronomical size, laying down
+        the pattern that gravity has been sharpening into filaments and voids ever since. The faint warm and
+        cool spots on the cosmic microwave background (§1.4) and the cosmic web are the same seeds, seen at two
+        very different ages. And as the first galaxies switched on, their fierce ultraviolet light reached out
+        and tore the electrons back off the surrounding hydrogen — the <strong>Epoch of Reionization</strong> —
+        flooding the young web with starlight.</p>
+
+      <h2 id="evolution">How Galaxies Grow</h2>
+      <p>The galaxies that first lit up along the web were not the grand designs of <a href={subPath("2.2")}>§2.2</a>
+        — they were small, ragged, gas-rich fragments. Galaxies grow mostly from the <strong>bottom up</strong>,
+        by <strong>hierarchical merging</strong>: gravity keeps drawing smaller pieces together into larger
+        ones, the way streams feed rivers that feed a sea. Because the early Universe was far more crowded than
+        today's, these collisions were frequent — and merging has been the main engine of galaxy evolution ever
+        since.</p>
+
+      <p>A galaxy collision is anything but tidy. As two galaxies swing past or plough through each other, their
+        gravity wrenches both out of shape, flinging long streamers of stars and gas — <strong>tidal
+        tails</strong> — out into space and slamming clouds of gas together. Compressed gas collapses into
+        stars, so a single collision can trigger a galaxy-wide burst of star formation: a <strong>starburst</strong>,
+        igniting thousands of brilliant young star clusters at once. But the <em>lasting</em> outcome turns on
+        one thing above all — the relative sizes of the two galaxies. Scrub through the encounter in the figure
+        below, and toggle between a merger of equals and a lopsided one.</p>
+
+      <FigureFrame label="Galaxy mergers — major versus minor">
+        <MergerPanel client:visible />
+      </FigureFrame>
+
+      <p>When two comparable spirals collide — a <strong>major merger</strong> — the wreck is total: the
+        delicate disks and spiral arms are destroyed, the stars flung onto random orbits, and what settles out
+        is a smooth, featureless <strong>elliptical</strong>. This is how many of the ellipticals on Hubble's
+        tuning fork (§2.2) were built — not by slowly ageing along the fork, but by sudden, violent assembly. A
+        <strong>minor merger</strong> is gentler: a large spiral swallows a much smaller dwarf galaxy,
+        thickening and ruffling its disk a little but leaving its overall shape intact. That is how our own
+        <a href={subPath("2.1")}>Milky Way</a> has grown — by quietly cannibalizing dwarf after dwarf.</p>
+
+      <p>The sky is full of these encounters frozen at every stage. The Whirlpool (M51) trails a luminous arm
+        drawn out by a small passing companion; the giant elliptical Centaurus A (§2.2) wears a dark band of
+        dust, the indigestible remains of a spiral it once swallowed. Closer to home, the Milky Way is pulling
+        apart the Sagittarius dwarf galaxy at this very moment. But the most photogenic merger of all is the
+        <strong>Antennae</strong> — two spirals caught in the thick of a major collision, ablaze with starburst
+        clusters. The picture below is the real thing, from the Hubble Space Telescope; switch on zoom to
+        explore it up close.</p>
+
+      <FigureFrame label="The Antennae galaxies — a real major merger">
+        <AntennaeImagePanel client:visible />
+      </FigureFrame>
+
+      <p>Our own Galaxy's story is not finished either. The Andromeda Galaxy, the nearest large spiral to ours,
+        is drifting toward us, and for years astronomers expected the two to fuse into a single giant elliptical
+        a few billion years from now. More careful measurements have since muddied that forecast — once the gentle
+        tugs of our smaller galactic neighbours are folded in, a collision within the next ten billion years now
+        looks closer to a coin-flip than a certainty. The one sure thing is that the building never stopped.</p>
+
+      <hr />
+
+      <p><em>From the faint seeds of the Big Bang to a web of galaxies, endlessly merging and reshaping — that is
+        how the Universe assembled its structure. Next we listen to how these galaxies move, and find that almost
+        every one of them is racing away from us: the first clue that the whole Universe is expanding.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>
