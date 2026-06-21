@@ -142,12 +142,40 @@ export const CHAPTERS: Chapter[] = [
     title: "Stellar Age",
     telescope: "Gaia",
     weeks: "5–6",
-    overviewLive: false,
+    overviewLive: true,
+    description:
+      "From roughly four to nine billion years after the Big Bang, the galaxies built in Chapter 2 fill with stars. Across four lessons and seven milestones, Chapter 3 follows the Sun and its furnace, the family of stars sorted by birth mass, the births and deaths that forge the carbon, oxygen, and iron of planets and people, and the white dwarfs, neutron stars, and black holes left behind — closing close to home with the cloud that collapsed to make our own Sun.",
+    overviewTease:
+      "The Galactic Age built the galaxies; the Stellar Age fills them with stars. From four to nine billion years in, generation after generation ignites, forges the elements the Big Bang never made, and scatters them back — ending with the cloud that became our own Sun.",
     subs: [
-      { id: "3.1", title: "The Sun", live: false },
-      { id: "3.2", title: "Types of Stars", live: false },
-      { id: "3.3", title: "Formation and Evolution of Stars", live: false },
-      { id: "3.4", title: "Stellar Remnants", live: false },
+      {
+        id: "3.1",
+        title: "The Sun",
+        live: true,
+        tease:
+          "The Sun is nothing special — an ordinary yellow star that happens to be ours, 150 million km away. But cut it open and it is a layered furnace: a 15-million-degree core fusing hydrogen into helium, wrapped in zones that ferry the heat to a 5,800-degree surface. Each second, four million tonnes become light.",
+      },
+      {
+        id: "3.2",
+        title: "Types of Stars",
+        live: true,
+        tease:
+          "No two stars are alike — they range from blue-white to deep red, and from a billion times the Sun's light down to a fraction of it. Yet sort them by colour and brightness and they fall into a few clean families on one chart. Behind it all lies a single quiet rule: birth weight is destiny.",
+      },
+      {
+        id: "3.3",
+        title: "Formation and Evolution of Stars",
+        live: true,
+        tease:
+          "A star is just a cold cloud of hydrogen until gravity squeezes its core to ten million degrees and it catches fire. From there, one number — its mass — decides everything: a quiet fade to a white dwarf, or a supernova that forges the carbon, oxygen, and iron of every planet and person.",
+      },
+      {
+        id: "3.4",
+        title: "Stellar Remnants",
+        live: true,
+        tease:
+          "Every star dies, but not the same death. What it leaves behind — a cooling Earth-sized cinder, a city-sized ball of neutrons, or a black hole — is set by one number: its birth mass. Follow that fork to its strangest end, where gravity wins so completely not even light escapes.",
+      },
     ],
   },
   {
@@ -339,6 +367,29 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
   "2.4": [
     { id: "rulers", label: "Distance & Speed" },
     { id: "law", label: "Hubble's Law" },
+  ],
+  /* Chapter 3 */
+  "3.0": [
+    { id: "our-star", label: "Our Star" },
+    { id: "the-family", label: "Star Families" },
+    { id: "forge", label: "Cosmic Forge" },
+    { id: "endings", label: "Endings" },
+  ],
+  "3.1": [
+    { id: "anatomy", label: "Anatomy" },
+    { id: "furnace", label: "The Furnace" },
+  ],
+  "3.2": [
+    { id: "classification", label: "Reading Starlight" },
+    { id: "mass", label: "Mass Is Destiny" },
+  ],
+  "3.3": [
+    { id: "birth", label: "Birth" },
+    { id: "life", label: "Life & Death" },
+  ],
+  "3.4": [
+    { id: "remnants", label: "The Fork" },
+    { id: "black-holes", label: "Black Holes" },
   ],
 };
 

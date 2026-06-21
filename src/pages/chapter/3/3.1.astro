@@ -1,0 +1,111 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/3.1/Hero";
+import PrevNext from "../../../components/scenes/3.1/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  SunStructurePanel,
+  FusionChainPanel,
+} from "../../../components/scenes/3.1/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="3.1 — The Sun · AST 100"
+  description="Our nearest star, layer by layer — core, radiative zone, convective zone, photosphere, chromosphere, and corona — and the proton–proton fusion chain that turns 600 million tonnes of hydrogen into light every second."
+  activeId="3.1" chapter={3} current="/chapter/3/3.1">
+  <Hero
+    tease="The Sun is not special — it is an ordinary yellow star, one of hundreds of billions, that happens to be ours. But look inside and it is a layered furnace: a 15-million-degree core fusing hydrogen into helium, wrapped in zones that ferry that energy out to a 5,800-degree surface. Each second it turns four million tonnes of itself into pure light."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="anatomy">Anatomy of a Star</h2>
+      <p>
+        The Sun is the nearest star, and a star is simply a giant ball of hot gas held together by its own gravity and lit
+        from within by nuclear reactions. What makes the Sun easy to study is only that it is close — 150 million
+        kilometres away, against light-years for the next one. In every other way it is utterly ordinary: a
+        middle-weight, middle-aged <strong>yellow star</strong>, the kind astronomers label a <strong>G-type</strong>
+        star (the letter is just a slot in the colour-and-temperature scheme we meet in <a href={subPath("3.2")}>§3.2</a>).
+        Hundreds of billions like it fill our galaxy alone.
+      </p>
+      <p>
+        Its bulk numbers set the scale for everything that follows. The Sun's radius is about
+        <strong>696,000 kilometres</strong> — roughly 109 Earths set side by side. Its mass is about
+        <strong>two thousand trillion trillion kilograms</strong> (a 2 followed by 30 zeros), some 333,000 times the mass
+        of the Earth, and that mass is what its gravity uses to hold the whole thing together. The visible surface sits at
+        about <strong>5,800 K</strong> — kelvin, a temperature scale that starts at the coldest possible cold, so 5,800 K
+        is about 5,500°C. Deep in the centre the temperature climbs to roughly <strong>15 million K</strong>. And it pours
+        out energy at a steady <strong>3.8 × 10²⁶ watts</strong> — a 38 followed by 25 zeros in watts, the power of
+        trillions of trillions of light bulbs, every second.
+      </p>
+      <p>
+        That energy keeps the Sun from collapsing. Gravity pulls every part of the star inward, and left alone it would
+        crush the Sun to a point. What holds the line is the outward push of hot gas — pressure — fed by the heat of
+        nuclear reactions in the centre. The inward pull and the outward push settle into a near-perfect standoff, and
+        that balance is what makes a star stable for billions of years.
+      </p>
+      <p>
+        Cut the Sun open and you find it built in layers, each one a different way of moving energy outward. Click through
+        them in the cutaway below, or step with the arrow keys, from the centre out. The innermost is the
+        <strong>core</strong>, the fusion furnace, where the 15-million-degree heat is generated. Around it is the
+        <strong>radiative zone</strong>, so dense that energy can only seep through as light, bouncing from particle to
+        particle. Outside that is the <strong>convective zone</strong>, cool enough that the gas itself churns — hot
+        plasma rises, sheds its heat, and sinks back to be reheated, like a pot at a boil. The churning surfaces at the
+        <strong>photosphere</strong>, the thin visible skin where light finally escapes. Above it lie two faint
+        atmospheric layers: the reddish <strong>chromosphere</strong> and, far beyond, the wispy
+        <strong>corona</strong> — both normally lost in the glare, but briefly visible during a total solar eclipse.
+      </p>
+
+      <FigureFrame label="A cutaway of the Sun">
+        <SunStructurePanel client:visible />
+      </FigureFrame>
+
+      <h2 id="furnace">The Furnace</h2>
+      <p>
+        What is actually happening in that core? The Sun runs on <strong>nuclear fusion</strong> — forcing the nuclei of
+        light atoms to merge into heavier ones. The fuel is <strong>hydrogen</strong>, the simplest atom, whose nucleus is
+        a single <strong>proton</strong>. Under the crushing heat and pressure of the core, protons slam together hard
+        enough to stick, and through a few steps four of them are welded into a single nucleus of <strong>helium</strong>,
+        the next-lightest element. The dominant route is called the <strong>proton–proton chain</strong>. Step through it
+        with the arrow keys in the figure below.
+      </p>
+
+      <FigureFrame label="The proton–proton fusion chain">
+        <FusionChainPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Along the way the chain throws off two <strong>positrons</strong> and two <strong>neutrinos</strong> — the
+        antimatter twins of the electron and the ghostly, near-weightless particles we first met in
+        <a href={subPath("1.2")}>§1.2</a> — plus a burst of light. The key is the bookkeeping of mass. One helium nucleus
+        weighs about <strong>0.7% less</strong> than the four protons that made it. That missing scrap of mass is not lost;
+        it leaves as energy, following Einstein's <strong>E = mc²</strong> from <a href={subPath("0.1")}>§0.1</a> — mass
+        and energy are two forms of one thing, and a tiny mass converts to an enormous amount of energy. (This is the same
+        fusion that forged the first helium moments after the Big Bang, in <a href={subPath("1.3")}>§1.3</a> — only now it
+        runs steadily inside a star instead of in a one-time cosmic flash.)
+      </p>
+      <p>
+        The numbers are staggering. Every second, the Sun fuses about <strong>600 million tonnes</strong> of hydrogen, and
+        of that, roughly <strong>4 million tonnes</strong> vanish as pure energy. The light born in the core does not
+        escape quickly: a single packet of light random-walks through the dense radiative zone, taking tens of thousands
+        of years to reach the surface — and then crosses the empty 150 million kilometres to your eyes in just about
+        <strong>eight minutes</strong>. So the sunlight on your skin began its journey before human history started.
+      </p>
+      <p>
+        Burning four million tonnes a second sounds like it should empty the tank fast, but the Sun is so vast that it can
+        keep this up for roughly <strong>10 billion years</strong> — its main hydrogen-burning lifetime. It formed about
+        <strong>4.6 billion years</strong> ago, which puts it a little past halfway. What happens when the core hydrogen
+        finally runs low — and how the Sun will end — is the story of <a href={subPath("3.3")}>§3.3</a>.
+      </p>
+
+      <hr />
+
+      <p><em>An ordinary yellow star, built in layers around a furnace that turns four million tonnes of itself into light
+        every second — and has done so for 4.6 billion years, with as long again to go. Next we ask where the Sun sits
+        among all the other stars.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

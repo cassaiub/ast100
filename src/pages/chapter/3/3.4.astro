@@ -1,0 +1,68 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/3.4/Hero";
+import PrevNext from "../../../components/scenes/3.4/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { StellarForkPanel, BlackHolePanel } from "../../../components/scenes/3.4/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="3.4 — Stellar Remnants · AST 100"
+  description="What a dying star leaves behind — white dwarf, neutron star, or black hole — depends only on its mass, and the strange physics of black holes that follows."
+  activeId="3.4"
+  chapter={3}
+  current="/chapter/3/3.4"
+>
+  <Hero
+    tease="Every star dies, but they do not all die the same death. What a star leaves behind — a cooling Earth-sized cinder, a city-sized ball of pure neutrons, or a black hole — is decided by one number: how much it weighed at birth. Follow that fork to its strangest ending, where gravity wins so completely that not even light can climb back out."
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="remnants">The Fork in the Road</h2>
+      <p>
+        A star spends its life balancing two opposing forces: gravity pulling its gas inward, and the outward push of heat from nuclear fusion in its core (<a href={subPath("3.3")}>§3.3</a>). When the fuel runs out, the heat fades and gravity wins. But it does not win the same way for every star. What the dead core becomes — and there are exactly three possibilities — is decided almost entirely by one number: the star's <strong>mass</strong>, the amount of matter it was born with, measured in <strong>solar masses</strong> (one solar mass, written 1 M☉, is the mass of our Sun).
+      </p>
+      <p>
+        A star born with <strong>less than about 8 solar masses</strong> ends as a <strong>white dwarf</strong>. After it gently puffs off its outer layers, the leftover core is roughly the size of the Earth (a radius near 6,000 km) yet still holds up to 1.4 times the mass of the whole Sun — so dense that a teaspoon of it would weigh about a tonne. Nothing is fusing inside it any more. What stops it collapsing further is a quantum rule called <strong>electron degeneracy pressure</strong>: electrons simply refuse to be packed any tighter. That rule sets a hard ceiling, the <strong>Chandrasekhar limit</strong>, at about 1.4 M☉ — no white dwarf can be heavier. (If one in a close pair steals enough gas from its companion to cross that limit, it detonates entirely as a Type Ia supernova, leaving nothing behind.) Otherwise it just cools and fades, forever.
+      </p>
+      <p>
+        A star born with roughly <strong>8 to 20 solar masses</strong> dies more violently. Its core collapses in a fraction of a second and rebounds as a <strong>supernova</strong>, blasting the outer star into space. The crushed core that remains is a <strong>neutron star</strong>: gravity has forced its protons and electrons to merge into neutrons, packing 1.4 to about 2 solar masses into a ball only about 20 km across — the width of a city. This is <strong>nuclear density</strong>, the same density as the inside of an atom's core; a sugar-cube of it would weigh as much as a mountain. Many neutron stars spin rapidly and sweep beams of radio waves across the sky like a lighthouse — the <strong>pulsars</strong> met in <a href={subPath("3.3")}>§3.3</a>.
+      </p>
+      <p>
+        And a star born with <strong>more than about 20 solar masses</strong> leaves the strangest remnant of all. Its core is so heavy that not even neutron pressure can hold it up. Gravity collapses it completely, with nothing left to stop it — a <strong>black hole</strong>. Drag the slider below to set a star's birth mass and watch which of the three remnants it leaves behind; each outcome's key numbers — size, density, mass limit — appear beside it.
+      </p>
+
+      <FigureFrame label="The remnant fork — set the birth mass, see the dead core">
+        <StellarForkPanel client:visible />
+      </FigureFrame>
+
+      <h2 id="black-holes">Black Holes</h2>
+      <p>
+        When gravity collapses a core with nothing left to resist it, the matter is crushed inward until — as far as known physics can tell — all of it piles into a single point of infinite density called the <strong>singularity</strong>. The result is an object whose gravity is so intense that, within a certain distance, nothing can escape it at all. That distance marks the <strong>event horizon</strong>, the "surface" of the black hole and the true point of no return: cross it, and there is no path back out.
+      </p>
+      <p>
+        Why can nothing climb back out? To escape any object you must move faster than its <strong>escape speed</strong> — the speed it takes to break free of its gravity (about 11 km per second to leave the Earth). The more compact and massive the object, the higher that speed. At the event horizon, the escape speed reaches the <strong>speed of light</strong> itself — the cosmic limit no object can exceed (<a href={subPath("0.1")}>§0.1</a>). Light leaving from just inside is bent right back (gravity bends the path of light, <a href={subPath("0.1")}>§0.1</a>), so even light cannot get out. That is why a black hole is black, and why its horizon is a true edge to what we can ever see — a cosmic horizon of the same kind we met in <a href={subPath("0.3")}>§0.3</a>.
+      </p>
+      <p>
+        The size of the horizon follows a beautifully simple rule. Its radius — called the <strong>Schwarzschild radius</strong> — is about <strong>3 km for every solar mass</strong> the black hole contains. A black hole as heavy as the Sun would be a mere 3 km across; one of ten solar masses, about 30 km. Just outside the horizon lies the <strong>photon sphere</strong>, at 1.5 times that radius, where gravity is strong enough to bend light into a circle, so a beam can orbit the hole. Drag the slider below to scale the mass and watch the horizon and photon sphere grow, with each part labelled.
+      </p>
+
+      <FigureFrame label="Anatomy of a black hole — scale the mass, grow the horizon">
+        <BlackHolePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The black holes born from dying stars weigh a few to a few dozen solar masses — these are <strong>stellar-mass</strong> black holes. But they are the small cousins. At the heart of nearly every galaxy sits a <strong>supermassive black hole</strong> of millions to billions of solar masses, the engine that powers the blazing active galaxies of <a href={subPath("2.2")}>§2.2</a>. The physics is identical — the same singularity, the same horizon, the same 3-km-per-solar-mass rule — only the scale is vastly larger: a billion-solar-mass horizon is wider than our entire Solar System.
+      </p>
+
+      <hr />
+
+      <p><em>Three endings, set by a single number at birth — a fading cinder, a city of neutrons, or a hole in spacetime. Next we leave the stars behind and turn to the worlds that orbit them, beginning with our own Sun's planets — and the white-dwarf fate that quietly awaits it.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

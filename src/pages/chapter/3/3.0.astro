@@ -1,0 +1,106 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/3.0/Hero";
+import PrevNext from "../../../components/scenes/3.0/PrevNext.astro";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="3.0 — Stellar Age · AST 100"
+  description="From roughly four to nine billion years after the Big Bang — the era when the galaxies built in Chapter 2 fill with stars. Four lessons and seven milestones woven into one story: the Sun as the type-specimen star and its furnace, the family of stars sorted by mass, the births and deaths that forge the elements, and the remnants left behind — ending with the cloud that became our own Sun."
+  activeId="3.0"
+  chapter={3}
+  current="/chapter/3/3.0"
+>
+  <Hero
+    tease="The Galactic Age built the galaxies; the Stellar Age fills them with stars. From about four to nine billion years after the Big Bang, generation after generation of stars ignite, forge the carbon and oxygen and iron that the Big Bang never made, and scatter them back into space. Four lessons and seven milestones trace that story — and it ends close to home, with the cloud that collapsed to make our own Sun."
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="our-star">Our Star</h2>
+      <p>The <strong>Stellar Age</strong> — Chapter 3 of <em>Our Cosmic History</em> — runs from about
+        <strong>four to nine billion years</strong> after the Big Bang, and across <strong>four lessons</strong> and
+        <strong>seven milestones</strong> it tells how the galaxies assembled in Chapter 2 filled with stars. It begins
+        where the Galactic Age left off (<a href={subPath("2.4")}>§2.4</a>): exploding stars had laced the galactic disks
+        with heavy elements, and a fresh generation of element-rich <strong>Population&nbsp;I</strong> stars — the kind
+        enriched enough to cradle rocky planets — began to form. Right at the chapter's opening the Milky Way settled into
+        its flat, spinning <strong>thin disk</strong> (around 4 Gyr), cradling exactly those new stars.</p>
+      <p>To understand a chapter full of stars, we start with the one we know best. The <strong>Sun</strong> is not
+        special — an ordinary yellow star, one of hundreds of billions — but it is close, and inside it is a layered
+        furnace fusing hydrogen into helium at fifteen million degrees, turning four million tonnes of itself into light
+        every second. It is the type specimen against which every other star is measured.</p>
+      <a
+        href={subPath("3.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">3.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">The Sun</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="the-family">A Family of Stars</h2>
+      <p>Step back from the Sun and the sky fills with stars of every colour and brightness. Sort them by colour and
+        luminosity and they fall into clear families on a single chart — the <strong>Hertzsprung–Russell diagram</strong>,
+        drawn today from the nearly two billion stars measured by <strong>Gaia</strong>, this chapter's telescope. Behind
+        the chart lies one quiet rule: a star's <strong>birth mass</strong> alone sets its colour, its brightness, its
+        lifetime, and its fate. This is also the era when the Universe built stars fastest — the <strong>peak
+        star-formation rate</strong> falls four to five billion years in — and when a <strong>galactic habitable
+        zone</strong> took shape around 6 Gyr: a band of the galaxy with enough heavy elements to build planets, yet far
+        enough from frequent supernova blasts to leave them in peace.</p>
+      <a
+        href={subPath("3.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">3.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Types of Stars</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="forge">The Cosmic Forge</h2>
+      <p>Stars are not eternal. Each is born inside a cold cloud of hydrogen, lives out a span fixed by its mass, and dies.
+        And it is in that living and dying that the chapter's most important work happens. Through <strong>stellar
+        nucleosynthesis</strong> (4–9 Gyr), stars act as furnaces — ordinary stars fuse hydrogen into helium, aging giants
+        build helium into carbon, oxygen, silicon, and finally iron. Then, in <strong>supernova enrichment</strong>
+        (4–9 Gyr), the most massive stars explode, forging elements heavier than iron — gold, uranium — and flinging the
+        whole enriched mix back into space to seed the next generation of clouds. The Big Bang made almost nothing but
+        hydrogen and helium (<a href={subPath("1.3")}>§1.3</a>); every heavier atom in your body was forged in a star. We
+        are, quite literally, made of stardust.</p>
+      <a
+        href={subPath("3.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">3.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Formation and Evolution of Stars</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="endings">Endings and a Beginning</h2>
+      <p>What a star leaves behind is decided, once again, by its birth mass: a cooling Earth-sized <strong>white
+        dwarf</strong>, a city-sized <strong>neutron star</strong>, or a <strong>black hole</strong> — gravity winning so
+        completely that not even light escapes (<a href={subPath("3.4")}>§3.4</a>). All of this unfolds against a shifting
+        cosmic backdrop: around <strong>7 Gyr</strong> the expansion of the Universe began to <strong>accelerate</strong>,
+        as a mysterious <strong>dark energy</strong> overtook gravity and the cosmos passed from a matter-ruled era to a
+        dark-energy-ruled one. And the age ends close to home. Around <strong>9 Gyr</strong> — about 4.6 billion years
+        ago — a chemically rich cloud in our corner of the Milky Way collapsed under its own gravity in the <strong>solar
+        nebula collapse</strong>, giving birth to the Sun and Solar System and handing the story to the Planetary Age.</p>
+      <a
+        href={subPath("3.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">3.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Stellar Remnants</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <hr />
+
+      <blockquote><p>The Galactic Age built the galaxies; the Stellar Age forged, inside them, the elements that
+        planets and people are made of — and lit the one ordinary star that, near the era's close, gave us the cloud our
+        own world was born from.</p></blockquote>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

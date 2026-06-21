@@ -1,0 +1,89 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/3.2/Hero";
+import PrevNext from "../../../components/scenes/3.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { HRDiagramPanel, MassDestinyPanel } from "../../../components/scenes/3.2/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="3.2 — Types of Stars · AST 100"
+  description="How astronomers sort the stars: the colour-and-temperature ladder O B A F G K M, the Hertzsprung–Russell diagram with its main sequence, giants, and white dwarfs, and the one number — birth mass — that decides a star's whole life and death."
+  activeId="3.2" chapter={3} current="/chapter/3/3.2">
+  <Hero
+    tease="No two stars are quite alike — they come in colours from blue-white to deep red, in brightnesses spanning a factor of a billion. Yet sort them by colour and brightness and they fall into a few clear families on a single chart, the Hertzsprung–Russell diagram. And behind it all lies one quiet rule: a star's birth weight alone seals its fate."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="classification">Reading Starlight</h2>
+      <p>The Sun (<a href={subPath("3.1")}>§3.1</a>) is one star among hundreds of billions in our galaxy, and they are
+        far from identical. The most obvious difference is <strong>colour</strong>. Some stars burn blue-white, others a
+        warm yellow, others a dull red — and colour is not decoration. As we saw with light and the spectrum
+        (<a href={subPath("0.4")}>§0.4</a>), a glowing object's colour reveals its <strong>temperature</strong>: hotter
+        surfaces glow blue, cooler ones glow red, exactly as an iron bar runs from red to white as it heats.</p>
+
+      <p>Astronomers grade that colour ladder with seven letters — <strong>O, B, A, F, G, K, M</strong> — the
+        <strong>spectral classes</strong>, running from the hottest blue stars to the coolest red ones. An O star can
+        reach 30,000 degrees Celsius at its surface (a 3 followed by four zeros); an M red dwarf simmers at only about
+        3,000. Generations of students have remembered the order with the line <em>"Oh, Be A Fine Girl/Guy, Kiss
+        Me."</em> Our own Sun is a middle-of-the-road <strong>G</strong> star at about 5,800 degrees — yellow, ordinary,
+        unremarkable.</p>
+
+      <p>Colour is only half the story; stars also differ enormously in <strong>brightness</strong>, or
+        <strong>luminosity</strong> — the total light a star pours out, which we measure in <strong>Suns</strong> (the
+        Sun's output is defined as 1). Plot every star with temperature across the bottom and luminosity up the side and
+        a remarkable pattern appears: the stars are not scattered at random but gather into a few families. This is the
+        <strong>Hertzsprung–Russell diagram</strong>, the single most important chart in all of stellar astronomy. Most
+        stars — the Sun included — sit along a diagonal band called the <strong>main sequence</strong>, the long, stable
+        prime of life during which a star fuses hydrogen in its core. Off the band sit two oddball families: the
+        <strong>giants and supergiants</strong> in the upper right (cool-surfaced but so vast they outshine everything),
+        and the <strong>white dwarfs</strong> in the lower left (scorching-hot but Earth-sized, so they barely glow).
+        Step through the marked stars below with the arrow keys and watch each one's class, colour and home region
+        light up.</p>
+
+      <FigureFrame label="The Hertzsprung–Russell diagram" variant="wide">
+        <HRDiagramPanel client:visible />
+      </FigureFrame>
+
+      <p>Charts like this one used to be drawn from a few thousand stars. Today they are drawn from nearly two billion.
+        The European Space Agency's <strong>Gaia</strong> mission — the telescope of this chapter — measured the
+        positions, distances, colours and brightnesses of about <strong>1.8 billion stars</strong>, yielding the finest,
+        most crowded Hertzsprung–Russell diagrams ever made and turning a hand-sketched idea from 1911 into a precise
+        census of the Milky Way.</p>
+
+      <h2 id="mass">Mass Is Destiny</h2>
+      <p>Why do stars come in such different kinds at all? The answer is a single number fixed at birth: a star's
+        <strong>mass</strong> — how much gas it gathered when it formed. Mass alone sets a star's temperature, its
+        colour, its brightness, how long it lives, and how it dies. Everything else follows.</p>
+
+      <p>The rule is steep, and at first it seems backwards. A heavy star has more fuel — yet it burns out far
+        <em>faster</em>, because greater weight crushes its core harder and makes it fuse that fuel at a furious rate.
+        A faint <strong>red dwarf</strong> of about one-tenth the Sun's mass sips its fuel so slowly that it can shine
+        steadily for <strong>trillions of years</strong> — longer than the present age of the Universe. The
+        <strong>Sun</strong>, at one solar mass, will last about <strong>ten billion years</strong>. A massive
+        <strong>O star</strong> of twenty Suns or more blazes thousands of times brighter, races through its fuel, and
+        dies in only a <strong>few million years</strong> — a cosmic eyeblink. Drag the slider below to set a star's
+        birth mass and watch its lifetime, colour and final fate change.</p>
+
+      <FigureFrame label="Birth mass sets a star's lifetime and fate">
+        <MassDestinyPanel client:visible />
+      </FigureFrame>
+
+      <p>That birth weight also decides the ending. A modest star like the Sun fades quietly into a
+        <strong>white dwarf</strong>; a heavier one explodes as a <strong>supernova</strong> and leaves behind a
+        neutron star or a black hole. How a star travels along this path — and what it scatters back into space on the
+        way — is the story of <a href={subPath("3.3")}>§3.3</a>, and what survives the end is the subject of
+        <a href={subPath("3.4")}>§3.4</a>.</p>
+
+      <hr />
+
+      <p><em>Seven letters of colour, one diagram of families, and a single number — mass at birth — that writes a
+        star's whole biography in advance. Next we follow that biography unfolding: how a star is born, lives, and
+        changes.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

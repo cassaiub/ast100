@@ -1,0 +1,53 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/3.3/Hero";
+import PrevNext from "../../../components/scenes/3.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { StarBirthPanel, HrTracksPanel } from "../../../components/scenes/3.3/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="3.3 — Formation and Evolution of Stars · AST 100"
+  description="How stars are born inside cold hydrogen clouds, and how their mass decides everything that follows — a small star's quiet end as a white dwarf, or a massive star's supernova that forges the elements of planets and people."
+  activeId="3.3" chapter={3} current="/chapter/3/3.3">
+  <Hero
+    tease="A star begins as nothing but a cold cloud of hydrogen, light-years wide, drifting in the dark. Gravity squeezes it down until its core catches fire at ten million degrees — and a star is born. From that moment its mass decides its whole life: a quiet fade to a white dwarf, or a violent supernova that scatters the carbon, oxygen, and iron of every planet and every person."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="birth">Birth</h2>
+      <p>Stars are not eternal. Each one is born, lives, and dies — and the whole story is written by a single number, its <strong>mass</strong> (how much matter it contains). We met that idea in <a href={subPath("3.2")}>§3.2</a>, where mass set a star's colour and brightness; here we follow it from the first cold cloud to the final cinder.</p>
+
+      <p>A star begins inside a <strong>giant molecular cloud</strong> — a vast, cold drift of hydrogen gas and dust, often around 250 light-years across (a light-year is the distance light travels in a year, about 9 trillion kilometres — a 9 followed by twelve zeros). The cloud is frigid, only about ten degrees above absolute zero, the coldest temperature possible. Two forces compete inside it: <strong>gravity</strong>, pulling the gas inward, and <strong>pressure</strong>, the outward push of the gas itself. Where a patch grows dense enough, gravity wins, and that patch begins to collapse.</p>
+
+      <p>As it falls inward the cloud breaks into smaller, denser <strong>fragments</strong>, each shrinking on its own. Squeezing gas heats up, so the core of a collapsing fragment warms as it contracts — gravitational energy turning into heat. The fragment also spins faster as it shrinks (the way a skater speeds up by pulling in their arms), and that spin flattens the leftover gas into a swirling <strong>accretion disk</strong> feeding a hot central lump: a <strong>protostar</strong>. This stormy stage is called the <strong>T-Tauri phase</strong>, and the young protostar fires jets of gas from its poles. But its core, around a million degrees, is still not hot enough to burn.</p>
+
+      <p>The final step is <strong>ignition</strong>. When the core is squeezed to about <strong>10 million degrees</strong>, hydrogen begins to fuse into helium — the furnace we met in <a href={subPath("3.1")}>§3.1</a> switches on. Fusion's outward push now balances gravity's inward pull, the collapse halts, and a stable <strong>main-sequence star</strong> is born. This is exactly when the cosmos was busiest building stars: the timeline's <strong>peak star-formation rate</strong> falls four to five billion years after the Big Bang. Step through the four stages below with the arrow keys (or the 1–4 buttons) to watch a star assemble itself.</p>
+
+      <FigureFrame label="How a star is born">
+        <StarBirthPanel client:visible />
+      </FigureFrame>
+
+      <h2 id="life">Life and Death</h2>
+      <p>Once fusion begins, a star joins the <strong>main sequence</strong> — the long diagonal band on the Hertzsprung–Russell diagram of <a href={subPath("3.2")}>§3.2</a>, which plots stars by brightness against surface temperature (hot on the left, cool on the right). A star spends most of its life there, steadily fusing hydrogen. What happens when that fuel runs out depends entirely on its starting mass. In the <em>star in a box</em> below, pick a mass and age the star — drag the slider or use the arrow keys — to watch it trace its whole life across the diagram, its size, colour, and brightness changing as it goes.</p>
+
+      <FigureFrame label="Star in a box — a star's life set by its mass">
+        <HrTracksPanel client:visible />
+      </FigureFrame>
+
+      <p><strong>Small stars</strong> — below about eight times the Sun's mass, our own Sun included — live long and die gently. After roughly ten billion years the core's hydrogen is spent; the star swells and cools into a <strong>red giant</strong>, around thirty times its old size, now fusing helium into carbon and oxygen. In its final act it sheds its outer layers as a glowing shell called a <strong>planetary nebula</strong>, about a light-year wide, leaving behind only its bare core — a <strong>white dwarf</strong>, an Earth-sized cinder with no fuel left, that cools for billions of years.</p>
+
+      <p><strong>Big stars</strong> — above about eight solar masses — live fast and die violently. They burn through their fuel in just a few million years, then balloon into a <strong>red supergiant</strong> that fuses ever-heavier elements in onion-like shells, layer upon layer, until the core is <strong>iron</strong>. Iron is the dead end: fusing it absorbs energy instead of releasing it, so the core suddenly collapses in less than a second and rebounds in a titanic explosion — a <strong>supernova</strong>, briefly outshining its entire galaxy. Left behind is a tiny, almost unimaginably dense remnant only about ten kilometres across: a <strong>neutron star</strong>, or, if the star was heavy enough, a <strong>black hole</strong> (the subject of <a href={subPath("3.4")}>§3.4</a>).</p>
+
+      <p>This building of elements inside stars is called <strong>stellar nucleosynthesis</strong>, and it is one of the most important facts in all of science. The Big Bang made almost nothing but hydrogen and helium — the primordial recipe of <a href={subPath("1.3")}>§1.3</a>. Every heavier atom — the carbon in your cells, the oxygen you breathe, the iron in your blood and in Earth's core — was forged inside a star and scattered into space when that star died, enriching the next generation of clouds. The timeline marks this as <strong>stellar nucleosynthesis</strong> and <strong>supernova enrichment</strong>, four to nine billion years after the Big Bang. We are, quite literally, made of stardust.</p>
+
+      <hr />
+
+      <p><em>A cloud collapses, ignites, and lives out a life set entirely by its mass — ending as a quiet white dwarf or a galaxy-lighting supernova. Next we visit what those deaths leave behind: the white dwarfs, neutron stars, and black holes of §3.4 — and later, in Chapter 4, the leftover disk of one ordinary star that became our own Solar System.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>
