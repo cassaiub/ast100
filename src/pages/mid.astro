@@ -72,6 +72,8 @@ const tools = [
   },
 ];
 
+const SAMPLE_PRESENTATION = "https://canva.link/g2ii8y73jpzdd7j";
+
 const reportRubric = [
   { label: "Content & research depth", marks: 6 },
   { label: "Connection to course material", marks: 5 },
@@ -311,7 +313,67 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         >
           What each group submits.
         </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Two deliverables, both submitted on{" "}
+          <span style="color: var(--c-text-strong);">Kriterion</span> — not
+          Google Classroom. All five students prepare their own part; one
+          person in the group merges everything and submits a single file or
+          link on behalf of the whole group.
+        </p>
       </div>
+
+      {/* Sample presentation — large call-to-action button */}
+      <a
+        data-fade
+        style="--delay: 120ms"
+        href={SAMPLE_PRESENTATION}
+        target="_blank"
+        rel="noopener"
+        class="group block mb-6 rounded-2xl px-6 md:px-8 py-6 md:py-7 transition-colors hover:bg-[rgb(var(--c-accent-rgb)/0.06)]"
+        style="border: 1px solid var(--c-border); background: rgb(var(--c-accent-rgb) / 0.04);"
+      >
+        <div class="flex items-center gap-5 flex-wrap">
+          <span
+            class="flex items-center justify-center w-12 h-12 rounded-full shrink-0"
+            style="background: rgb(var(--c-accent-rgb) / 0.12); color: var(--c-accent);"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </span>
+          <div class="min-w-0">
+            <div
+              class="font-mono text-[10px] tracking-[0.28em] uppercase mb-1"
+              style="color: var(--c-accent);"
+            >
+              Sample presentation
+            </div>
+            <div
+              class="font-serif font-medium leading-tight"
+              style="font-size: clamp(1.3rem, 2.6vw, 1.7rem); color: var(--c-text-strong);"
+            >
+              Open the Canva template structure →
+            </div>
+            <p class="mt-1.5 text-[13px] max-w-[60ch]" style="color: var(--c-text-soft);">
+              This is the structure your presentation must follow.{" "}
+              <span style="color: var(--c-text-strong);">Copy it into your own
+              Canva</span> and edit it together as a group — each student
+              builds their segment on the same theme and layout.
+            </p>
+          </div>
+          <span
+            class="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase shrink-0 transition-transform group-hover:translate-x-1"
+            style="color: var(--c-text-faint);"
+          >
+            ↗ open
+          </span>
+        </div>
+      </a>
 
       <div data-fade style="--delay: 180ms" class="grid md:grid-cols-2 gap-4">
         <div class="surface-card">
@@ -319,7 +381,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
             style="color: var(--c-accent);"
           >
-            Report
+            Report → Kriterion · Mid report
           </div>
           <div
             class="font-serif font-medium leading-tight mb-2"
@@ -331,10 +393,12 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="text-[14px] font-sans leading-[1.6]"
             style="color: var(--c-text-soft);"
           >
-            Each student writes 400–600 words on their assigned role, with
-            embedded figures and captions. The group assembles all five
-            sections plus a shared intro and conclusion into a single PDF,
-            submitted via Google Classroom before the midterm class.
+            Each of the five students writes 400–600 words on their assigned
+            role, with embedded figures and captions. One member then merges
+            all five sections plus a shared intro and conclusion into a single
+            PDF and uploads it to the{" "}
+            <span style="color: var(--c-text-strong);">Mid report</span> on
+            Kriterion. One PDF per group — not per student.
           </p>
         </div>
 
@@ -343,7 +407,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
             style="color: var(--c-accent);"
           >
-            Presentation
+            Presentation → Kriterion · Canva link
           </div>
           <div
             class="font-serif font-medium leading-tight mb-2"
@@ -356,10 +420,39 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             style="color: var(--c-text-soft);"
           >
             Each student presents their section for 3–4 minutes (Role 1 →
-            Role 5 in order). Minimum 4 slides per student including a title
-            slide. Built in Canva from the provided template.
+            Role 5 in order), minimum 4 slides each including a title slide,
+            following the sample structure above. One member merges every
+            segment into a single Canva deck and submits its{" "}
+            <span style="color: var(--c-text-strong);">link in the
+            presentation section</span> of Kriterion.
           </p>
         </div>
+      </div>
+
+      {/* How submission works on Kriterion — the one-shot, per-group mechanic */}
+      <div
+        data-fade
+        style="--delay: 260ms; border: 1px solid var(--c-border); background: var(--c-bg-soft);"
+        class="mt-4 rounded-xl px-6 py-5"
+      >
+        <div
+          class="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
+          style="color: var(--c-solar, var(--c-accent));"
+        >
+          ⚠ How submission works on Kriterion
+        </div>
+        <p class="text-[14px] font-sans leading-[1.6]" style="color: var(--c-text-soft);">
+          When you log into Kriterion you'll see the option to submit{" "}
+          <span style="color: var(--c-text-strong);">from your group</span>.
+          The moment one member submits, the submission locks — no one else in
+          the group can submit after that. So decide{" "}
+          <span style="color: var(--c-text-strong);">who is responsible</span>{" "}
+          ahead of time. That person must gather all five parts into the single
+          merged PDF and the single merged Canva deck before submitting, and
+          everyone must confirm they're working on a consistent theme and
+          structure (different topics, same look) before it goes in. There is
+          no individual submission and no resubmission.
+        </p>
       </div>
     </div>
   </section>

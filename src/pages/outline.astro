@@ -194,9 +194,21 @@ const habits = [
             Seven ages, thirteen weeks.
           </h2>
         </div>
-        <p class="text-[13px] max-w-[36ch] mt-1" style="color: var(--c-text-faint);">
-          Two project weeks bookend the second half of the course.
-        </p>
+        <div class="mt-1 flex flex-col items-start md:items-end gap-3">
+          <p class="text-[13px] max-w-[36ch]" style="color: var(--c-text-faint);">
+            Two project weeks bookend the second half of the course.
+          </p>
+          <a
+            href={withBase("/files/phy100-ast100-outline.pdf")}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.22em] uppercase px-3 py-2 rounded-md transition-colors hover:bg-[rgb(var(--c-accent-rgb)/0.06)]"
+            style="color: var(--c-accent); border: 1px solid var(--c-border);"
+          >
+            <span class="inline-block w-2 h-2 rounded-full" style="background: var(--c-accent); box-shadow: 0 0 10px rgb(var(--c-accent-rgb) / 0.75);"></span>
+            Download outline (PDF)
+          </a>
+        </div>
       </div>
 
       <div data-fade style="--delay: 180ms; border: 1px solid var(--c-border);" class="overflow-x-auto rounded-xl">
