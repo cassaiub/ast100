@@ -6,36 +6,82 @@ const roles = [
     n: 1,
     title: "The Cosmic Camera",
     subtitle: "How telescopes read the Universe",
-    body: "Narrator and visual guide for the group. Explains why we need different telescopes for different wavelengths using the electromagnetic spectrum from Chapter 0.4, and introduces the specific telescopes — Planck, Hubble, JWST, Chandra, ALMA — that the other four students draw from. Frames the entire group presentation: telescopes are time machines, each image a photograph of a different era of cosmic history.",
+    body: "Narrator and visual guide for the group. Explains why we need different telescopes for different wavelengths using the electromagnetic spectrum from Chapter 0.4, and introduces the specific telescopes — Planck, Hubble, JWST, Chandra, ALMA — that the other four students draw from. Opens the story: telescopes are time machines, each image a photograph of a different era of cosmic history.",
     chapter: "0.4",
   },
   {
     n: 2,
     title: "The Oldest Light",
     subtitle: "Images of the Particle Age",
-    body: "Works with CMB maps from the Planck satellite — the earliest photograph of the Universe at 380,000 years old. Explains what color variations mean (density fluctuations, the seeds of future structure), compares COBE, WMAP, and Planck maps to show improving resolution over decades, and connects the CMB to Big Bang theory.",
+    body: "Works with CMB maps from the Planck satellite — the earliest photograph of the Universe at 380,000 years old. Explains what colour variations mean (density fluctuations, the seeds of future structure), compares COBE, WMAP, and Planck maps to show improving resolution over decades, and hands the CMB's density seeds forward to Role 3's first galaxies.",
     chapter: "1",
   },
   {
     n: 3,
     title: "The First Galaxies",
     subtitle: "Images of the Galactic Age",
-    body: "Works with deep field images — the Hubble Ultra Deep Field and JWST deep fields. Explains that looking deeper into space means looking further back in time, identifies the difference between nearby and distant galaxies in the same image, and connects chaotic early galaxies to the ordered spirals we see today.",
+    body: "Works with deep field images — the Hubble Ultra Deep Field and JWST deep fields. Explains that looking deeper into space means looking further back in time, identifies the difference between nearby and distant galaxies in the same image, and hands those galaxies forward to Role 4 as the places where stars are born.",
     chapter: "2",
   },
   {
     n: 4,
     title: "Stellar Nurseries & Graveyards",
     subtitle: "Images of the Stellar Age",
-    body: "Works with two contrasting sets of images: star-forming regions (the Pillars of Creation, Orion Nebula in infrared from JWST) and stellar remnants (Crab Nebula from Chandra in X-ray, Hubble planetary nebulae). The narrative arc is the complete stellar lifecycle — from birth to death — told through publicly available images across infrared and X-ray wavelengths.",
+    body: "Works with two contrasting sets of images: star-forming regions (the Pillars of Creation, Orion Nebula in infrared from JWST) and stellar remnants (Crab Nebula from Chandra in X-ray, Hubble planetary nebulae). The arc is the complete stellar life cycle — birth to death — told across infrared and X-ray, then hands one rich, multi-wavelength object to Role 5.",
     chapter: "3",
   },
   {
     n: 5,
     title: "One Object, Many Eyes",
     subtitle: "A multi-wavelength story",
-    body: "Takes a single famous object — Centaurus A or the Crab Nebula — and shows how it looks completely different across radio, infrared, visible, X-ray, and gamma-ray wavelengths, explaining what each wavelength reveals. Serves as the group's conclusion, synthesizing the central message: the full story of the Universe requires the full spectrum of light.",
+    body: "Takes a single famous object — Centaurus A or the Crab Nebula — and shows how it looks completely different across radio, infrared, visible, X-ray, and gamma-ray wavelengths, explaining what each reveals. Closes the story, tying every age back together: the full history of the Universe needs the full spectrum of light.",
     chapter: "0.4",
+  },
+];
+
+// The three in-class build sessions = the three "Seeing the Seven Ages" progress
+// reports on Kriterion (Gather → Develop → Weave). Each is submitted as ≤100
+// words + one annotated image (hand-drawn or AI-assisted), and together they
+// become the report and the talk. Mirrors PROGRESS_EVENT_DEFS in kriterion route.
+const build = [
+  {
+    n: 1,
+    word: "Gather",
+    tag: "Progress report 1 · in class",
+    essence: "Find the real telescope images your part of the story is built from.",
+    doing: [
+      "Open Aladin Lite and the archives; pull 2–4 real archival images for your role.",
+      "For each, note the object, telescope or mission, wavelength, and archive.",
+      "Choose ONE as your anchor — the single image you'll explain next week.",
+    ],
+    submit:
+      "≤ 100 words listing your images and your anchor, plus one annotated image — arrows and a label (object · telescope · wavelength · archive).",
+  },
+  {
+    n: 2,
+    word: "Develop",
+    tag: "Progress report 2 · in class",
+    essence: "Turn your anchor image into understood science.",
+    doing: [
+      "Work out what your anchor shows and why it looks that way at its wavelength.",
+      "Back it with one comparison to a second image.",
+      "Check your explanation against your course chapter — correct, not guessed.",
+    ],
+    submit:
+      "≤ 100 words naming the cause, not just the picture, plus one annotated science diagram whose arrows and labels explain WHY (“deeper = older”, “X-ray shell = dying star”).",
+  },
+  {
+    n: 3,
+    word: "Weave",
+    tag: "Progress report 3 · in class",
+    essence: "Link the group's five parts into one continuous story.",
+    doing: [
+      "Order the five parts along the Particle → Galactic → Stellar timeline.",
+      "Work out your two handoffs: what you receive from the role before, and set up for the role after.",
+      "Agree the shared thread and lock your one or two hero images.",
+    ],
+    submit:
+      "≤ 100 words naming the roles before and after you and each handoff, plus one annotated storyboard — your hero image, an arrow in from the previous role and out to the next.",
   },
 ];
 
@@ -74,23 +120,101 @@ const tools = [
 
 const SAMPLE_PRESENTATION = "https://canva.link/g2ii8y73jpzdd7j";
 
+// Both halves are 15 marks, each split into three equal 5-mark parts. The
+// report's three parts ARE the three progress reports (Gather / Develop / Weave);
+// the talk's three are fixed on Kriterion (Content / Delivery / Interaction,
+// PRESENTATION_CRITERION_MAX = 5 in @cassa/shared). Keep in sync with Kriterion.
 const reportRubric = [
-  { label: "Content & research depth", marks: 6 },
-  { label: "Connection to course material", marks: 5 },
-  { label: "Writing & figure curation", marks: 4 },
+  { label: "Gather", note: "real, correctly-labelled images", marks: 5 },
+  { label: "Develop", note: "the science, tied to the chapters", marks: 5 },
+  { label: "Weave", note: "your part connects into one story", marks: 5 },
 ];
 const presentationRubric = [
-  { label: "Content & narrative", marks: 7 },
-  { label: "Delivery & fluency", marks: 4 },
-  { label: "Slide design & visuals", marks: 4 },
+  { label: "Content", note: "informative, organised slides", marks: 5 },
+  { label: "Delivery", note: "preparedness and clear speech", marks: 5 },
+  { label: "Interaction", note: "engaging the room, body language", marks: 5 },
 ];
 const reportTotal = reportRubric.reduce((s, r) => s + r.marks, 0);
 const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
+
+// Concise, actionable tips per report criterion — drawn straight from the
+// Gather / Develop / Weave progress-report instructions.
+const reportTips = [
+  {
+    label: "Gather",
+    marks: 5,
+    blurb: "The evidence — real images, correctly identified.",
+    items: [
+      "Use real archival images with real names — “Crab Nebula · Chandra · X-ray”, never “a space picture”.",
+      "For every image give the object, telescope or mission, wavelength, and archive.",
+      "Include your annotated figures — hand-drawn or AI-assisted — a clean, unmarked screenshot doesn't count.",
+    ],
+  },
+  {
+    label: "Develop",
+    marks: 5,
+    blurb: "The understanding — the science behind the picture.",
+    items: [
+      "Explain the cause, not the caption — why the feature looks that way at that wavelength.",
+      "Anchor every claim to your course chapter; don't guess the science.",
+      "Back your anchor with one comparison — COBE → Planck detail, deeper = older, X-ray vs optical.",
+    ],
+  },
+  {
+    label: "Weave",
+    marks: 5,
+    blurb: "The synthesis — five parts, one continuous story.",
+    items: [
+      "Hand off cleanly — name what you receive from the role before you and set up for the role after.",
+      "Keep the shared thread visible — the spectrum, “looking out = looking back”, “deeper = earlier”.",
+      "Read as one Particle → Galactic → Stellar story, not five stapled essays.",
+    ],
+  },
+];
+
+// Tips per presentation criterion — what earns each of the three 5-mark bands.
+const presentationTips = [
+  {
+    label: "Content",
+    marks: 5,
+    blurb: "How informative, ordered, and well-organised your slides are.",
+    items: [
+      "Curate, don't cram — pick the most interesting points you can summarise well, but never skip the core concepts from class.",
+      "Bullets, not paragraphs — short lists, and balance each slide so it's neither empty nor overloaded.",
+      "Title slide: your name and the title of your assigned part.",
+      "Build from the course materials, not random websites or AI summaries.",
+      "Use explanatory images and diagrams — you may reuse infographics straight from the course pages.",
+    ],
+  },
+  {
+    label: "Delivery",
+    marks: 5,
+    blurb: "How prepared you are and how clearly you convey the material.",
+    items: [
+      "Present entirely in English.",
+      "Rehearse until your speech is fluid and confident.",
+      "Speak to the slide on screen — follow its bullets in order and walk the audience through each image.",
+      "Cut filler: keep only the slides you'll actually present.",
+      "Stay on time — finish within your allotted minutes.",
+    ],
+  },
+  {
+    label: "Interaction",
+    marks: 5,
+    blurb: "How you engage the screen, the audience, and your body language.",
+    items: [
+      "Speak spontaneously — don't read off a phone, laptop, or paper.",
+      "Split your focus between the screen (point out details) and the audience (make eye contact).",
+      "Move around and point toward different parts of the screen; don't freeze in one spot.",
+      "Use natural hand gestures to emphasise your points.",
+    ],
+  },
+];
 ---
 
 <Layout
   title="Midterm Project — Seeing the Seven Ages · AST 100"
-  description="A visual journey through the first half of cosmic history using archival telescope data."
+  description="A visual journey through the first half of cosmic history using archival telescope data, built over three weeks."
   current="/mid"
 >
   {/* ─────────────────────────────  Hero  ───────────────────────────── */}
@@ -101,7 +225,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         class="font-mono text-[11px] tracking-[0.32em] uppercase text-[var(--c-accent)] mb-7 flex items-center gap-3"
       >
         <span class="block w-9 h-px" style="background: var(--c-accent);"></span>
-         Midterm project · weeks 1–7
+         Midterm project · a three-week build
       </div>
 
       <h1
@@ -125,20 +249,22 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         style="--delay: 420ms; color: var(--c-text-soft);"
         class="mt-10 max-w-[68ch] text-[17px] md:text-[19px] leading-[1.65]"
       >
-        The midterm is a group astrophotography presentation using archival
-        data from the world's largest telescopes. Each group of 5 tells the
-        story of the first three ages of the Universe — Particle, Galactic,
-        and Stellar — through real images taken across the full
-        electromagnetic spectrum. The primary tool is{" "}
+        The midterm is a group astrophotography project — built over three weeks
+        and delivered as one report and one talk. Each group of 5 tells the story
+        of the Universe's first three ages — Particle, Galactic, and Stellar —
+        through real archival images taken across the full electromagnetic
+        spectrum. You build it in three in-class steps —{" "}
+        <span style="color: var(--c-text-strong);">Gather</span>,{" "}
+        <span style="color: var(--c-text-strong);">Develop</span>,{" "}
+        <span style="color: var(--c-text-strong);">Weave</span> — using{" "}
         <a
           href="https://aladin.cds.unistra.fr/AladinLite/"
           target="_blank"
           rel="noopener"
           style="color: var(--c-accent);"
           class="hover:underline">Aladin Lite</a
-        >, a browser-based sky atlas that lets students view any region of
-        the sky across radio, infrared, visible, X-ray, and microwave
-        wavelengths.
+        >, a browser sky atlas that shows any patch of sky in radio, infrared,
+        visible, X-ray, and microwave light.
       </p>
 
       <div
@@ -154,9 +280,9 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
            groups of 5
         </span>
         <span style="color: var(--c-text-ghost);">·</span>
-        <span>15 min total</span>
+        <span>3 build weeks</span>
         <span style="color: var(--c-text-ghost);">·</span>
-        <span>Canva template</span>
+        <span>15-min talk</span>
         <span style="color: var(--c-text-ghost);">·</span>
         <span>30 marks · 15 + 15</span>
       </div>
@@ -185,8 +311,9 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
           class="mt-4 max-w-[64ch] text-[15px]"
           style="color: var(--c-text-soft);"
         >
-          Each student takes one role. Together the five present a single
-          continuous story.
+          Each student takes one role. Role 1 opens the story and Role 5 closes
+          it, and every part hands off to the next — so the five voices read as a
+          single continuous story from the Particle Age to the Stellar Age.
         </p>
       </div>
 
@@ -233,6 +360,111 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
     </div>
   </section>
 
+  {/* ───────────────────────  The three-week build  ─────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 02 · The Build
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Three weeks, three steps.
+        </h2>
+        <p
+          class="mt-4 max-w-[68ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          The project isn't built the night before — it grows over three in-class
+          sessions, each submitted as a{" "}
+          <span style="color: var(--c-text-strong);">progress report</span> on
+          Kriterion. Every step is a small, real piece of the work: up to 100
+          words and one annotated image — hand-drawn or AI-assisted, either is
+          fine. Gather finds the evidence, Develop
+          explains it, Weave connects it — and together they become the report
+          you write and the talk you give.
+        </p>
+      </div>
+
+      <ol class="grid md:grid-cols-3 gap-4">
+        {
+          build.map((b, i) => (
+            <li
+              data-fade
+              style={`--delay: ${i * 90}ms`}
+              class="surface-card flex flex-col"
+            >
+              <div class="flex items-baseline justify-between mb-2">
+                <span
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {b.tag}
+                </span>
+                <span
+                  class="font-mono text-[11px]"
+                  style="color: var(--c-text-faint);"
+                >
+                  0{b.n}
+                </span>
+              </div>
+              <div
+                class="font-serif font-medium leading-tight"
+                style="font-size: 1.7rem; color: var(--c-text-strong);"
+              >
+                {b.word}
+              </div>
+              <p
+                class="font-serif italic mt-1 mb-4 text-[15px]"
+                style="color: var(--c-text-soft);"
+              >
+                {b.essence}
+              </p>
+              <ul class="space-y-2 mb-4">
+                {b.doing.map((d) => (
+                  <li
+                    class="flex gap-2.5 text-[13.5px] font-sans leading-[1.5]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    <span
+                      class="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full"
+                      style="background: var(--c-accent);"
+                    />
+                    <span>{d}</span>
+                  </li>
+                ))}
+              </ul>
+              <div
+                class="mt-auto pt-3"
+                style="border-top: 1px dashed var(--c-border);"
+              >
+                <div
+                  class="font-mono text-[10px] tracking-[0.18em] uppercase mb-1"
+                  style="color: var(--c-text-faint);"
+                >
+                  You submit
+                </div>
+                <p
+                  class="text-[12.5px] font-sans leading-[1.5]"
+                  style="color: var(--c-text-soft);"
+                >
+                  {b.submit}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
   {/* ─────────────────────────────  Tools  ──────────────────────────── */}
   <section
     class="relative px-6 md:px-10 py-24 md:py-32"
@@ -243,7 +475,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 02 · Tools
+          § 03 · Tools
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -255,7 +487,9 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
           class="mt-4 text-[14px] max-w-[40ch]"
           style="color: var(--c-text-soft);"
         >
-          All images are publicly available — no original capture required.
+          Every image is public — no original capture required. You start pulling
+          them from the Gather session and keep drawing on them through Develop
+          and Weave.
         </p>
       </div>
 
@@ -305,7 +539,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 03 · Deliverables
+          § 04 · Deliverables
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -317,11 +551,12 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
           class="mt-4 max-w-[64ch] text-[15px]"
           style="color: var(--c-text-soft);"
         >
-          Two deliverables, both submitted on{" "}
+          Your three weeks of Gather, Develop, and Weave now converge into two
+          deliverables, both submitted per group on{" "}
           <span style="color: var(--c-text-strong);">Kriterion</span> — not
-          Google Classroom. All five students prepare their own part; one
-          person in the group merges everything and submits a single file or
-          link on behalf of the whole group.
+          Google Classroom. All five students prepare their own part; one person
+          merges everything and submits a single file or link on behalf of the
+          whole group.
         </p>
       </div>
 
@@ -393,8 +628,9 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="text-[14px] font-sans leading-[1.6]"
             style="color: var(--c-text-soft);"
           >
-            Each of the five students writes 400–600 words on their assigned
-            role, with embedded figures and captions. One member then merges
+            Each student writes 400–600 words on their role — the images they
+            gathered, the science they developed, and how their part weaves into
+            the group's story — with their annotated figures. One member merges
             all five sections plus a shared intro and conclusion into a single
             PDF and uploads it to the{" "}
             <span style="color: var(--c-text-strong);">Mid report</span> on
@@ -468,7 +704,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 04 · Grading
+          § 05 · Grading
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -477,11 +713,15 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
           30 marks, split evenly.
         </h2>
         <p
-          class="mt-4 max-w-[60ch] text-[14px]"
-          style="color: var(--c-text-faint);"
+          class="mt-4 max-w-[64ch] text-[14px]"
+          style="color: var(--c-text-soft);"
         >
-          Indicative weights below — the detailed rubric will be confirmed
-          before the midterm.
+          Both halves are 15 marks, and each breaks into three equal parts of 5.
+          The report is scored on the three steps you already did —{" "}
+          <span style="color: var(--c-text-strong);">Gather, Develop, Weave</span>;
+          the talk on{" "}
+          <span style="color: var(--c-text-strong);">Content, Delivery,
+          Interaction</span>, graded live on Kriterion.
         </p>
       </div>
 
@@ -492,7 +732,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               class="font-mono text-[10px] tracking-[0.22em] uppercase"
               style="color: var(--c-accent);"
             >
-              Report
+              Report · the PDF
             </div>
             <div
               class="font-serif font-medium"
@@ -502,16 +742,29 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
             </div>
           </div>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             {
               reportRubric.map((r) => (
                 <li
-                  class="flex items-center justify-between font-sans text-[13px]"
-                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                  class="flex items-baseline justify-between gap-3 py-2"
+                  style="border-bottom: 1px dashed var(--c-border);"
                 >
-                  <span class="py-2">{r.label}</span>
+                  <div>
+                    <div
+                      class="font-sans text-[13.5px]"
+                      style="color: var(--c-text-strong);"
+                    >
+                      {r.label}
+                    </div>
+                    <div
+                      class="font-sans text-[11.5px] leading-tight mt-0.5"
+                      style="color: var(--c-text-faint);"
+                    >
+                      {r.note}
+                    </div>
+                  </div>
                   <span
-                    class="font-mono text-[12px]"
+                    class="font-mono text-[12px] shrink-0"
                     style="color: var(--c-text-faint);"
                   >
                     {r.marks}
@@ -528,7 +781,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               class="font-mono text-[10px] tracking-[0.22em] uppercase"
               style="color: var(--c-accent);"
             >
-              Presentation
+              Presentation · the talk
             </div>
             <div
               class="font-serif font-medium"
@@ -538,16 +791,29 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
             </div>
           </div>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             {
               presentationRubric.map((r) => (
                 <li
-                  class="flex items-center justify-between font-sans text-[13px]"
-                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                  class="flex items-baseline justify-between gap-3 py-2"
+                  style="border-bottom: 1px dashed var(--c-border);"
                 >
-                  <span class="py-2">{r.label}</span>
+                  <div>
+                    <div
+                      class="font-sans text-[13.5px]"
+                      style="color: var(--c-text-strong);"
+                    >
+                      {r.label}
+                    </div>
+                    <div
+                      class="font-sans text-[11.5px] leading-tight mt-0.5"
+                      style="color: var(--c-text-faint);"
+                    >
+                      {r.note}
+                    </div>
+                  </div>
                   <span
-                    class="font-mono text-[12px]"
+                    class="font-mono text-[12px] shrink-0"
                     style="color: var(--c-text-faint);"
                   >
                     {r.marks}
@@ -557,6 +823,166 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             }
           </ul>
         </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────  How to do well — the talk  ───────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 06 · Doing well — the talk
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Maximise the presentation score.
+        </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Present the work you built — the images you gathered, the science you
+          developed, the story you wove. The talk is graded on{" "}
+          <span style="color: var(--c-text-strong);">Content</span>,{" "}
+          <span style="color: var(--c-text-strong);">Delivery</span>, and{" "}
+          <span style="color: var(--c-text-strong);">Interaction</span>, 5 marks
+          each. A few tips for each.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        {
+          presentationTips.map((cat, i) => (
+            <div
+              data-fade
+              style={`--delay: ${i * 90}ms`}
+              class="surface-card flex flex-col"
+            >
+              <div class="flex items-baseline justify-between mb-1">
+                <div
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {cat.label}
+                </div>
+                <div
+                  class="font-mono text-[11px]"
+                  style="color: var(--c-text-faint);"
+                >
+                  {cat.marks} marks
+                </div>
+              </div>
+              <p
+                class="text-[13px] font-sans leading-[1.55] mb-4"
+                style="color: var(--c-text-faint);"
+              >
+                {cat.blurb}
+              </p>
+              <ul class="space-y-2.5 mt-auto">
+                {cat.items.map((tip) => (
+                  <li
+                    class="flex gap-2.5 text-[13.5px] font-sans leading-[1.55]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    <span
+                      class="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full"
+                      style="background: var(--c-accent);"
+                    />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────  How to do well — the report  ─────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 07 · Doing well — the report
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Maximise the report score.
+        </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          The report is your three progress reports, polished and merged into one
+          PDF. It's graded on the same three steps —{" "}
+          <span style="color: var(--c-text-strong);">Gather</span>,{" "}
+          <span style="color: var(--c-text-strong);">Develop</span>,{" "}
+          <span style="color: var(--c-text-strong);">Weave</span>, 5 marks each.
+          A few tips for each.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        {
+          reportTips.map((cat, i) => (
+            <div
+              data-fade
+              style={`--delay: ${i * 90}ms`}
+              class="surface-card flex flex-col"
+            >
+              <div class="flex items-baseline justify-between mb-1">
+                <div
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {cat.label}
+                </div>
+                <div
+                  class="font-mono text-[11px]"
+                  style="color: var(--c-text-faint);"
+                >
+                  {cat.marks} marks
+                </div>
+              </div>
+              <p
+                class="text-[13px] font-sans leading-[1.55] mb-4"
+                style="color: var(--c-text-faint);"
+              >
+                {cat.blurb}
+              </p>
+              <ul class="space-y-2.5 mt-auto">
+                {cat.items.map((tip) => (
+                  <li
+                    class="flex gap-2.5 text-[13.5px] font-sans leading-[1.55]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    <span
+                      class="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full"
+                      style="background: var(--c-accent);"
+                    />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
