@@ -5,7 +5,7 @@ interface SubLink { id: string; title: string; href: string; }
 interface Props { prev?: SubLink | null; next?: SubLink | null; sourceUrl?: string; }
 const {
   prev = { id: "3.3", title: "Formation and Evolution of Stars", href: subPath("3.3") },
-  next = { id: "4.0", title: "Planetary Age (coming soon)", href: chapterPath(4) },
+  next = { id: "4.0", title: "Planetary Age", href: subPath("4.0") },
   sourceUrl = "cassa.bd/abekta/courses/ast100/3.4",
 } = Astro.props;
 ---

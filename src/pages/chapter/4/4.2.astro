@@ -1,0 +1,128 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/4.2/Hero";
+import PrevNext from "../../../components/scenes/4.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  ClassMapPanel,
+  MassRadiusPanel,
+  SaturnSystemPanel,
+  EarthPanel,
+} from "../../../components/scenes/4.2/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="4.2 — Types of Planets · AST 100"
+  description="Sorting 6,300+ known planets into families by size, orbit, and density — hot Jupiters, super-Earths, ocean and lava worlds — then two case studies up close: the Saturn system and the living machine of Earth."
+  activeId="4.2" chapter={4} current="/chapter/4/4.2">
+  <Hero
+    tease="More than six thousand planets are now known, and almost none resemble home. Sort them by size and orbit and clean families appear — hot Jupiters, super-Earths, lava worlds, rare Earth-likes — while density betrays what each is made of. Then two case studies up close: Saturn, a miniature solar system of rings and shepherd moons, and Earth, whose churning core, layered air, and magnetic shield keep it alive."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="classification">Sorting the Worlds</h2>
+      <p>
+        When we sorted the stars in <a href={subPath("3.2")}>§3.2</a>, thousands of seemingly different suns collapsed
+        into a few clean families on a single chart. Planets reward the same treatment. Astronomers have now confirmed
+        <strong>more than 6,300 planets</strong> around other stars — <strong>exoplanets</strong> — on top of the eight
+        at home, and the way to tame that zoo is to plot two simple properties against each other: the planet's
+        <strong>size</strong> (its radius, measured in Earth radii) and its <strong>orbital period</strong> (the length
+        of its year, which also tells us how close it sits to its star, and so how hot it runs). On that chart,
+        explored in the figure below, the crowd separates into neighbourhoods.
+      </p>
+      <p>
+        At the top sit the <strong>gas giants</strong>, ten or more Earth radii across — but split into two camps.
+        The <strong>cold gas giants</strong> orbit far out, like our Jupiter and Saturn. The <strong>hot
+        Jupiters</strong>, by contrast, complete an orbit in just days, roasting against their stars; the very first
+        planet found around a Sun-like star, <strong>51 Pegasi b in 1995</strong>, was one, and their existence was the
+        first hint that planets can <em>move</em> after birth (<a href={subPath("4.3")}>§4.3</a>). Below them come the
+        <strong>ice giants</strong> like Uranus and Neptune, then the great middle class our solar system entirely
+        lacks: <strong>super-Earths and mini-Neptunes</strong>, worlds of one to four Earth radii that are the most
+        common type of planet known. The chart's corners hold the exotics — <strong>lava worlds</strong> orbiting so
+        tightly their rock stays molten, possible <strong>ocean worlds</strong> wrapped in global seas, and, rarest of
+        all to catch, <strong>Earth-like</strong> planets on temperate, year-long orbits. Click each family in the
+        figure; the arrow keys walk through them.
+      </p>
+
+      <FigureFrame label="The planet zoo, sorted by size and orbit">
+        <ClassMapPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Size and orbit sketch the families, but to learn what a planet is <em>made of</em> we need a second chart. If
+        we also know a planet's <strong>mass</strong>, then mass divided by volume gives its <strong>density</strong> —
+        and density is a fingerprint of composition. Earth, a ball of rock and iron, packs
+        <strong>5.5 grams into every cubic centimetre</strong> (five and a half times water's density). Saturn, a ball
+        of hydrogen, manages only <strong>0.7 g/cm³</strong> — less dense than water, so it would float in an
+        impossibly large bathtub. Those two values draw the reference lines in the figure below. A world hugging the
+        rock line is terrestrial; a world near the Saturn line is gas; and the wide space between is where the
+        in-between worlds live — ice giants, and super-Earths whose radius balloons if they keep even a thin
+        hydrogen-helium envelope. How we actually weigh and measure such distant planets — the transit for the radius,
+        the stellar wobble for the mass — is the whole story of <a href={subPath("4.4")}>§4.4</a>.
+      </p>
+
+      <FigureFrame label="Mass, radius, and density">
+        <MassRadiusPanel client:visible />
+      </FigureFrame>
+
+      <h2 id="worlds">Two Worlds Up Close</h2>
+      <p>
+        Statistics tell us what kinds of planets exist; visiting one tells us how a planet <em>works</em>. So let us
+        end with two case studies from home — one from each end of the density chart. First, the lightweight champion:
+        <strong>Saturn</strong>. The second-largest planet is a working scale model of a solar system. More than
+        <strong>270 confirmed moons</strong> orbit it — a single 2025 announcement added 128 at once — from ice-ball
+        <strong>Enceladus</strong>, whose south-pole geysers vent a buried ocean of liquid water into space, to mighty
+        <strong>Titan</strong>, bigger than Mercury and the only moon anywhere with a dense atmosphere, complete with
+        methane rain and rivers. And around it all spread the <strong>rings</strong>: countless orbiting chunks of
+        nearly pure water ice, wider than the Earth–Moon distance yet in places only ten metres thick, their sharp
+        edges and gaps patrolled by small <strong>shepherd moons</strong> whose gravity herds the ice into line — the
+        same gravitational choreography, in miniature, that governs the planets around the Sun. Tour the system in the
+        figure below with the arrow keys.
+      </p>
+
+      <FigureFrame label="The Saturn system">
+        <SaturnSystemPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Now the heavyweight — and the only world known to be alive: <strong>Earth</strong>. Its secret is that it is
+        still a <em>running machine</em>. Heat left over from its formation, topped up by radioactive decay, keeps the
+        deep interior churning. That churning drives <strong>plate tectonics</strong>: the rigid crust is broken into
+        plates that drift a few centimetres per year — about as fast as your fingernails grow — colliding, diving
+        under one another, and being recycled through the mantle. Run the clock across a billion years and whole
+        continents assemble and scatter: the supercontinent <strong>Rodinia</strong> formed around 1,000 million years
+        ago and broke apart around 750; its successor <strong>Pangea</strong> gathered by about 335 million years ago
+        and has been rifting apart since about 175 — the Atlantic Ocean is one of the cracks, still widening today.
+        This endless recycling regulates the atmosphere and climate over geological time; a dead, still planet could
+        not do it.
+      </p>
+      <p>
+        The same engine also builds Earth's defences. The churning liquid-iron <strong>outer core</strong> is a natural
+        dynamo, generating a <strong>magnetic field</strong> that inflates a protective bubble far larger than the
+        planet — reaching about ten Earth radii toward the Sun and streaming millions of kilometres downwind as a
+        tail. This <strong>magnetosphere</strong> deflects the solar wind we met in <a href={subPath("4.1")}>§4.1</a>;
+        particles that do get trapped collect in the doughnut-shaped <strong>Van Allen belts</strong>, and the few that
+        leak down the polar field lines paint the <strong>auroras</strong>. Beneath the shield floats the layered
+        <strong>atmosphere</strong>: the weather-filled troposphere, then the stratosphere whose <strong>ozone
+        layer</strong> absorbs the Sun's harshest ultraviolet, the frigid mesosphere, and the thin ionosphere fading
+        into space. Interior, shield, and air are one linked system — switch between them in the figure below. Without
+        the dynamo, the wind would slowly strip the air; without the air, no oceans and no life — the thread
+        chapter 5 will pick up.
+      </p>
+
+      <FigureFrame label="Earth: interior, atmosphere, magnetic shield">
+        <EarthPanel client:visible />
+      </FigureFrame>
+
+      <hr />
+
+      <p><em>Six thousand worlds sort into a handful of families by size, orbit, and density — and our own two extremes,
+        floating Saturn and living Earth, show what the numbers mean in the flesh. But why does the family a planet
+        joins depend on where it was born? That is the question of formation — next.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

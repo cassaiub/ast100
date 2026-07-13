@@ -1,0 +1,112 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/4.0/Hero";
+import PrevNext from "../../../components/scenes/4.0/PrevNext.astro";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="4.0 — Planetary Age · AST 100"
+  description="From roughly nine to eleven billion years after the Big Bang — the era when the stardust forged in Chapter 3 gathers into worlds. Four lessons and seven milestones: the architecture of our solar system, the families of planets, the hundred-million-year construction project that built them, and the telescopes that found six thousand more around other stars."
+  activeId="4.0"
+  chapter={4}
+  current="/chapter/4/4.0"
+>
+  <Hero
+    tease="The Stellar Age forged the ingredients; the Planetary Age builds the worlds. From about nine to eleven billion years after the Big Bang — in our corner of the Galaxy, starting 4.6 billion years ago — a spinning disk of gas and stardust around the young Sun condensed, collided, and settled into eight planets, a Moon, oceans, and sky. Four lessons and seven milestones trace that construction — and end by finding the same story repeated around thousands of other stars."
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="home">The View from Home</h2>
+      <p>The <strong>Planetary Age</strong> — Chapter 4 of <em>Our Cosmic History</em> — runs from roughly
+        <strong>nine to eleven billion years</strong> after the Big Bang, and across <strong>four lessons</strong> and
+        <strong>seven milestones</strong> it tells how the stardust forged in Chapter 3 gathered into worlds. It begins
+        exactly where the Stellar Age ended (<a href={subPath("3.4")}>§3.4</a>): around 9 Gyr — about
+        <strong>4.6 billion years ago</strong> — a chemically rich cloud in the Milky Way collapsed to ignite our Sun,
+        leaving behind a spinning disk of gas and dust. Everything this chapter describes was built from that disk.</p>
+      <p>So we start with the finished product: home. The solar system is one star's household — four rocky worlds and
+        a belt of rubble close in, four giants and a belt of ice farther out, all riding a single flat disk that is
+        itself the fossil of the nebula — wrapped in the vast bubble blown by the solar wind and, beyond everything,
+        the spherical Oort cloud of comets, reaching a third of the way to the next star.</p>
+      <a
+        href={subPath("4.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">4.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">The Solar System</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="families">Families of Worlds</h2>
+      <p>Just as sorting the stars by two numbers revealed their families (<a href={subPath("3.2")}>§3.2</a>), sorting
+        planets by size and orbit sorts the more than <strong>6,300 worlds</strong> now known into clean types: hot
+        Jupiters roasting beside their stars, cold gas and ice giants like our own, the super-Earths our system
+        strangely lacks, lava worlds, possible ocean worlds, and the rare Earth-likes. A third number —
+        <strong>density</strong>, mass divided by volume — betrays what each is made of, from Saturn (lighter than
+        water) to iron-hearted Earth. Two case studies from home close the lesson: Saturn, a miniature solar system of
+        rings and shepherd moons, and Earth, whose churning core, layered air, and magnetic shield keep it alive.</p>
+      <a
+        href={subPath("4.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">4.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Types of Planets</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="assembly">Building Worlds</h2>
+      <p>How did a disk of dust become all of that? In the <strong>accretion of planetesimals</strong> (9.1 Gyr),
+        microscopic grains stuck together into pebbles, kilometre-sized bodies, and then protoplanets — rock alone
+        inside the snow line, rock plus ice beyond it, which is why the giants grew first and biggest. Meanwhile the
+        young Sun threw a tantrum: in its violent <strong>T-Tauri phase</strong> (9.1 Gyr) its fierce early wind swept
+        the leftover gas from the disk — capping the giants' growth and stripping the first, flimsy atmospheres of the
+        rocky worlds. The young Earth, melted by impacts and radioactivity, then sorted itself: in <strong>planetary
+        differentiation</strong> (9.2 Gyr) the iron sank to build the core — the future magnetic dynamo — while
+        lighter rock floated up as mantle and crust.</p>
+      <p>Then came the blow that made the night sky: a Mars-sized protoplanet, <strong>Theia</strong>, slammed into
+        the young Earth, and the splashed-out debris gathered into <strong>the Moon</strong> (9.2 Gyr) — the partner
+        that has steadied Earth's tilt ever since. Volcanoes exhaled a new atmosphere, and as it cooled, planet-wide
+        rains — topped up by icy comet deliveries — filled the basins to form the first <strong>oceans</strong>
+        (9.4 Gyr). The finale was rough: the <strong>Late Heavy Bombardment</strong> (9.6–10 Gyr) battered every inner
+        world with leftover asteroids and comets, until the barrage faded and Earth's crust thickened into stable
+        continents — the <strong>stabilization of the lithosphere</strong> (10–11 Gyr), with the first supercontinent,
+        Vaalbara — turning a hellish sphere into a quiet world ready for chemistry.</p>
+      <a
+        href={subPath("4.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">4.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Formation and Evolution of Planets</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="other-suns">Worlds of Other Suns</h2>
+      <p>For most of history our eight planets were the only ones known. This chapter's telescope changed that:
+        <strong>Kepler</strong>, launched in 2009, stared at about <strong>150,000 stars at once</strong> and watched
+        for the tiny, repeating dips — as small as twenty parts in a million — of a planet crossing its star's face.
+        By its end in 2018 it had confirmed nearly 2,800 planets and proved that planets outnumber stars in the
+        Galaxy. Together with the wobble method that found the first exoplanet around a Sun-like star in 1995, and the
+        coronagraph portraits that photograph young giants directly, it turned "are there other worlds?" into a
+        catalogue — and handed the next age its question: on worlds of rock and water at comfortable distances from
+        steady stars, what does chemistry do next?</p>
+      <a
+        href={subPath("4.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">4.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Discovering Exoplanets</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <hr />
+
+      <blockquote><p>The Stellar Age forged the elements; the Planetary Age gathered them into worlds — a disk
+        condensed into eight planets, one battered young Earth grew a Moon, oceans, and continents, and the same
+        construction, we now know, has played out around thousands of other suns.</p></blockquote>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

@@ -184,12 +184,40 @@ export const CHAPTERS: Chapter[] = [
     title: "Planetary Age",
     telescope: "Kepler",
     weeks: "8–9",
-    overviewLive: false,
+    overviewLive: true,
+    description:
+      "Around 4.6 billion years ago, in our corner of the Galaxy, the heavy elements forged by the Stellar Age began to gather into worlds. Chapter 4 starts at home: the architecture of the solar system from the rocky inner disk out to the spherical Oort cloud; the families of planets and what their densities reveal; and the disk of gas and dust that assembled eight worlds in a hundred and fifty million years. It ends by leaving home — the three great methods that have found more than 6,300 planets around other stars.",
+    overviewTease:
+      "The Stellar Age forged the ingredients; the Planetary Age builds the worlds. Around a young yellow star, a spinning disk of gas and dust condenses, collides, and settles into eight planets — a story now confirmed around thousands of other stars by Kepler and its successors.",
     subs: [
-      { id: "4.1", title: "The Solar System", live: false },
-      { id: "4.2", title: "Types of Planets", live: false },
-      { id: "4.3", title: "Formation and Evolution of Planets", live: false },
-      { id: "4.4", title: "Discovering Exoplanets", live: false },
+      {
+        id: "4.1",
+        title: "The Solar System",
+        live: true,
+        tease:
+          "Our home system from the inside out: four rocky worlds and a belt of rubble, four giants and a belt of ice — all riding one flat disk — then the vast bubble blown by the solar wind, and finally the Oort cloud, a sphere of comets reaching a third of the way to the next star.",
+      },
+      {
+        id: "4.2",
+        title: "Types of Planets",
+        live: true,
+        tease:
+          "More than 6,300 planets are now known, and they sort into families on two simple charts — size against orbit, mass against radius — from hot Jupiters and lava worlds to the rare Earth-likes. Then two case studies up close: ringed, moon-rich Saturn and the living machine of Earth.",
+      },
+      {
+        id: "4.3",
+        title: "Formation and Evolution of Planets",
+        live: true,
+        tease:
+          "A star is born inside a spinning disk of gas and dust, and its planets are the leftovers. Temperature wrote the recipe: rock condensed near the fire, ices beyond the snow line — so the giants grew first, the rocky worlds followed, and one last great collision made our Moon.",
+      },
+      {
+        id: "4.4",
+        title: "Discovering Exoplanets",
+        live: true,
+        tease:
+          "No telescope can outstare a star's glare, yet 6,300 worlds have been found around other suns: by catching the dip when a planet's shadow crosses its star, reading the wobble in the colour of starlight, and — for a lucky few — masking the star and photographing the planets themselves.",
+      },
     ],
   },
   {
@@ -390,6 +418,29 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
   "3.4": [
     { id: "remnants", label: "The Fork" },
     { id: "black-holes", label: "Black Holes" },
+  ],
+  /* Chapter 4 */
+  "4.0": [
+    { id: "home", label: "The View from Home" },
+    { id: "families", label: "Families of Worlds" },
+    { id: "assembly", label: "Building Worlds" },
+    { id: "other-suns", label: "Other Suns" },
+  ],
+  "4.1": [
+    { id: "architecture", label: "Four Scales" },
+    { id: "worlds", label: "Eight Worlds" },
+  ],
+  "4.2": [
+    { id: "classification", label: "Sorting Worlds" },
+    { id: "worlds", label: "Two Up Close" },
+  ],
+  "4.3": [
+    { id: "disk", label: "The Disk" },
+    { id: "assembly", label: "The Assembly" },
+  ],
+  "4.4": [
+    { id: "shadows", label: "Planet Shadows" },
+    { id: "wobbles", label: "Wobbles & Portraits" },
   ],
 };
 

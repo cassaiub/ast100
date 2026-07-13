@@ -1,0 +1,109 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/4.3/Hero";
+import PrevNext from "../../../components/scenes/4.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  DiskThermostatPanel,
+  AssemblyPanel,
+} from "../../../components/scenes/4.3/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="4.3 — Formation and Evolution of Planets · AST 100"
+  description="How a spinning disk of gas and dust around the newborn Sun — zoned by temperature, split by snow lines — assembled eight planets in 150 million years: giants first beyond the ice, rocky worlds later, water delivered last."
+  activeId="4.3" chapter={4} current="/chapter/4/4.3">
+  <Hero
+    tease="A star is born inside a spinning disk of gas and dust — and its planets are the leftovers. Temperature wrote the recipe: rock condensed near the fire, ices beyond the snow line, and where ice was plentiful, giant cores grew fast enough to capture gas. Then a hundred million years of collisions — one of which made our Moon — settled eight worlds into the orbits they still keep."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="disk">A Disk with a Thermostat</h2>
+      <p>
+        Why are the rocky planets close to the Sun and the giants far away? Why is Earth wet, Mercury bone-dry, and the
+        Kuiper belt frozen? Remarkably, one idea answers all of it. In <a href={subPath("3.3")}>§3.3</a> we watched a
+        cold cloud of gas collapse under gravity to ignite a star. But a collapsing cloud always spins a little, and as
+        it shrinks the spin speeds up — so not everything can fall into the star. The leftover matter flattens into a
+        rotating <strong>disk</strong> of gas and dust around the newborn sun, spread across the very plane in which,
+        as <a href={subPath("4.1")}>§4.1</a> showed, all the planets still orbit today. The disk <em>is</em> the reason
+        the solar system is flat. Astronomers call it the <strong>solar nebula</strong>, and telescopes like ALMA now
+        photograph such disks around young stars throughout the galaxy.
+      </p>
+      <p>
+        The disk had a built-in thermostat: blazing near the protosun, frigid at its rim. And temperature decided what
+        the local building material was. Closest in, hotter than about 1,400 kelvin, even rock existed only as vapour
+        — nothing could grow there at all. A little farther, grains of <strong>rock and metal</strong> could condense,
+        but carbon-rich compounds were still burned away inside the so-called <strong>soot line</strong>, leaving the
+        inner disk's building blocks dry and carbon-poor. The decisive boundary lay near <strong>2.7 au</strong>: the
+        <strong>water snow line</strong>, beyond which water froze onto every grain of dust. Ice roughly doubled the
+        amount of solid material there — and farther out still, past about 10 and 27 au, even carbon dioxide and
+        carbon monoxide froze. Drag the probe through the young nebula in the figure below and watch the available
+        ingredients change with distance; that gradient is the master key to everything that follows.
+      </p>
+
+      <FigureFrame label="The young solar nebula, zone by zone">
+        <DiskThermostatPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The disk's chemistry left fingerprints we can still read. Meteorites — surviving fragments of the first
+        solids — come in two chemically distinct families: dry, carbon-poor rock from the inner disk, and carbon- and
+        water-rich material from beyond the snow line (the <strong>non-carbonaceous</strong> and
+        <strong>carbonaceous</strong> types, NC and CC). Their isotopes show the two reservoirs formed within the
+        first million years and then <em>stayed separate</em> for millions more — most plausibly because the growing
+        core of Jupiter opened a gap in the disk that acted as a fence. The oldest of these solids, tiny
+        calcium-aluminium flecks found inside meteorites, carry radioactive clocks that all read the same age:
+        <strong>4,567 million years</strong>. That is the birth date of the solar system, and the "t = 0" of the
+        story below.
+      </p>
+
+      <h2 id="assembly">One Hundred and Fifty Million Years</h2>
+      <p>
+        From those first condensed grains to eight finished planets took only about 150 million years — nearly
+        nothing against the 4,600 million years since. Growth worked from the bottom up, just as it did for galaxies
+        in <a href={subPath("2.3")}>§2.3</a>: microscopic grains stuck together into pebbles, pebbles into
+        kilometre-scale <strong>planetesimals</strong>, planetesimals into Moon-to-Mars-sized <strong>embryos</strong>,
+        embryos into planets. But the two sides of the snow line ran the race at very different speeds. Beyond it,
+        ice-fattened cores grew huge within a couple of million years — quickly enough to gravitationally capture the
+        disk's hydrogen and helium <em>before</em> the young Sun's radiation swept the gas away, which it did within
+        about 3 to 10 million years. That deadline is why <strong>the giants formed first</strong>, and why Uranus and
+        Neptune, growing slower and farther out, missed most of the gas and stayed "ice giants."
+      </p>
+      <p>
+        The inner disk, poor in solids, assembled its worlds the slow, violent way — tens of millions of years of
+        collisions between embryos. One of the last of these giant impacts, around 4.5 billion years ago, struck the
+        young Earth hard enough to splash a ring of molten debris into orbit: that debris cooled into
+        <strong>the Moon</strong>. The same era of upheaval, with the giant planets shifting and scattering small
+        bodies across the system, flung water-rich and carbon-rich material from beyond the snow line into the dry
+        inner zone — delivering to a parched young Earth the water and organic molecules that would one day fill its
+        oceans (the story chapter 5 takes up). By about 150 million years in, the gas was gone, the great collisions
+        had tapered off, and the architecture of <a href={subPath("4.1")}>§4.1</a> — rock inside, giants outside,
+        rubble and ice in the gaps — was set. Step through the whole construction in the figure below.
+      </p>
+
+      <FigureFrame label="Assembling the solar system">
+        <AssemblyPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        One caution before we leave home: the tidy picture above is calibrated by a single example. The hot Jupiters of
+        <a href={subPath("4.2")}>§4.2</a> proved that planets can <strong>migrate</strong> — a giant born cold beyond
+        its snow line can spiral inward to roast beside its star. Our own giants almost certainly wandered too before
+        settling, and those wanderings may be why the asteroid belt is so sparse and Mars so small. Every planetary
+        system runs the same physics through different dice rolls — which is why the 6,300 systems found around other
+        stars, and the methods that found them (<a href={subPath("4.4")}>§4.4</a>), matter so much: they are the
+        experiment repeated.
+      </p>
+
+      <hr />
+
+      <p><em>A spinning disk, zoned by temperature; ice beyond 2.7 au; giants first, rocky worlds later; water
+        delivered by the leftovers. In 150 million years the blueprint was done — and it has held for 4.4 billion
+        more. Next: how we catch other stars running the same experiment.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

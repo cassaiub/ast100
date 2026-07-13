@@ -1,0 +1,131 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/4.1/Hero";
+import PrevNext from "../../../components/scenes/4.1/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  ArchitecturePanel,
+  TiltSpinPanel,
+  InteriorsPanel,
+} from "../../../components/scenes/4.1/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="4.1 — The Solar System · AST 100"
+  description="Our home system from the inside out — rocky planets, asteroid belt, gas and ice giants, Kuiper belt, heliosphere, and the Oort cloud — plus the tilts, spins, and interiors of the eight planets."
+  activeId="4.1" chapter={4} current="/chapter/4/4.1">
+  <Hero
+    tease="Our home system, mapped from the inside out. Eight planets ride one flat disk around an ordinary star — rocky worlds close in, giants beyond — but the system does not end at Neptune: past it lie the icy Kuiper belt, the vast bubble blown by the solar wind, and finally the Oort cloud, a sphere of comets reaching a third of the way to the next star."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="architecture">One System, Four Scales</h2>
+      <p>
+        The Stellar Age of <a href={subPath("3.0")}>chapter 3</a> ended close to home, with the cloud that collapsed to
+        make the Sun. This chapter stays home and asks what came with it — because a star is rarely born alone. Around
+        our ordinary yellow star (<a href={subPath("3.1")}>§3.1</a>) orbits a whole household of worlds: eight planets,
+        their moons, and countless smaller bodies, all bound by the Sun's gravity. That household is the
+        <strong>solar system</strong>, and its most striking feature is its shape. Almost everything in it moves in the
+        same direction around the Sun, in nearly the same flat plane — a plane called the <strong>ecliptic</strong>. The
+        solar system is, to a very good approximation, a disk. Why it is a disk is the story of
+        <a href={subPath("4.3")}>§4.3</a>; here we first walk the disk from the inside out.
+      </p>
+      <p>
+        Closest to the Sun, within about one and a half times the Earth–Sun distance, sit the four small rocky worlds:
+        <strong>Mercury, Venus, Earth, and Mars</strong>. Astronomers measure these distances in
+        <strong>astronomical units</strong> (au) — one au is the average Earth–Sun distance, about 150 million
+        kilometres. Beyond Mars, between roughly 2 and 3 au, circles the <strong>asteroid belt</strong>: rocky fragments
+        that never gathered into a planet. Two further swarms of asteroids, the <strong>Trojans</strong>, share
+        Jupiter's own orbit, held 60° ahead of and behind the planet by a gravitational balancing act between Jupiter
+        and the Sun. Then come the four giants — <strong>Jupiter and Saturn</strong>, made mostly of gas, and
+        <strong>Uranus and Neptune</strong>, the ice giants — spread from 5 to 30 au. Past Neptune the disk continues as
+        the <strong>Kuiper belt</strong>, a ring of icy leftover bodies between about 30 and 50 au that includes the
+        dwarf planet Pluto.
+      </p>
+      <p>
+        The Sun's influence reaches much farther than its planets. From its outer atmosphere — the corona of
+        <a href={subPath("3.1")}>§3.1</a> — the Sun constantly exhales a thin, fast stream of charged particles called
+        the <strong>solar wind</strong>. This wind inflates an enormous bubble in the gas between the stars, the
+        <strong>heliosphere</strong>. Where the wind finally slows against the interstellar gas, at about 94 au, is the
+        <strong>termination shock</strong>; where its push is fully balanced and interstellar space truly begins, at
+        roughly 122 au, is the <strong>heliopause</strong>. This is not a theoretical boundary: the
+        <strong>Voyager 1</strong> spacecraft, launched in 1977, crossed it in August 2012 and became humanity's first
+        interstellar probe. And because the whole bubble is flying through the galaxy, it is not a neat sphere — the
+        gas ahead piles up while the bubble trails a long <strong>heliotail</strong> behind, like the wake of a ship.
+      </p>
+      <p>
+        Even the heliopause is not the edge. The true frontier of the Sun's gravitational dominance is the
+        <strong>Oort cloud</strong> — a spherical shell of billions of icy bodies, leftover building blocks flung
+        outward during the system's violent youth. It is thought to begin a few thousand au out and reach to about
+        <strong>100,000 au — roughly 1.6 light-years</strong>, a third of the way to the nearest star. Unlike the
+        planets and the Kuiper belt, the Oort cloud is not a disk at all but a three-dimensional sphere enclosing
+        everything, and it is where the long-period comets come from. Step outward through the four frames of the
+        figure below — each one a wider view of the same system — using the arrow keys.
+      </p>
+
+      <FigureFrame label="The solar system, four frames out">
+        <ArchitecturePanel client:visible />
+      </FigureFrame>
+
+      <h2 id="worlds">Eight Worlds, One Disk</h2>
+      <p>
+        Within that architecture, every planet performs the same dual motion: it <strong>revolves</strong> around the
+        Sun along the shared disk, and it <strong>rotates</strong> — spins — on its own axis. The revolutions are
+        orderly; the rotations are anything but. Each planet's spin axis leans at its own angle away from "upright,"
+        an angle called the <strong>axial tilt</strong>. That single number shapes a world's whole calendar, because
+        it sets how directly sunlight strikes each hemisphere through the year: tilt is what makes
+        <strong>seasons</strong>. Earth's familiar 23.4° lean gives us ours. Pick each planet in the figure below —
+        arrow keys work — and watch the axis swing.
+      </p>
+      <p>
+        The extremes are wonderfully strange. Mercury stands almost perfectly upright (0.03°) and has essentially no
+        seasons. <strong>Venus is tipped 177°</strong> — flipped nearly upside down — so its spin runs backwards:
+        on Venus the Sun rises in the west and sets in the east, and one lazy rotation takes 243 Earth days, longer
+        than its year. <strong>Uranus lies at 98°</strong>, rolling on its side, so each pole enjoys about 42 years of
+        unbroken sunlight while the other endures decades of frozen dark. Pluto, tipped 122.5°, spins backwards too.
+        These odd tilts are not decoration — they are <em>evidence</em>, the surviving scars of the collisions and
+        gravitational shoves that battered the young solar system, a violence we return to in
+        <a href={subPath("4.3")}>§4.3</a>.
+      </p>
+
+      <FigureFrame label="Tilt and spin of the nine worlds">
+        <TiltSpinPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Cut the planets open and the eight worlds sort themselves into families — the same families their positions in
+        the disk already hinted at. The four <strong>terrestrial</strong> (rocky) planets all repeat one recipe: a
+        dense <strong>core of iron and nickel</strong>, wrapped in a thick mantle of silicate rock, capped by a thin
+        solid crust. The proportions vary tellingly. Mercury's metal core fills about 83% of its radius — evidence
+        that a giant early impact stripped away much of its rock — while Earth and Venus are more balanced, and
+        Earth's core is split into a solid inner ball and a churning liquid shell (which, as
+        <a href={subPath("4.2")}>§4.2</a> shows, is what generates our magnetic shield).
+      </p>
+      <p>
+        The giants are built on an entirely different plan: they have no surface to stand on. <strong>Jupiter and
+        Saturn</strong> are almost all hydrogen — an atmosphere thousands of kilometres deep that grades into liquid,
+        and then, under pressures millions of times Earth's, into an exotic electricity-conducting state called
+        <strong>metallic hydrogen</strong> — around a comparatively small core of rock and iron.
+        <strong>Uranus and Neptune</strong> carry a thinner hydrogen coat over a deep, hot fluid mantle of water,
+        ammonia, and methane — compounds astronomers collectively call "ices," which is why these two are the
+        <strong>ice giants</strong>. Step through all eight interiors below; the strip along the bottom keeps the true
+        size comparison honest — Jupiter is eleven Earths across. Why the rocky worlds formed close in and the giants
+        far out is exactly where <a href={subPath("4.3")}>§4.3</a> picks up.
+      </p>
+
+      <FigureFrame label="Interiors of the eight planets">
+        <InteriorsPanel client:visible />
+      </FigureFrame>
+
+      <hr />
+
+      <p><em>One ordinary star; a flat disk of eight worlds, two belts of rubble and ice; a wind-blown bubble reaching
+        122 au; and a spherical cloud of comets stretching a third of the way to the next star. That is the estate.
+        Next we sort its worlds — and thousands found around other stars — into types.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

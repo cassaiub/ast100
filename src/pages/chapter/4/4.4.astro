@@ -1,0 +1,120 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/4.4/Hero";
+import PrevNext from "../../../components/scenes/4.4/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import {
+  TransitPanel,
+  RVPanel,
+  ImagingPanel,
+} from "../../../components/scenes/4.4/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="4.4 — Discovering Exoplanets · AST 100"
+  description="How we find worlds we cannot see: the transit method's tell-tale dips in starlight, the radial-velocity wobble read from Doppler-shifted spectra, and direct imaging with a coronagraph — including the real HR 8799 timelapse."
+  activeId="4.4" chapter={4} current="/chapter/4/4.4">
+  <Hero
+    tease="No telescope can simply look at a planet around another star — the star is millions to billions of times brighter. Yet we have found more than 6,300 of them, almost all by indirect tricks: catching the tiny dip when a planet's shadow crosses its star, reading the star's wobble in the colour of its light, and, for a rare few, blotting the star out and photographing the planets themselves."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="shadows">Planet Shadows</h2>
+      <p>
+        Until 1992 every planet known to humanity orbited our own Sun. That year the count began to grow — oddly
+        enough, around a dead star, when precise radio timing of a pulsar (<a href={subPath("3.4")}>§3.4</a>) revealed
+        two small worlds tugging on it. The real flood, though, came from watching ordinary starlight with
+        extraordinary patience. Astronomers now know of <strong>more than 6,300 exoplanets</strong>, and while several
+        clever techniques contribute — the pulsar timing just mentioned, <strong>astrometry</strong> (watching a
+        star's position shift on the sky), <strong>gravitational microlensing</strong> (a star's gravity briefly
+        magnifying a background star, an effect we met with curved spacetime in <a href={subPath("0.1")}>§0.1</a>) —
+        the overwhelming majority of discoveries come from just three methods. This lesson walks through them:
+        transits, wobbles, and portraits.
+      </p>
+      <p>
+        The champion is the <strong>transit method</strong>. If a planetary system happens to lie edge-on to our line
+        of sight, then once per orbit the planet passes directly in front of its star — a <strong>transit</strong> —
+        and blocks a tiny, repeating fraction of its light. The fraction tells us the planet's <strong>size</strong>:
+        it equals the planet's disk area divided by the star's, so a Jupiter crossing a Sun-like star dims it by about
+        <strong>1%</strong>, and an Earth by a mere <strong>0.008%</strong>. The time between dips is the planet's
+        <strong>orbital period</strong> — its year. And half an orbit later a second, far shallower dip occurs when
+        the planet hides <em>behind</em> the star, taking its own faint glow with it; that
+        <strong>secondary eclipse</strong> lets astronomers isolate the planet's own light and take its temperature.
+        Run the orbit yourself in the simulator below — drag the slider or use the arrow keys, and try both planet
+        sizes.
+      </p>
+
+      <FigureFrame label="Transit simulator">
+        <TransitPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        What makes transits so powerful is that they scale. A wobble measurement must court one star at a time, but a
+        camera can watch a whole field of stars at once and simply wait for dips. NASA's <strong>Kepler</strong> space
+        telescope — this chapter's namesake instrument — stared at about <strong>150,000 stars simultaneously</strong>
+        from 2009 to 2018 and returned nearly 2,800 confirmed planets, teaching us that planets outnumber stars in
+        our galaxy and that the commonest kind is the super-Earth we met in <a href={subPath("4.2")}>§4.2</a>. Its
+        successor TESS has been sweeping the whole sky since 2018. The first transiting planet, HD 209458 b in 1999,
+        settled any doubt that the wobble detections were real worlds.
+      </p>
+
+      <h2 id="wobbles">Wobbles and Portraits</h2>
+      <p>
+        The second method finds planets by their gravity. A planet does not simply circle a stationary star: star and
+        planet both swing around their common balance point, the <strong>barycenter</strong> — think of a heavy adult
+        and a small child on a seesaw, whose pivot must sit far closer to the adult. Because the star is thousands of
+        times heavier, its share of the motion is tiny — the Sun's answer to Jupiter is a stately wobble of just
+        <strong>12.5 metres per second</strong>, bicycle speed — but it is measurable, through the
+        <strong>Doppler effect</strong>: the same stretching and squeezing of light waves that revealed the receding
+        galaxies in <a href={subPath("2.4")}>§2.4</a>. As the star swings away from us, its light shifts slightly
+        toward the red; swinging toward us, toward the blue. A <strong>spectrograph</strong> — the
+        rainbow-spreading instrument from <a href={subPath("0.4")}>§0.4</a> — reads the shift in the star's dark
+        absorption lines, cycling back and forth with the orbit. Watch the whole mechanism run in the figure below.
+      </p>
+
+      <FigureFrame label="Radial-velocity simulator">
+        <RVPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        This <strong>radial-velocity method</strong> (radial = along our line of sight) delivered the breakthrough:
+        in 1995 Michel Mayor and Didier Queloz measured the four-day wobble of the star 51 Pegasi — the first planet
+        ever found around a Sun-like star, and a Nobel Prize in 2019. The wobble's rhythm gives the planet's orbital
+        period, and its size gives the planet's <strong>mass</strong> — strictly a minimum mass, since a tilted orbit
+        hides some of the motion. Pair a wobble mass with a transit size and you get density, which is precisely how
+        the composition chart of <a href={subPath("4.2")}>§4.2</a> was built. Modern spectrographs read wobbles down
+        to a walking pace — around one metre per second.
+      </p>
+      <p>
+        The third method is the most direct and the most demanding: actually <strong>photographing</strong> the
+        planet. The obstacle is glare — a star outshines its planets by factors of <strong>millions to
+        billions</strong>. The cure is a <strong>coronagraph</strong>: a precisely engineered mask inside the
+        telescope that blots out the star's disk, creating an artificial eclipse so the faint sparks beside it can
+        register. It works best for the planets transits and wobbles miss: <strong>young, massive giants orbiting
+        far from their stars</strong>, in systems we view more nearly face-on, where the planets stay clear of the
+        glare for their whole orbit. The showcase is <strong>HR 8799</strong>: in 2008 Christian Marois and colleagues
+        imaged three giant planets around it at once — the first planetary system ever photographed — adding a fourth
+        in 2010. Years of follow-up images, assembled into a famous timelapse, show all four visibly crawling along
+        their orbits. Toggle the coronagraph in the figure below, then compare with the real thing underneath. Best of
+        all, a direct image captures the planet's <em>own light</em> — light that can be spread into a spectrum and
+        searched for the fingerprints of water, methane, and more, the doorway to chapter 5's question of chemistry
+        and life.
+      </p>
+
+      <FigureFrame label="Direct imaging: HR 8799">
+        <ImagingPanel client:visible />
+      </FigureFrame>
+
+      <hr />
+
+      <p><em>A shadow, a wobble, a masked portrait — three tricks that turned "are there other worlds?" from
+        philosophy into a catalogue of 6,300 and counting. The Planetary Age has built the stage: worlds of rock and
+        water at comfortable distances from steady stars. What happens on such a stage — oceans, air, chemistry,
+        life — is the Chemical Age, next.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>
