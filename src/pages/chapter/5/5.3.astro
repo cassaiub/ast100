@@ -1,0 +1,118 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/5.3/Hero";
+import PrevNext from "../../../components/scenes/5.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { VentPanel, StepsPanel } from "../../../components/scenes/5.3/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="5.3 — Origin of Life on Earth · AST 100"
+  description="How chemistry became biology: alkaline vents on the Hadean sea floor, protocells, the RNA world, and the last universal common ancestor — with an honest account of which steps are solved and which are not."
+  activeId="5.3" chapter={5} current="/chapter/5/5.3">
+  <Hero
+    tease="Somewhere between four and four billion years ago, chemistry on this planet began doing something no chemistry had done before: it started making copies of itself. We do not know exactly how. But we know a great deal about the ingredients, the energy source, and the order of events — and the leading account starts in a crack in the sea floor, where hot alkaline water seeps out of the rock and builds, entirely for free, a natural battery."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="vents">A Battery in the Rock</h2>
+      <p>
+        Here is the question this lesson refuses to dodge: how do you get from a planet of rock, water, and gas to a
+        thing that is <em>alive</em>? Before we start, one honest admission. This is the least settled subject in the
+        whole course. The elements of <a href={subPath("5.1")}>§5.1</a> are known to four decimal places; the origin of
+        life is a live research frontier where serious people disagree. What follows is the leading account — not the
+        final one.
+      </p>
+      <p>
+        Start with what "alive" needs. Three things, at minimum: <strong>a boundary</strong>, so the chemistry stays
+        together instead of drifting off into the ocean; <strong>an energy source</strong>, to push reactions that would
+        never happen on their own; and <strong>a way to copy information</strong>, so that whatever works can be passed
+        on. The old picture — Darwin's "warm little pond", and the famous 1953 Miller–Urey experiment that sparked
+        lightning through a flask of gases and got amino acids out — showed that life's building blocks form easily.
+        (Though Miller and Urey assumed an atmosphere rich in methane and ammonia, and we now think the real early air
+        was mostly carbon dioxide and nitrogen — a nice case of an experiment whose conclusion outlived its premise.)
+        Building blocks, though, are not the hard part. The hard part is the <em>energy</em>, and keeping it flowing.
+      </p>
+      <p>
+        Which is what makes the sea floor so interesting. Where seawater seeps into the rock of the ocean crust, reacts
+        with it, and comes back up warm, it emerges as an <strong>alkaline hydrothermal vent</strong> — not the
+        scalding black smokers of nature documentaries, but a gentler kind, building porous chimneys of soft mineral
+        honeycomb. Vents like this exist today; the Lost City field in the mid-Atlantic has been quietly running for
+        tens of thousands of years. Explore one in the figure below — click any labelled part, or walk them with the
+        arrow keys.
+      </p>
+
+      <FigureFrame label="Inside an alkaline hydrothermal vent">
+        <VentPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The magic is in the wall. On one side of that thin, porous mineral barrier is the vent's alkaline fluid; on the
+        other is the Hadean ocean, made mildly acidic by all the carbon dioxide in the air above it. "Acidic" simply
+        means rich in <strong>protons</strong> — hydrogen nuclei, positively charged. So protons crowd against one face
+        of the wall and are scarce on the other, and they push through. That is a <strong>battery</strong>: a store of
+        energy, built by plumbing, running continuously and free of charge, for as long as the vent flows.
+      </p>
+      <p>
+        And here is the detail that makes this hypothesis so compelling. Every living cell on Earth — the bacteria in
+        your gut, the cells in your eye reading this — makes its energy in exactly the same way: by pumping protons
+        across a membrane and letting them flow back through a molecular turbine. Life did not invent the
+        proton-gradient trick. It looks very much as though life <em>inherited</em> it from the rock, and has never
+        stopped using it.
+      </p>
+
+      <h2 id="steps">From Chemistry to a Cell</h2>
+      <p>
+        With a boundary (the pores), an energy source (the gradient), and catalysts (iron-sulfur minerals studding the
+        walls, chemically the ancestors of the ones still buried inside your enzymes), the road to a cell can be
+        sketched in seven steps. Walk them in the figure below — and watch the bar on the right, which is an honesty
+        meter. It is not the same height at every step, and it should not be.
+      </p>
+
+      <FigureFrame label="Seven steps from rock to cell">
+        <StepsPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The early steps are on solid ground. Simple organic molecules from carbon dioxide and hydrogen over a mineral
+        catalyst: done in laboratories. <strong>Protocells</strong> — hollow bubbles that assemble themselves out of
+        fatty acids, soap-like molecules with a water-loving head and a water-fearing tail, which grow and split:
+        also done in laboratories. Neither is alive, but neither requires life.
+      </p>
+      <p>
+        Then it gets hard. Somewhere in there, molecules appear that can both carry information and act as catalysts —
+        the leading candidate is <strong>RNA</strong>, a cousin of DNA, and the idea that it came first is known as the
+        <strong>RNA world</strong>. It is the best hypothesis we have. It is also unfinished: nobody has yet made an RNA
+        molecule that can copy itself. Harder still is the <strong>genetic code</strong> — the fact that particular
+        three-letter sequences <em>stand for</em> particular amino acids, the same way in every organism on Earth. How
+        that mapping came to exist is, frankly, unsolved.
+      </p>
+      <p>
+        What we <em>can</em> do is look backwards. Every living thing shares the same four-letter alphabet, the same
+        genetic code, the same molecular turbine for making energy, and a ribosome — the machine that builds proteins —
+        so nearly identical across bacteria, oak trees, and people that it can only be an inheritance. Run those shared
+        features back up the family tree and they converge on a single ancestral cell: <strong>LUCA</strong>, the
+        <strong>last universal common ancestor</strong>. Genome comparisons published in 2024 place it around
+        <strong>4.2 billion years ago</strong> — startlingly early, on a planet barely finished forming.
+      </p>
+      <p>
+        Note carefully what LUCA is not. It is not the first living thing; it is the last common ancestor of everything
+        that is <em>still alive</em>. There was life before it — perhaps a great deal, perhaps for a long time — and we
+        have no way to see it, because its descendants are gone. Which leaves us with the two possibilities that
+        <a href={subPath("5.4")}>§5.4</a> has to weigh. Life appeared on this planet almost as soon as it possibly
+        could, which might mean life is easy and the Universe is full of it. Or life appeared once, in one improbable
+        crack in one sea floor, and every living thing since is a copy of that single accident.
+      </p>
+
+      <hr />
+
+      <p><em>A gradient in the rock, a bubble of soap, a molecule that copies itself, and a code nobody can yet explain.
+        We know the ingredients and the energy; we do not know the recipe. Which makes the next question the sharpest in
+        science: has it happened anywhere else?</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

@@ -1,0 +1,114 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/6.2/Hero";
+import PrevNext from "../../../components/scenes/6.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { EndosymbiosisPanel, DnaZoomPanel, ActsPanel } from "../../../components/scenes/6.2/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="6.2 — Rise of the Eukaryotes · AST 100"
+  description="The accident that built complex life: one cell swallowed another and kept it. Plus the DNA inside the result — two metres of it, folded into a nucleus — and the two billion years from that first complex cell to us."
+  activeId="6.2" chapter={6} current="/chapter/6/6.2">
+  <Hero
+    tease="About two billion years ago, one microbe swallowed another and failed to digest it. The passenger could burn food with oxygen — the new gas that life itself had just poured into the air — and it started paying rent in energy. That prisoner is still inside you, in every cell, still carrying its own bacterial DNA. Every animal, plant, and fungus on Earth descends from that single undigested meal."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="symbiosis">The Cell That Swallowed a Cell</h2>
+      <p>
+        For the first half of the history of life, nothing on Earth was bigger than a dot. Bacteria and archaea ruled a
+        world of single cells for something like two billion years — a stretch so long it makes the entire history of
+        animals look like a weekend. They were not idle: they invented photosynthesis, rebuilt the atmosphere
+        (<a href={subPath("5.2")}>§5.2</a>), and colonised every damp corner of the planet. But they stayed small, and
+        they stayed simple. Something was missing.
+      </p>
+      <p>
+        That something was <strong>energy</strong>. A bacterium generates power across its outer membrane, and a cell
+        only has so much surface. Grow the cell bigger and its volume outruns its skin — more to power, no more power
+        plant. It is a hard ceiling, and for two billion years nothing got past it. What finally did was not a clever
+        adaptation. It was an accident.
+      </p>
+      <p>
+        Around two billion years ago, an archaeon engulfed a bacterium — and, for once, failed to digest it. The
+        bacterium had a useful skill: it could burn food using <em>oxygen</em>, the reactive new gas that cyanobacteria
+        had just finished pumping into the world, and oxygen-burning releases about <strong>ten times</strong> more
+        energy than the airless chemistry that came before. The prisoner kept doing what it did best and handed the
+        proceeds to its captor. Both did better together than apart, so natural selection kept the arrangement. Step
+        through it in the figure below.
+      </p>
+
+      <FigureFrame label="Endosymbiosis: the origin of the complex cell">
+        <EndosymbiosisPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Over many generations, the passenger gave up most of its genes to its host and lost the ability to live on its
+        own. It stopped being a bacterium and became an <strong>organ</strong>: the <strong>mitochondrion</strong>, the
+        power plant inside your cells. You have hundreds of them in almost every cell of your body, and they still carry
+        their own little loop of bacterial DNA, separate from yours — the smoking gun. This is
+        <strong>endosymbiosis</strong>, and the idea was pushed for years, against considerable ridicule, by the
+        biologist Lynn Margulis. She was right.
+      </p>
+      <p>
+        With an internal power plant, the energy ceiling lifts. A cell can now afford a far bigger genome, and a
+        <strong>nucleus</strong> to keep it safely in, and the elaborate machinery that complex life requires. That is
+        the <strong>eukaryotic cell</strong> — the cell that every animal, plant, and fungus is built from. And in
+        plants, remarkably, it happened <em>again</em>: another cell swallowed a cyanobacterium, which became the
+        <strong>chloroplast</strong>. Every leaf on Earth is running captured bacteria.
+      </p>
+
+      <h2 id="dna">Inside the Nucleus, and Onward</h2>
+      <p>
+        What is being kept in that nucleus is a library. The information for building and running the organism is
+        written on <strong>DNA</strong>, a molecule shaped like a twisted ladder, and your body must fit about
+        <strong>two metres</strong> of it inside a nucleus a few millionths of a metre across — and still be able to
+        read it. Zoom in on that packing problem in the figure below, from the whole cell down to the chemical letters
+        themselves.
+      </p>
+
+      <FigureFrame label="Zooming into a chromosome">
+        <DnaZoomPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        At the bottom of that zoom is the fact that makes heredity possible. The rungs of the ladder are pairs of
+        chemical letters, and the pairing is strict: <strong>A always pairs with T</strong>, and <strong>C always with
+        G</strong>. So if you split the ladder down the middle, each half automatically specifies what its missing
+        partner must be. Copying is built into the geometry. When Watson, Crick, Franklin, and Wilkins worked out that
+        structure in 1953, the mechanism of inheritance — a mystery since antiquity — fell out of it almost as an
+        afterthought.
+      </p>
+      <p>
+        And then, with complex cells finally on the board, life spent another billion years doing… very little. This is
+        the strangest chapter of the story: a long, flat stretch in which complexity existed but did not go anywhere.
+        Only when oxygen made its second great rise, after about 800 million years ago
+        (<a href={subPath("5.2")}>§5.2</a>), did the brakes come off — and then everything happened at once. Step
+        through the last two billion years in the figure below.
+      </p>
+
+      <FigureFrame label="Two billion years in seven acts">
+        <ActsPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The moment to notice is the <strong>Cambrian explosion</strong>, about 539 million years ago. In a geological
+        eyeblink — perhaps twenty million years — the fossil record fills with animals: shells, limbs, jaws, and the
+        first <strong>eyes</strong>. Nearly every basic body plan alive today shows up in that window, including ours.
+        After that, life crawls out of the water (under the protection of the ozone layer that its own exhaust had
+        built), grows backbones, grows forests, and eventually grows dinosaurs — who ruled for 180 million years and
+        would be ruling still, were it not for the subject of the next lesson.
+      </p>
+
+      <hr />
+
+      <p><em>An undigested meal, an energy revolution, two metres of DNA in a microscopic vault, and then — after a
+        billion years of waiting — animals, eyes, and forests. But the path from there to us was not a smooth climb.
+        Five times, it very nearly ended.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

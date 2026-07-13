@@ -1,0 +1,121 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/5.2/Hero";
+import PrevNext from "../../../components/scenes/5.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { OxygenPanel, OceanRedoxPanel } from "../../../components/scenes/5.2/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="5.2 — Formation of Oceans and Atmospheres · AST 100"
+  description="How a molten young Earth got its air and its seas — volcanic outgassing, a rain that lasted centuries, an ocean of dissolved iron — and how life then poisoned the whole planet with oxygen."
+  activeId="5.2" chapter={5} current="/chapter/5/5.2">
+  <Hero
+    tease="A newborn Earth had no air worth breathing and no ocean at all. Volcanoes exhaled steam and carbon dioxide; the steam fell as rain for centuries and filled the basins. Then, quietly, life invented a way to eat sunlight — and began pumping out a gas so reactive it rusted the seas, poisoned nearly everything alive, and eventually became a fifth of the air you are breathing right now."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="origins">Where the Air and the Sea Came From</h2>
+      <p>
+        The Earth that emerged from the collisions of <a href={subPath("4.3")}>§4.3</a> was not a place you could stand
+        on, let alone breathe on. It was a ball of molten rock, still glowing from the impacts that assembled it, and
+        whatever thin atmosphere it had been born with — a wisp of hydrogen and helium caught from the disk — was
+        stripped away by the young Sun's fierce early wind. Earth had to build its air and its ocean a second time,
+        from the inside out.
+      </p>
+      <p>
+        The source was <strong>volcanic outgassing</strong>. Rock, when it melts, releases the gases dissolved in it,
+        and the young Earth was one enormous volcano. What came out was mostly <strong>water vapour</strong>, along with
+        <strong>carbon dioxide</strong> and <strong>nitrogen</strong> — a hot, thick, heavy atmosphere with essentially
+        <em>no oxygen</em> in it at all. This surprises people, but it is worth pausing on: for the first half of Earth's
+        history, an unprotected human would have suffocated in seconds. The air we regard as normal is a recent
+        invention, and life invented it.
+      </p>
+      <p>
+        As the surface cooled below the boiling point, that atmospheric steam did what steam does — it condensed. The
+        rain that followed is thought to have fallen more or less continuously for centuries, and it filled the low
+        basins of the crust to make the first <strong>oceans</strong>. We can put a rough date on it from an unlikely
+        witness: tiny crystals of the mineral zircon, found in Australia and dated to <strong>4.4 billion years
+        ago</strong>, carry a chemical signature that suggests they formed in the presence of liquid water. Earth got
+        wet astonishingly early — within a couple of hundred million years of forming.
+      </p>
+      <p>
+        Some of that water was delivered rather than exhaled. Water carries a fingerprint — the ratio of ordinary
+        hydrogen to its heavier cousin, deuterium — and Earth's ocean fingerprint matches the water locked inside
+        <strong>carbonaceous asteroids</strong>, the dark, water-rich bodies from beyond the snow line
+        (<a href={subPath("4.3")}>§4.3</a>). It does <em>not</em> match most comets: when the Rosetta spacecraft
+        measured comet 67P in 2015, its water was three times heavier than ours. So the old story that "comets brought
+        the oceans" has largely given way to asteroids, and it is a lovely example of how an isotope ratio can settle
+        an argument about the deep past.
+      </p>
+
+      <h2 id="oxygen">The Great Poisoning</h2>
+      <p>
+        For its first two billion years, Earth was a living planet with an unbreathable atmosphere. The microbes of
+        <a href={subPath("5.3")}>§5.3</a> lived without oxygen, drawing energy from chemistry — from volcanic gases,
+        from minerals, from sunlight in ways that did not release oxygen. Then, at some point deep in the Archean,
+        one lineage of microbes — the <strong>cyanobacteria</strong> — hit on a new trick:
+        <strong>oxygenic photosynthesis</strong>. Use sunlight to prise hydrogen out of water, keep the hydrogen to
+        build sugars, and throw away the leftover oxygen.
+      </p>
+      <p>
+        It was the most consequential act of pollution in the history of the planet. Free oxygen is violently
+        reactive — it is precisely why it is useful for burning things, including food — and to the anaerobic life that
+        ruled the world, it was a poison. Slide through the whole four-billion-year record of atmospheric oxygen in the
+        figure below (the vertical axis is logarithmic, so each step up is ten times more oxygen); the panel underneath
+        tells you the air, the ocean, and the life of the moment you are standing in.
+      </p>
+
+      <FigureFrame label="Four billion years of atmospheric oxygen">
+        <OxygenPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The curve has a strange shape, and the strangest thing about it is the delay. Cyanobacteria were making oxygen
+        for hundreds of millions of years before any of it showed up in the air. Where was it going? Into the ocean —
+        specifically, into the <strong>iron</strong> dissolved in it. Without oxygen, iron stays dissolved in seawater;
+        the early ocean held a colossal amount of it. Every oxygen molecule released was immediately seized by that
+        iron and dropped to the sea floor as rust. The ocean was an oxygen sponge the size of a planet, and it took
+        hundreds of millions of years to fill.
+      </p>
+      <p>
+        We can still see the receipt. Those rusted layers, laid down season after season, are the
+        <strong>banded iron formations</strong> — the striped red rock that supplies most of the world's iron ore.
+        The steel in a bridge is the fossilised exhaust of Earth's first breath. Step through the three states of the
+        ocean in the figure below.
+      </p>
+
+      <FigureFrame label="The changing chemistry of the ocean">
+        <OceanRedoxPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        When the sponge finally saturated, oxygen flooded into the atmosphere — the <strong>Great Oxidation
+        Event</strong>, roughly <strong>2.4 to 2.2 billion years ago</strong>. For the anaerobes it was a catastrophe;
+        they were driven into the airless corners of the world where their descendants still live — deep mud, hot
+        springs, the inside of your gut. (Microbes leave too poor a fossil record to count the dead, so we speak of this
+        as a near-certain inference rather than a documented extinction.) But for what came after, oxygen was a gift.
+        Burning food with oxygen yields roughly <strong>ten times</strong> more energy than the airless chemistry that
+        preceded it, and that energy budget is what pays for an animal. High in the atmosphere, oxygen also assembled
+        itself into <strong>ozone</strong> — a molecule of three oxygen atoms — forming the shield that absorbs the
+        Sun's harshest ultraviolet and, in time, made it safe for life to crawl out of the water.
+      </p>
+      <p>
+        There is a lesson here that a course in cosmic history has no business skipping. Life is not a passenger on this
+        planet. It rebuilt the atmosphere, rusted the oceans, changed the colour of the sky, and drove — as far as we
+        can tell — the largest ecological upheaval in Earth's history, entirely as a by-product of making a living.
+        The air you are breathing is not a natural feature of a rocky planet. It is exhaust.
+      </p>
+
+      <hr />
+
+      <p><em>Outgassed steam, a rain of centuries, an ocean of iron, and then the slow, planetary poisoning that made
+        the air breathable. But we have been talking about "life" as if it were already here. Where did it come
+        from?</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

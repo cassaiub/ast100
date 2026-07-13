@@ -1,0 +1,104 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/6.3/Hero";
+import PrevNext from "../../../components/scenes/6.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { BigFivePanel, NeoPanel } from "../../../components/scenes/6.3/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="6.3 — Mass Extinctions · AST 100"
+  description="The five times life on Earth nearly ended — what caused them, why the speed of change matters more than its size — and the asteroids that still cross our orbit."
+  activeId="6.3" chapter={6} current="/chapter/6/6.3">
+  <Hero
+    tease="Five times in the last 540 million years, most of the species on Earth died in a geological instant. Four of those catastrophes were caused by the planet itself — volcanoes rewriting the atmosphere. One came from space. What all of them share is speed: a world that changes faster than life can adapt is a world that empties. It is the single most important lesson the fossil record has to teach us, and it is not a historical one."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="bigfive">Five Times the World Nearly Ended</h2>
+      <p>
+        Extinction is not unusual. It is the normal fate of species — more than 99% of all species that have ever lived
+        are gone, and they went at a slow, steady rate, a species here and there, over millions of years. That is the
+        background hum of the fossil record.
+      </p>
+      <p>
+        But five times, the hum became a scream. In the last 540 million years — the whole span in which animals have
+        existed — the fossil record shows five moments when a huge fraction of all species vanished essentially at once.
+        Palaeontologists call them the <strong>Big Five</strong>. Click through them in the figure below, or use the
+        arrow keys.
+      </p>
+
+      <FigureFrame label="The Big Five mass extinctions">
+        <BigFivePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The worst by an enormous margin was the <strong>End-Permian</strong>, 252 million years ago — nicknamed
+        <em>the Great Dying</em>, because roughly nine species in ten disappeared. (Estimates run from 81% to 96%; the
+        uncertainty tells you how hard it is to count the dead from a quarter of a billion years away.) Its cause was
+        not an asteroid. It was a volcanic eruption in Siberia so vast that it burned through buried coal beds and
+        loaded the atmosphere with carbon, cooking the planet and choking the oceans. Life took ten million years to
+        recover — the longest hangover in the history of the world.
+      </p>
+      <p>
+        And that points to the pattern most people get backwards. <strong>Four of the five were caused by the Earth
+        itself</strong>, mostly by colossal volcanism that changed the atmosphere. Only <em>one</em> — the last one —
+        came from space. The famous story is the exception.
+      </p>
+      <p>
+        The exception is worth telling, because it is why you are reading this. Sixty-six million years ago an asteroid
+        roughly ten kilometres across struck the shallow sea off what is now Mexico. The impact vaporised rock, threw a
+        pall of debris around the world, and shut down photosynthesis — the base of every food chain on the planet.
+        The <strong>non-avian dinosaurs</strong>, who had ruled for 180 million years, were gone within a geological
+        instant. The small, unpromising mammals in the undergrowth survived, and inherited an emptied world. Every
+        primate, including you, is a beneficiary of that rock.
+      </p>
+      <p>
+        What actually does the killing, in all five cases, turns out to be less the <em>size</em> of the environmental
+        change than its <strong>speed</strong>. Life adapts remarkably well to a world that warms over a million
+        years — species move, evolve, and cope. It fails catastrophically when the same change arrives in a few
+        thousand. Ecosystems are outrun. Studies across the whole 450-million-year record find that the <em>rate</em> of
+        temperature change predicts extinction severity, independently of how large the change eventually was. That is
+        the fossil record's central finding, and it should be read slowly by anyone alive in this century.
+      </p>
+
+      <h2 id="neos">The Rocks That Cross Our Path</h2>
+      <p>
+        The one extinction that came from space raises an obvious question: could it happen again? We inherited a solar
+        system littered with leftovers (<a href={subPath("4.1")}>§4.1</a>), and some of their orbits cross ours.
+        Astronomers call them <strong>near-Earth objects</strong>, and they sort into four families by orbit shape —
+        explore them in the figure below.
+      </p>
+
+      <FigureFrame label="Near-Earth asteroids: the four orbit families">
+        <NeoPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Only two of the four families actually cross Earth's orbit, and those are the ones planetary defence watches:
+        the <strong>Apollos</strong> and the <strong>Atens</strong>. Astronomers have now catalogued tens of thousands
+        of near-Earth objects, and — the essential point — they have found nearly all of the <em>large</em> ones, the
+        kilometre-scale bodies that could end a civilisation. None of them is on course to hit us. The smaller
+        ones, the city-killers, are far more numerous and much harder to spot, and the search continues.
+      </p>
+      <p>
+        Here is what makes this different from every other chapter in the fossil record. The dinosaurs had no telescopes
+        and no options. We have both. In September 2022, NASA deliberately flew a spacecraft called <strong>DART</strong>
+        into a small, harmless asteroid — and measurably changed its orbit, shortening it by more than half an hour. It
+        was the first time in the history of life on Earth that a species has deliberately altered the motion of a
+        celestial body to protect itself. For four billion years, the sky did whatever it liked to whatever lived here.
+        Now, for the first time, something living here can answer back.
+      </p>
+
+      <hr />
+
+      <p><em>Five catastrophes, four of them home-grown, all of them fast. We are the first species with a fossil record
+        to read, a telescope to watch with, and a rocket to answer with. Which raises the question this chapter has been
+        circling all along: in a Galaxy of four hundred billion stars, is anyone else asking it?</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

@@ -1,0 +1,116 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/6.4/Hero";
+import PrevNext from "../../../components/scenes/6.4/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { DrakePanel, SilencePanel } from "../../../components/scenes/6.4/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="6.4 — Life in the Universe · AST 100"
+  description="The Drake equation as a live calculator, the Fermi paradox, and an honest look at the Great Silence — including how little of the sky we have actually searched."
+  activeId="6.4" chapter={6} current="/chapter/6/6.4">
+  <Hero
+    tease="In 1961 Frank Drake wrote down an equation that breaks the biggest question we have — are we alone? — into seven smaller ones. Sixty-five years later, this course has measured the first three of them. The other four are still guesses, and they swing the answer from millions of civilisations to less than one. That gap is not a failure. It is an honest map of what we know, and it is the most useful thing in the field."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="drake">Seven Numbers</h2>
+      <p>
+        In 1961, an astronomer named <strong>Frank Drake</strong> had to organise a small meeting about the search for
+        extraterrestrial intelligence, and needed an agenda. What he wrote on the blackboard has outlived every talk
+        given at that meeting. The <strong>Drake equation</strong> does not answer whether we are alone; it does
+        something better. It breaks an unanswerable question into seven answerable ones, and then makes it painfully
+        clear which of them we can answer and which we cannot.
+      </p>
+      <p>
+        The logic is a funnel. Start with how many stars are born each year. Of those, how many have planets? Of those
+        planets, how many could support life? Of those, how many actually <em>get</em> life? Of those, how many evolve
+        intelligence? Of those, how many build a technology we could detect? And finally — the sting in the tail — how
+        long does such a civilisation <em>last</em> before it falls silent? Multiply the seven together and you get
+        <strong>N</strong>: the number of civilisations in our galaxy we could talk to right now.
+      </p>
+      <p>
+        Work the equation yourself in the figure below. Use ↑/↓ to select a factor and ←/→ to change it, and watch how
+        the answer responds.
+      </p>
+
+      <FigureFrame label="The Drake equation, live">
+        <DrakePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Play with it for a minute and the real lesson arrives on its own. <strong>The first three factors are now
+        measured</strong> — and measuring them is essentially the achievement of this entire course. Stars form at a
+        known rate (<a href={subPath("3.2")}>§3.2</a>). Kepler proved that virtually <em>every</em> star has planets
+        (<a href={subPath("4.4")}>§4.4</a>). And we can now estimate how many of those sit in the habitable zone
+        (<a href={subPath("5.4")}>§5.4</a>). In 1961 these three were pure speculation. Today they are data — and,
+        notably, they are all <em>generous</em>: the Galaxy is amply stocked with real estate.
+      </p>
+      <p>
+        The last four are guesses, and they are not small guesses. How likely is life to start on a suitable world? We
+        have exactly one example, which appeared almost as soon as the planet cooled — encouraging, but one example
+        cannot establish a probability. How likely is intelligence? Life existed here for four billion years without it.
+        And how long do technological civilisations last? We have been detectable for about a hundred years, and we
+        have spent a good fraction of that time inventing new ways to destroy ourselves. Slide that last factor and the
+        answer swings by a factor of a million. The Drake equation's true output is not a number. It is a diagnosis of
+        our ignorance.
+      </p>
+
+      <h2 id="silence">The Great Silence</h2>
+      <p>
+        Which brings us to a lunch in 1950. The physicist <strong>Enrico Fermi</strong>, in the middle of a conversation
+        about flying saucers, is said to have asked a question so simple it has bothered people ever since:
+        <em>"Where is everybody?"</em> The Galaxy is old — billions of years older than the Sun. If even a modest
+        fraction of stars produced a civilisation, and even one of those spread outward at a fraction of light speed, it
+        should have crossed the entire Milky Way many times over by now. The Galaxy should be full. It looks empty.
+        This is the <strong>Fermi paradox</strong>, and it is uncomfortable precisely because both halves of it are
+        reasonable.
+      </p>
+      <p>
+        Before reaching for exotic explanations, though, do the arithmetic. Explore what N actually implies in the
+        figure below.
+      </p>
+
+      <FigureFrame label="The Great Silence">
+        <SilencePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The numbers are sobering, and they are also comforting. Even a galaxy generously stocked with a
+        <em>thousand</em> broadcasting civilisations would space them thousands of light-years apart. Our own radio
+        broadcasts have been travelling for about a century, so our signal bubble is roughly <strong>a hundred
+        light-years</strong> across — a few thousand stars out of four hundred billion. We are a village that has been
+        shouting for one lifetime, in a country the size of a continent, and we are surprised that nobody has answered.
+        By one careful estimate, all the searching humanity has ever done amounts to sampling a hot tub's worth of water
+        out of Earth's oceans.
+      </p>
+      <p>
+        Still, the silence might mean something. The unsettling possibility is the <strong>Great Filter</strong>: some
+        step on the road from chemistry to a galactic civilisation that is fantastically improbable. If the filter is
+        <em>behind</em> us — the origin of life itself, perhaps (<a href={subPath("5.3")}>§5.3</a>), or the swallowed
+        bacterium of <a href={subPath("6.2")}>§6.2</a> — then we are simply the winners of an astronomically unlikely
+        lottery, and the silence is expected. If the filter is <em>ahead</em> of us — if civilisations reliably destroy
+        themselves shortly after learning to broadcast — then the silence is a warning, and the last factor of the
+        Drake equation is the most important number in the world. The lesson of <a href={subPath("6.3")}>§6.3</a>, that
+        a world changing faster than its inhabitants can adapt is a world that empties, does not become less relevant
+        when you apply it to yourself.
+      </p>
+      <p>
+        We do not know which. What we can say is that the question has, in one human lifetime, moved from philosophy
+        into science: it now has measured inputs, real instruments, and testable predictions. The final chapter of this
+        course is about the species that managed that — and what it might do next.
+      </p>
+
+      <hr />
+
+      <p><em>Seven numbers, three of them now known, four of them wide open — and a silence that is exactly what a
+        Galaxy with neighbours would sound like. Which leaves one thing left to explain: how did a primate on one
+        ordinary planet come to be asking?</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

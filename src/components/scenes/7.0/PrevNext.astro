@@ -4,9 +4,9 @@ import { subPath } from "../../../data/course-nav";
 interface SubLink { id: string; title: string; href: string; }
 interface Props { prev?: SubLink | null; next?: SubLink | null; sourceUrl?: string; }
 const {
-  prev = { id: "4.3", title: "Formation and Evolution of Planets", href: subPath("4.3") },
-  next = { id: "5.0", title: "Chemical Age", href: subPath("5.0") },
-  sourceUrl = "cassa.bd/abekta/courses/ast100/4.4",
+  prev = { id: "6.4", title: "Life in the Universe", href: subPath("6.4") },
+  next = { id: "7.1", title: "History of the World", href: subPath("7.1") },
+  sourceUrl = "cassa.bd/abekta/courses/ast100/ch7",
 } = Astro.props;
 ---
 <footer class="relative border-t border-white/[0.07] mt-20">

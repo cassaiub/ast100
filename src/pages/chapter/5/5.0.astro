@@ -1,0 +1,110 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/5.0/Hero";
+import PrevNext from "../../../components/scenes/5.0/PrevNext.astro";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="5.0 — Chemical Age · AST 100"
+  description="From roughly ten and a half to twelve and a half billion years after the Big Bang — the era when atoms learn to combine. Seven milestones from the first prebiotic molecules to the oxygen crisis, and four lessons: the periodic table as a map of cosmic history, the making of oceans and air, the origin of life, and the search for it elsewhere."
+  activeId="5.0"
+  chapter={5}
+  current="/chapter/5/5.0"
+>
+  <Hero
+    tease="The Planetary Age built the worlds; the Chemical Age fills them with molecules — and, on at least one of them, with life. Between roughly ten and a half and twelve and a half billion years after the Big Bang, atoms forged in stars combine into water, air, and organic chemistry; chemistry becomes a cell; and that cell poisons the whole planet with oxygen. Four lessons, seven milestones, and the sharpest question in science: has it happened anywhere else?"
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="atoms">The Atoms and Their Addresses</h2>
+      <p>The <strong>Chemical Age</strong> — Chapter 5 of <em>Our Cosmic History</em> — is where the story stops being
+        about objects and starts being about <em>substances</em>. It picks up from the Planetary Age
+        (<a href={subPath("4.3")}>§4.3</a>) with a young Earth of raw rock and metal, and it ends, about two billion
+        years later, with a living, breathing planet. Across <strong>four lessons</strong> and <strong>seven
+        milestones</strong>, it follows atoms into molecules, molecules into cells, and cells into an atmosphere.</p>
+      <p>It begins with an inventory. The <strong>periodic table</strong> organises every element by a single number —
+        the protons in its nucleus — but colour it by where each element was <em>manufactured</em> and it becomes a map
+        of everything the course has covered so far: hydrogen from the Big Bang, carbon from dying stars, oxygen from
+        exploding ones, gold from colliding neutron stars. The atoms in your hand are a receipt for fourteen billion
+        years.</p>
+      <a
+        href={subPath("5.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">5.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">The Periodic Table</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="molecules">Molecules, Air, and Sea</h2>
+      <p>Long before Earth existed, those atoms were already combining. In the cold clouds between the stars — the
+        clouds that ALMA, this chapter's telescope, was built to see — astronomers detect water, alcohols, sugars, and
+        the carbon-nitrogen molecules that are precursors to the building blocks of life. The
+        <strong>synthesis of prebiotic molecules</strong> (10.5–11 Gyr) is not an Earth story at all: it is a galactic
+        one, and asteroids and meteorites delivered a sample of it to the young planet ready-made.</p>
+      <p>On Earth, the raw materials became a world. Volcanoes exhaled steam, carbon dioxide, and nitrogen; the steam
+        rained out for centuries and filled the basins with the first <strong>oceans</strong>. There was no oxygen in
+        that air whatsoever — the air we call normal is a later invention, and life is what invented it.</p>
+      <a
+        href={subPath("5.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">5.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Formation of Oceans and Atmospheres</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="life">Chemistry Becomes Life</h2>
+      <p>Then the central mystery of the chapter — arguably of the course. In hot alkaline vents on the Hadean sea
+        floor, a natural battery of protons drives carbon dioxide and hydrogen together over mineral catalysts. Fatty
+        acids close into hollow bubbles: the <strong>formation of protocells</strong> (11 Gyr). Inside them, molecules
+        appear that can both carry information and speed up reactions — the <strong>"RNA world"</strong> (11 Gyr) — and
+        chemistry crosses, by a route we still cannot fully retrace, into biology. By around <strong>11.5 Gyr</strong>
+        the first <strong>prokaryotes</strong> — simple cells without a nucleus — are established, descendants of a
+        single ancestral cell we call LUCA.</p>
+      <p>What follows is the biggest thing microbes have ever done. With the <strong>invention of
+        photosynthesis</strong> (12 Gyr), cyanobacteria learn to eat sunlight and split water, throwing away the
+        leftover oxygen. For hundreds of millions of years the ocean's dissolved iron swallows every molecule of it —
+        rusting, sinking, laying down the banded iron we mine today. Then the sponge fills, and in the <strong>oxygen
+        crisis</strong> (12.2 Gyr) the gas floods the air: poison to nearly everything then alive, and the fuel of
+        everything that came after. By <strong>12.5 Gyr</strong>, <strong>eukaryotic symbiosis</strong> — one cell
+        swallowing another and keeping it — builds the complex cell that Chapter 6 is made of.</p>
+      <a
+        href={subPath("5.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">5.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Origin of Life on Earth</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="elsewhere">And Anywhere Else?</h2>
+      <p>Life appeared on Earth almost as soon as the planet could hold it — which either means life is easy, and the
+        Galaxy is full of it, or means we are the beneficiaries of one staggering accident. The chapter closes by taking
+        the question outward: the <strong>habitable zone</strong> where liquid water survives, the few dozen rocky
+        candidate worlds we have found inside one, and the way starlight filtered through a distant atmosphere could
+        betray the presence of life — oxygen and methane together, two gases that destroy each other, so that finding
+        both means something is busily making both. As of 2026 we have the telescopes, the method, the targets — and no
+        confirmed detection at all.</p>
+      <a
+        href={subPath("5.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">5.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Life on Other Planets</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <hr />
+
+      <blockquote><p>The Planetary Age made the stage; the Chemical Age wrote the chemistry — atoms into molecules,
+        molecules into a cell, and a cell that rebuilt the sky. Everything alive descends from that one experiment, and
+        we still do not know whether it has ever been repeated.</p></blockquote>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

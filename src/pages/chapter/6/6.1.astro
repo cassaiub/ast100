@@ -1,0 +1,88 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/6.1/Hero";
+import PrevNext from "../../../components/scenes/6.1/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { TreePanel, UniversalPanel } from "../../../components/scenes/6.1/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="6.1 — Tree of Life · AST 100"
+  description="Every living thing on one tree, rooted at a single ancestral cell — and the surprise that bacteria hold nearly all of life's diversity while animals, plants, and fungi are one thin twig."
+  activeId="6.1" chapter={6} current="/chapter/6/6.1">
+  <Hero
+    tease="Everything alive is related. Not poetically — literally, by descent, from a single cell that lived four billion years ago. We can prove it, because every organism on Earth still uses the same four-letter alphabet and the same genetic dictionary. And when you draw the family tree honestly, the result is humbling: the entire visible living world, every animal and plant you have ever seen, is one thin twig on a bush of microbes."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="tree">One Tree, One Ancestor</h2>
+      <p>
+        The Chemical Age ended with a single cell (<a href={subPath("5.3")}>§5.3</a>). The Biological Age is what that
+        cell did next — and the headline is easy to state and hard to absorb: <strong>it is still here</strong>. Not the
+        cell itself, but its lineage, unbroken, in every living thing. You are not descended from a common ancestor in
+        some vague, metaphorical sense. You are a physical continuation of a cell that lived on a young, airless planet
+        roughly four billion years ago, and so is every bacterium in your gut, every tree outside, and every fish in the
+        sea.
+      </p>
+      <p>
+        How can we possibly know that? Because life is full of arbitrary choices that never changed. There is no
+        chemical necessity for genetic information to be written in <em>four</em> letters — A, T, C, and G — yet every
+        organism ever sequenced uses exactly those four. There is no necessity for the three-letter word "GGA" to mean
+        the amino acid glycine — yet it does, in bacteria, in oak trees, and in you. Shared arbitrary choices are the
+        fingerprint of shared ancestry: they are how you would know two students copied the same essay. Step through
+        the four universal features in the figure below.
+      </p>
+
+      <FigureFrame label="What every living thing shares">
+        <UniversalPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        With those shared features, biologists can do something remarkable: measure how <em>closely</em> two organisms
+        are related, by counting how much their shared molecules have drifted apart. Compare the same ancient protein
+        across thousands of species, tally the differences, and the pattern of similarities reconstructs the family
+        tree — not guessed from what things look like, but computed from what they are made of. Recent trees are built
+        from DNA read straight out of soil, seawater, and mud, from organisms nobody has ever managed to grow in a
+        laboratory. Explore the result below — click any branch, or walk them with the arrow keys.
+      </p>
+
+      <FigureFrame label="The tree of life">
+        <TreePanel client:visible />
+      </FigureFrame>
+
+      <h2 id="domains">Three Domains — and a Humbling</h2>
+      <p>
+        Life sorts into three great <strong>domains</strong>. The <strong>Bacteria</strong> you have heard of. The
+        <strong>Archaea</strong> look like bacteria under a microscope but are built differently underneath —
+        different membranes, different machinery — and many of them live in places that would kill anything else:
+        boiling springs, salt lakes, acid, the rock kilometres beneath your feet. And the <strong>Eukarya</strong>: the
+        organisms whose cells keep their DNA in a nucleus. That is us, along with every animal, plant, fungus, and
+        amoeba.
+      </p>
+      <p>
+        Now for the humbling. Look at the proportions of that tree again. Almost all of life's genetic diversity sits in
+        the bacteria. An enormous slab of it — the <strong>Candidate Phyla Radiation</strong> — consists of microbes so
+        small and so dependent on other cells that essentially none of them have ever been grown in a laboratory; we
+        know they exist only because we can now read DNA directly out of the environment. And <em>everything you have
+        ever seen with your eyes</em> — every animal, every plant, every mushroom, the entire subject matter of
+        natural history — occupies one narrow sliver of one branch. Life on Earth is, and always has been, a microbial
+        affair. We are a rounding error that learned to look at the tree.
+      </p>
+      <p>
+        There is one more twist, and it is the setup for the next lesson. Notice <em>where</em> the eukaryotes attach.
+        They are not a third trunk rising independently from the root. On the best current evidence, they grew out from
+        <strong>within the archaea</strong> — which means that you, at the deepest level of your cellular ancestry, are
+        a kind of archaeon. A kind of archaeon that, at some point, swallowed a bacterium and did not digest it.
+      </p>
+
+      <hr />
+
+      <p><em>One alphabet, one dictionary, one ancestor — and a tree whose proportions put us firmly in our place. But
+        the branch we sit on was made by an accident so strange it deserves a lesson of its own.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

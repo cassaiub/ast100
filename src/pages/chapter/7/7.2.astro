@@ -1,0 +1,105 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/7.2/Hero";
+import PrevNext from "../../../components/scenes/7.2/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { ModelsPanel, RetrogradePanel } from "../../../components/scenes/7.2/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="7.2 — History of Mapping the Worlds · AST 100"
+  description="Two thousand years of drawing the universe: Earth at the centre, then the Sun, then no centre at all, then a map of time itself — and the stubborn backwards loop of Mars that broke the first one."
+  activeId="7.2" chapter={7} current="/chapter/7/7.2">
+  <Hero
+    tease="Every age draws the universe, and every age puts itself somewhere in the picture. We began at the exact centre of creation, with everything circling us. We have ended as one planet, of one star, in one galaxy, at one moment in a history with no centre at all. This is the story of four maps — and of the demotions that produced them."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="maps">Four Maps of Everything</h2>
+      <p>
+        Long before anyone knew what a star was, people were mapping the sky — because they had to. The sky told you
+        when to plant, when the river would flood, and which way was north
+        (<a href={subPath("7.3")}>§7.3</a>). But somewhere along the way, the practical business of tracking the sky
+        turned into something else: an argument about what the universe <em>is</em>, and where we sit in it.
+      </p>
+      <p>
+        That argument has run for two and a half thousand years, and this course is its most recent chapter. Step
+        through its four great maps in the figure below.
+      </p>
+
+      <FigureFrame label="Four maps of everything">
+        <ModelsPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The first map is the obvious one. The Earth is still, the sky turns, so put the Earth in the middle and hang
+        everything else on spheres around it. Aristotle argued it; <strong>Ptolemy</strong>, around 150 CE, turned it
+        into a working machine that could actually <em>predict</em> where the planets would appear. It is easy to sneer
+        at, and that would be a mistake — it fit the evidence available, and it worked well enough to be used for
+        fourteen centuries.
+      </p>
+      <p>
+        But it had one embarrassment, and everything turns on it. Most nights, Mars creeps slowly eastward against the
+        stars. Then, every couple of years, it stops, reverses, loops <em>backwards</em> for a few weeks, and resumes.
+        This is <strong>retrograde motion</strong>, and on a geocentric model it makes no sense — how does a planet on a
+        sphere back up? Ptolemy's fix was the <strong>epicycle</strong>: a small circle riding on the big one, so that
+        the planet occasionally swings backwards as it goes around. It worked. It was also, transparently, a patch.
+      </p>
+      <p>
+        Now watch what happens to that mystery when you simply let the Earth move. Run the figure below.
+      </p>
+
+      <FigureFrame label="Why Mars goes backwards">
+        <RetrogradePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        There is no loop. There is no epicycle. There is just Earth, on a shorter, faster track, overtaking Mars on the
+        inside — and, as it passes, Mars appears to slide backwards against the distant stars, exactly the way a slower
+        car seems to drift backwards when you overtake it on a motorway. Fourteen centuries of the hardest problem in
+        astronomy dissolve into an everyday experience, the moment you are willing to admit that <em>we</em> are the ones
+        moving.
+      </p>
+
+      <h2 id="demotions">The Demotions</h2>
+      <p>
+        <strong>Copernicus</strong> published that idea in 1543, the year he died. He kept the perfect circles the
+        ancients loved, so his model still needed epicycles to match the data; it was <strong>Kepler</strong>, working
+        from Tycho Brahe's superb observations of Mars, who finally threw the circles out and replaced them with
+        <strong>ellipses</strong> — at which point the solar system snapped into focus and has stayed there ever since.
+        <strong>Galileo</strong> then aimed a telescope at Jupiter in 1610 and found four moons orbiting something that
+        was plainly not the Earth. The debate was effectively over, though the shouting continued for a century.
+      </p>
+      <p>
+        And then a quieter revolution — the one this whole course rests on. In 1576, the English astronomer
+        <strong>Thomas Digges</strong> redrew the Copernican system and did something nobody had dared: he let the stars
+        keep going, off the edge of the page, "infinitely up". If the stars are other suns, then <em>our</em> Sun is
+        just a star, and the centre of the universe is nowhere in particular. Everything in chapters 2, 3, and 4 of this
+        course is a working-out of that single thought.
+      </p>
+      <p>
+        The modern map, finally, is not a map of <em>where</em> at all. Because light travels at a finite speed, looking
+        far away is looking far back in time (<a href={subPath("0.3")}>§0.3</a>), and because space itself expands
+        (<a href={subPath("2.4")}>§2.4</a>), the honest picture runs from the Big Bang along one edge to us at the
+        other. There is still no centre — every galaxy sees itself as the middle of its own expanding sphere — but there
+        <em>is</em> an edge, and it is made of time rather than space.
+      </p>
+      <p>
+        Notice the pattern of those four maps. Each one removed us from a privileged position: from the centre of
+        creation, to the third rock around an ordinary star, to a dot in an unremarkable galaxy, to a brief moment in a
+        13.8-billion-year history. Astronomers sometimes call this the <strong>Copernican principle</strong> — the
+        working assumption that we are not special. It has been the single most reliable guide in the history of the
+        subject. Every time we have assumed we were at the centre of something, we have been wrong.
+      </p>
+
+      <hr />
+
+      <p><em>From the centre of everything to nowhere in particular, in four maps and two thousand years. But those maps
+        began as something far more practical: a calendar, a clock, and a compass, all read from the sky.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

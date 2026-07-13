@@ -226,12 +226,40 @@ export const CHAPTERS: Chapter[] = [
     title: "Chemical Age",
     telescope: "ALMA",
     weeks: "10",
-    overviewLive: false,
+    overviewLive: true,
+    description:
+      "Between roughly ten and a half and twelve and a half billion years after the Big Bang, atoms learn to combine. Chapter 5 begins with the periodic table read as a map of cosmic history — every element stamped with the event that forged it — then follows those atoms onto a young Earth: outgassed into an atmosphere, rained down as an ocean, assembled in vents on the sea floor into the first cell, and finally exhaled back into the sky as oxygen. It closes by turning the question outward: could the same chemistry have run anywhere else?",
+    overviewTease:
+      "The Planetary Age built the worlds; the Chemical Age fills them with molecules — and, on at least one, with life. Atoms become water and air, chemistry becomes a cell, and that cell rebuilds the whole atmosphere. Then the sharpest question in science: has it happened anywhere else?",
     subs: [
-      { id: "5.1", title: "The Periodic Table", live: false },
-      { id: "5.2", title: "Formation of Oceans and Atmospheres", live: false },
-      { id: "5.3", title: "Origin of Life on Earth", live: false },
-      { id: "5.4", title: "Life on Other Planets", live: false },
+      {
+        id: "5.1",
+        title: "The Periodic Table",
+        live: true,
+        tease:
+          "The periodic table is usually taught as chemistry. It is also a map of cosmic history — colour each element by where its atoms were forged and you get a receipt for the whole course: hydrogen from the Big Bang, carbon from dying stars, iron from exploding white dwarfs, gold from colliding neutron stars.",
+      },
+      {
+        id: "5.2",
+        title: "Formation of Oceans and Atmospheres",
+        live: true,
+        tease:
+          "A newborn Earth had no air worth breathing and no ocean at all. Volcanoes exhaled steam that fell as rain for centuries; then life invented photosynthesis and began pumping out a gas so reactive it rusted the seas, poisoned nearly everything alive, and became a fifth of the air you breathe.",
+      },
+      {
+        id: "5.3",
+        title: "Origin of Life on Earth",
+        live: true,
+        tease:
+          "Somewhere around four billion years ago, chemistry began copying itself. The leading account starts in a crack in the sea floor, where alkaline water seeping through rock builds a natural battery of protons — the very same trick every living cell on Earth still runs on today.",
+      },
+      {
+        id: "5.4",
+        title: "Life on Other Planets",
+        live: true,
+        tease:
+          "The band around a star where water stays liquid, the few dozen rocky worlds we have found inside one, and the way starlight filtered through a distant atmosphere could betray life: oxygen and methane together, two gases that destroy each other. So far, no confirmed detection anywhere.",
+      },
     ],
   },
   {
@@ -240,12 +268,40 @@ export const CHAPTERS: Chapter[] = [
     title: "Biological Age",
     telescope: "JWST",
     weeks: "11",
-    overviewLive: false,
+    overviewLive: true,
+    description:
+      "The Chemical Age made a cell; the Biological Age makes everything else. Chapter 6 draws the family tree of all living things — and finds that bacteria hold nearly all of life's diversity while every animal and plant is one thin twig. It follows the accidental swallowing that produced the complex cell, the long pause and then the explosion of bodies, eyes, and limbs, and the five catastrophes that nearly ended it all. It closes with the Drake equation, and an honest accounting of the silence.",
+    overviewTease:
+      "One microbe swallows another and complex life becomes possible. Cells learn to live in bodies; bodies grow eyes and crawl ashore; and five times, most of it dies. Seven milestones, four lessons, and a tree whose proportions put us firmly in our place.",
     subs: [
-      { id: "6.1", title: "Tree of Life", live: false },
-      { id: "6.2", title: "Rise of the Eukaryotes", live: false },
-      { id: "6.3", title: "Mass Extinctions", live: false },
-      { id: "6.4", title: "Life in the Universe", live: false },
+      {
+        id: "6.1",
+        title: "Tree of Life",
+        live: true,
+        tease:
+          "Everything alive is related by descent from a single cell — and we can prove it, because every organism still uses the same four-letter alphabet and the same genetic dictionary. Draw the tree honestly, though, and it is humbling: the entire visible living world is one thin twig on a bush of microbes.",
+      },
+      {
+        id: "6.2",
+        title: "Rise of the Eukaryotes",
+        live: true,
+        tease:
+          "Two billion years ago one microbe swallowed another and failed to digest it. The passenger could burn food with oxygen, and it started paying rent in energy. It is still inside you, in every cell, still carrying its own bacterial DNA — and every animal, plant, and fungus descends from that single undigested meal.",
+      },
+      {
+        id: "6.3",
+        title: "Mass Extinctions",
+        live: true,
+        tease:
+          "Five times, most species on Earth died in a geological instant. Four were the planet's own doing — volcanoes rewriting the atmosphere; one came from space and ended the dinosaurs. What kills is not the size of the change but its speed, and that is not a historical lesson.",
+      },
+      {
+        id: "6.4",
+        title: "Life in the Universe",
+        live: true,
+        tease:
+          "The Drake equation breaks 'are we alone?' into seven numbers — and this course has now measured the first three. The other four are guesses that swing the answer from millions to less than one. Meanwhile the Galaxy is silent, which is exactly what a Galaxy with distant neighbours would sound like.",
+      },
     ],
   },
   {
@@ -254,12 +310,40 @@ export const CHAPTERS: Chapter[] = [
     title: "Cultural Age",
     telescope: "Allen Array",
     weeks: "12",
-    overviewLive: false,
+    overviewLive: true,
+    description:
+      "The final age, and the shortest by far. In the last million years — a rounding error on this course's clock — one branch of one primate lineage learned to control fire, to farm, to write, and to burn buried sunlight. Chapter 7 follows that curve, then the two-thousand-year argument about what the universe is and where we sit in it, then the sky as humanity's first calendar, clock, and compass. It ends by pointing the instruments outward and listening — so far, to silence.",
+    overviewTease:
+      "Fire, farming, cities, industry — and a species that reconstructed the entire fourteen-billion-year story of which it is the latest sentence, then began listening for anyone else who managed the same. Seven milestones, four lessons, and one question left open.",
     subs: [
-      { id: "7.1", title: "History of the World", live: false },
-      { id: "7.2", title: "History of Mapping the Worlds", live: false },
-      { id: "7.3", title: "Role of the Sky in Culture", live: false },
-      { id: "7.4", title: "Search for Extraterrestrial Intelligence", live: false },
+      {
+        id: "7.1",
+        title: "History of the World",
+        live: true,
+        tease:
+          "For 95% of our history there were never more than a few hundred thousand of us. Then farming, writing, and buried sunlight bent the curve nearly vertical. Everything you would call history happens in that final stroke — including the walk that carried one African primate to every habitable place on Earth.",
+      },
+      {
+        id: "7.2",
+        title: "History of Mapping the Worlds",
+        live: true,
+        tease:
+          "Every age draws the universe and puts itself somewhere in the picture. We began at the exact centre of creation and ended as one planet, of one star, at one moment in a history with no centre at all. Four maps, two thousand years, and a series of demotions that all turned out to be right.",
+      },
+      {
+        id: "7.3",
+        title: "Role of the Sky in Culture",
+        live: true,
+        tease:
+          "The year comes from the tilt, the month from the Moon, and the names of the days from seven wandering lights — Thursday is Jupiter's day, and so is Brihaspatibar. The sky was humanity's first calendar, first clock, first compass, and first library.",
+      },
+      {
+        id: "7.4",
+        title: "Search for Extraterrestrial Intelligence",
+        live: true,
+        tease:
+          "Measured in energy per gram, a modern society runs hotter than a brain, a plant, or a star — the most intense thing we know of. And it is now listening for anyone else who managed the same climb. Sixty years of listening have produced silence; we have also searched only a hot tub's worth of a cosmic ocean.",
+      },
     ],
   },
 ];
@@ -441,6 +525,76 @@ export const RAIL_ANCHORS: Record<string, RailAnchor[]> = {
   "4.4": [
     { id: "shadows", label: "Planet Shadows" },
     { id: "wobbles", label: "Wobbles & Portraits" },
+  ],
+  /* Chapter 5 */
+  "5.0": [
+    { id: "atoms", label: "Atoms & Addresses" },
+    { id: "molecules", label: "Air and Sea" },
+    { id: "life", label: "Chemistry → Life" },
+    { id: "elsewhere", label: "Anywhere Else?" },
+  ],
+  "5.1": [
+    { id: "table", label: "Where Atoms Come From" },
+    { id: "furnace", label: "The Onion Furnace" },
+  ],
+  "5.2": [
+    { id: "origins", label: "Air and Sea" },
+    { id: "oxygen", label: "The Great Poisoning" },
+  ],
+  "5.3": [
+    { id: "vents", label: "A Battery in the Rock" },
+    { id: "steps", label: "Chemistry → Cell" },
+  ],
+  "5.4": [
+    { id: "zone", label: "The Water Zone" },
+    { id: "biosignatures", label: "Reading the Air" },
+  ],
+  /* Chapter 6 */
+  "6.0": [
+    { id: "tree", label: "One Tree" },
+    { id: "complex", label: "The Accident" },
+    { id: "crises", label: "Five Catastrophes" },
+    { id: "alone", label: "Are We Alone?" },
+  ],
+  "6.1": [
+    { id: "tree", label: "One Ancestor" },
+    { id: "domains", label: "Three Domains" },
+  ],
+  "6.2": [
+    { id: "symbiosis", label: "The Swallowing" },
+    { id: "dna", label: "Inside the Nucleus" },
+  ],
+  "6.3": [
+    { id: "bigfive", label: "The Big Five" },
+    { id: "neos", label: "Rocks That Cross" },
+  ],
+  "6.4": [
+    { id: "drake", label: "Seven Numbers" },
+    { id: "silence", label: "The Great Silence" },
+  ],
+  /* Chapter 7 */
+  "7.0": [
+    { id: "fire", label: "Fire and Farms" },
+    { id: "maps", label: "Redrawing It All" },
+    { id: "sky", label: "The Sky We Live By" },
+    { id: "listening", label: "And Now We Listen" },
+  ],
+  "7.1": [
+    { id: "curve", label: "The Shape of Us" },
+    { id: "migration", label: "Out of Africa" },
+  ],
+  "7.2": [
+    { id: "maps", label: "Four Maps" },
+    { id: "demotions", label: "The Demotions" },
+  ],
+  "7.3": [
+    { id: "year", label: "The Sky as Calendar" },
+    { id: "month", label: "Month, Week, Zodiac" },
+  ],
+  "7.4": [
+    { id: "complexity", label: "The Cost of Us" },
+    { id: "silence", label: "Is Anybody There?" },
+    { id: "end", label: "The End" },
   ],
 };
 

@@ -1,0 +1,104 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/6.0/Hero";
+import PrevNext from "../../../components/scenes/6.0/PrevNext.astro";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="6.0 — Biological Age · AST 100"
+  description="From one cell to the tree of life — multicellularity, the Cambrian explosion, the colonisation of land, the five great extinctions, and the primates left standing. Seven milestones, four lessons, and the question of whether any of it happened elsewhere."
+  activeId="6.0"
+  chapter={6}
+  current="/chapter/6/6.0"
+>
+  <Hero
+    tease="The Chemical Age made a cell; the Biological Age makes everything else. One microbe swallows another and complex life becomes possible. Cells learn to live in bodies, bodies grow eyes and limbs, life crawls out of the sea under a shield of its own making — and five times, most of it dies. Seven milestones, four lessons, and a tree whose proportions put us firmly in our place."
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="tree">Everything Alive, on One Tree</h2>
+      <p>The <strong>Biological Age</strong> — Chapter 6 of <em>Our Cosmic History</em> — begins with a single cell and
+        ends with a species reading about it. Across <strong>four lessons</strong> and <strong>seven
+        milestones</strong>, it follows life from microbe to mind.</p>
+      <p>It opens by drawing the family tree. Everything alive is descended from one ancestral cell, and we can prove it:
+        every organism on Earth still writes its genes in the same four letters and reads them with the same dictionary.
+        But when the tree is drawn honestly, the proportions are humbling — <strong>bacteria</strong> hold nearly all of
+        life's diversity, while every animal, plant, and fungus you have ever seen occupies a single thin twig.</p>
+      <a
+        href={subPath("6.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">6.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Tree of Life</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="complex">The Accident That Built Us</h2>
+      <p>For two billion years, nothing on Earth was bigger than a dot — cells had hit an energy ceiling they could not
+        climb. Then, about two billion years ago, one microbe swallowed another and failed to digest it. The passenger
+        could burn food with the new oxygen in the water, and it began paying rent in energy: <strong>eukaryotic
+        symbiosis</strong> (12.5 Gyr in the previous chapter's clock). That prisoner is the mitochondrion in every cell
+        of your body, and it still carries its own bacterial DNA.</p>
+      <p>With power to spare, cells could finally build. Around <strong>1 Gyr</strong> comes the <strong>rise of
+        multicellularity</strong> — cells sticking together and specialising. Then, after a further long wait, the brakes
+        come off: in the <strong>Cambrian explosion</strong> (540–600 My) the oceans fill, within a geological eyeblink,
+        with shells, limbs, jaws, and the first eyes. Nearly every body plan alive today, including ours, appears in that
+        window.</p>
+      <a
+        href={subPath("6.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">6.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Rise of the Eukaryotes</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="crises">Out of the Sea — and Five Catastrophes</h2>
+      <p>Under the ozone shield built from life's own exhaust (<a href={subPath("5.2")}>§5.2</a>), the
+        <strong>colonisation of land</strong> (400–475 My) begins: plants first, then arthropods, then backboned animals
+        hauling themselves ashore. Forests rise, and with them the <strong>dominance of reptiles</strong> (300 My), the
+        <strong>emergence of mammals</strong> (200 My), and 180 million years of dinosaurs.</p>
+      <p>But the climb is not smooth. Five times, most species on Earth die at once. Four of the five are the planet's
+        own doing — vast volcanic eruptions rewriting the atmosphere — and only one comes from space: the
+        <strong>K-T mass extinction</strong> (65 My), when a ten-kilometre asteroid ended the dinosaurs and handed the
+        world to the mammals in the undergrowth. What kills, in every case, is less the size of the change than its
+        speed. Then, at <strong>5–7 My</strong>, the <strong>divergence of the hominids</strong>: one branch of one
+        lineage of primates starts down the road that leads to the reader.</p>
+      <a
+        href={subPath("6.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">6.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Mass Extinctions</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="alone">Are We Alone?</h2>
+      <p>The chapter closes by asking whether any of this happened anywhere else. This chapter's telescope, <strong>JWST</strong>,
+        is the first instrument capable of reading the air of a rocky planet light-years away and looking for the
+        chemical exhaust of life. Meanwhile the <strong>Drake equation</strong> breaks the question into seven factors —
+        and this course has now <em>measured</em> the first three. The remaining four are honest guesses, and they swing
+        the answer from millions of civilisations to less than one. The silence we hear is exactly what a galaxy with
+        distant neighbours would sound like — but it might also be a warning.</p>
+      <a
+        href={subPath("6.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">6.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Life in the Universe</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <hr />
+
+      <blockquote><p>The Chemical Age made one cell; the Biological Age made the rest — by an accidental swallowing, a
+        billion-year pause, an explosion of bodies, and five catastrophes survived. We are the twig that lived, and
+        learned to read the tree.</p></blockquote>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

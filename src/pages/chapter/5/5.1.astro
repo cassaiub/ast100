@@ -1,0 +1,112 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/5.1/Hero";
+import PrevNext from "../../../components/scenes/5.1/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { PeriodicTablePanel, OnionFurnacePanel } from "../../../components/scenes/5.1/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="5.1 — The Periodic Table · AST 100"
+  description="Every element, colour-coded by the cosmic event that made it — from hydrogen in the Big Bang to gold in a collision of neutron stars — and the onion-shell furnace inside a dying massive star that forged most of the rest."
+  activeId="5.1" chapter={5} current="/chapter/5/5.1">
+  <Hero
+    tease="The periodic table is usually taught as chemistry. It is also a map of cosmic history. Each of the 118 elements was manufactured somewhere specific — hydrogen in the first minutes of the Universe, carbon inside dying stars, iron in exploding white dwarfs, gold when two neutron stars collided. The atoms in your hand carry the address of the event that made them."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="table">A Map of Where Atoms Come From</h2>
+      <p>
+        The Planetary Age gave us worlds. The Chemical Age asks what those worlds are <em>made of</em> — and the answer
+        turns out to be a history book. Everything around you is built from <strong>elements</strong>: substances that
+        cannot be broken into anything simpler by chemistry. What makes one element different from another is a single
+        number — how many <strong>protons</strong> sit in the nucleus of its atoms (<a href={subPath("1.2")}>§1.2</a>).
+        One proton is hydrogen. Six is carbon. Twenty-six is iron. Seventy-nine is gold. That number, and nothing else,
+        is the element's identity.
+      </p>
+      <p>
+        Arrange the elements in order of that number and something remarkable happens: their personalities repeat.
+        Every so often you come back to a metal that fizzes in water, or a gas that refuses to react with anything.
+        Fold the list at those repeats and you get the <strong>periodic table</strong> — the most useful chart in
+        science, and one of the few that a chemist from any planet would recognise. Reading left to right, each step
+        adds a proton; reading down a column, the elements are chemical cousins.
+      </p>
+      <p>
+        But for us, the table hides a second story. Colour each tile by <em>where its atoms were manufactured</em> and
+        the chart becomes a map of cosmic history — a receipt for the whole course so far. Hydrogen and helium, from
+        the first twenty minutes after the Big Bang (<a href={subPath("1.3")}>§1.3</a>). Carbon and nitrogen, cooked
+        gently inside dying Sun-like stars. Oxygen, silicon, and calcium, forged in massive stars and blown out when
+        they exploded (<a href={subPath("3.4")}>§3.4</a>). Most of the iron, from exploding white dwarfs. And the gold,
+        platinum, and uranium — those came from the collision of two neutron stars, something astronomers actually
+        watched happen in 2017. Click through the table below; the arrow keys walk the elements, and clicking a forge
+        in the legend dims everything the others made.
+      </p>
+
+      <FigureFrame label="The periodic table, coloured by cosmic origin">
+        <PeriodicTablePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Two honest cautions about that chart. First, most elements are made in more than one place; the colour shows
+        where the <em>majority</em> of the atoms around us came from, and the boundaries are still being argued over in
+        the literature. Second, the elements past uranium at the bottom — the ones in grey — are not really cosmic at
+        all: they are made by people, atom by atom, in reactors and accelerators, and most vanish again in minutes.
+      </p>
+
+      <h2 id="furnace">The Onion Furnace</h2>
+      <p>
+        Of all those forges, the one that made most of the atoms in <em>you</em> — the oxygen, the carbon, the calcium,
+        the iron in your blood — deserves a closer look. We met the death of a massive star in
+        <a href={subPath("3.3")}>§3.3</a> as a plot point. Now we go inside it.
+      </p>
+      <p>
+        A star lives by a standoff: gravity pulling in, the heat of fusion pushing out (<a href={subPath("3.1")}>§3.1</a>).
+        The trouble comes when the fuel in the core runs out. The outward push falters, gravity squeezes the core
+        smaller, and squeezing makes it <em>hotter</em> — hot enough to ignite the ash of the last round as the fuel of
+        the next. Helium becomes carbon, carbon becomes neon, neon becomes oxygen, oxygen becomes silicon, and silicon
+        becomes iron. Meanwhile the previous fuels keep burning in shells further out, so the star ends up built in
+        layers, like an <strong>onion</strong>.
+      </p>
+      <p>
+        The astonishing thing is the clock. Each stage burns hotter, and hotter burning is faster burning. For a star
+        twenty times the Sun's mass, hydrogen lasts about <strong>eight million years</strong>. Carbon lasts a
+        <strong>thousand</strong>. Oxygen, about <strong>six months</strong>. Silicon — the final stage, the one that
+        makes iron — lasts about <strong>a single day</strong>. From the outside, the star looks perfectly serene the
+        whole time. Step through its last eight million years in the figure below, with the arrow keys.
+      </p>
+
+      <FigureFrame label="Inside a dying massive star">
+        <OnionFurnacePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        And then it stops — because iron is the end of the line. Nuclei around iron are the most tightly bound in
+        nature, packed as efficiently as matter can manage. Fusing anything lighter than iron <em>releases</em> energy;
+        fusing iron itself <em>consumes</em> it. So when the core turns to iron, the furnace does not just run low on
+        fuel — it can no longer produce energy at all, at any temperature. The outward push vanishes, and gravity, which
+        has been waiting patiently for eight million years, wins in under a second. The core collapses, rebounds, and
+        blows the star apart, scattering every layer of the onion into space — where, four and a half billion years ago,
+        some of it was swept into the cloud that made the Sun (<a href={subPath("4.3")}>§4.3</a>).
+      </p>
+      <p>
+        What is left behind at the centre is a <strong>neutron star</strong> (<a href={subPath("3.4")}>§3.4</a>) — and
+        that is where the gold comes in. Ordinary supernovae make surprisingly little of the heaviest elements. But when
+        two neutron stars, left over from two such deaths, spiral together and collide, the debris is so drenched in
+        free neutrons that nuclei can absorb them faster than they can fall apart, building up to gold, platinum, and
+        uranium in a matter of seconds. In August 2017, gravitational-wave detectors felt two neutron stars merge, and
+        telescopes watched the glow of freshly made heavy elements. The ring on someone's finger is, quite literally,
+        the debris of that kind of collision.
+      </p>
+
+      <hr />
+
+      <p><em>One hundred and eighteen elements, seven cosmic forges, and a single number — the protons in a nucleus —
+        that decides everything. The table on a classroom wall is a map of fourteen billion years. Next: what happens
+        when those atoms land on a young planet and get wet.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

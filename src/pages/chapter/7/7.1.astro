@@ -1,0 +1,96 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/7.1/Hero";
+import PrevNext from "../../../components/scenes/7.1/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { PopulationPanel, MigrationPanel } from "../../../components/scenes/7.1/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="7.1 — History of the World · AST 100"
+  description="A million years of human population on one chart — flat for 95% of it — and the migration that carried one African primate to every habitable place on Earth."
+  activeId="7.1" chapter={7} current="/chapter/7/7.1">
+  <Hero
+    tease="For almost all of our history there were never more than a few hundred thousand of us — a rare, unremarkable large mammal. Then, in the last one percent of that history, we learned to farm, to write, and to burn buried sunlight, and the population curve went nearly vertical. Everything you would call history happens in that final stroke."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="curve">The Shape of Our History</h2>
+      <p>
+        We have come, in six chapters, from the first instant of the Universe to a primate reading a sentence about it.
+        The Cultural Age is the story of that primate — and the honest way to begin is with a graph that puts us firmly
+        in our place.
+      </p>
+      <p>
+        <strong>Homo sapiens</strong> appears in Africa around <strong>300,000 years ago</strong>. For the next quarter
+        of a million years, our numbers stay in the hundreds of thousands. That is fewer people than live in a
+        medium-sized city today — spread across an entire continent, for ten thousand generations. We were not
+        dominant. We were not even notably successful. We were a clever, fire-using, tool-making ape whose population
+        could have been wiped out by a bad century. Step through the curve in the figure below.
+      </p>
+
+      <FigureFrame label="A million years of human population">
+        <PopulationPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Look at the shape of that line. For 95% of our species' existence it is flat. Everything that a history book
+        contains — farming, cities, writing, empires, science, the industrial revolution, the internet — is crammed into
+        the final upward stroke. If the 300,000 years of our species were one day, agriculture would begin at about
+        eleven o'clock at night, and the Industrial Revolution would happen in the last minute before midnight.
+      </p>
+      <p>
+        Three inventions bend the curve. <strong>Farming</strong>, about eleven thousand years ago, means a patch of
+        land can feed far more people — and that people must stay near it, which changes everything about how humans
+        live. <strong>Cities and writing</strong>, about five thousand years ago, allow specialists, and let knowledge
+        escape the human skull: for the first time, what one person learned could outlive them and accumulate. And the
+        <strong>Industrial Revolution</strong>, about two centuries ago, gives each person the energy of dozens of
+        servants — by burning the buried forests of <a href={subPath("6.2")}>§6.2</a>. It took us three hundred thousand
+        years to reach our first billion, around 1800. It took about two hundred more to reach eight.
+      </p>
+
+      <h2 id="migration">The Walk That Covered a Planet</h2>
+      <p>
+        Before any of that, though, comes the journey. Every human being alive is descended from those few hundred
+        thousand Africans — and the way we got from there to <em>everywhere</em> is one of the most remarkable stories
+        our species has. Step through it in the figure below.
+      </p>
+
+      <FigureFrame label="Out of Africa">
+        <MigrationPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Around <strong>60,000 years ago</strong>, a group left Africa. It was small — small enough that its genetic
+        fingerprint is stamped on every non-African person alive today. Their descendants walked east along the coast of
+        Asia, through the Bengal delta, and reached Australia by about fifty thousand years ago. That last step deserves
+        a pause: <strong>Australia has never been reachable on foot</strong>. Getting there meant crossing open water,
+        deliberately, out of sight of land — which means boats, and planning, fifty thousand years ago.
+      </p>
+      <p>
+        Others went north into the cold, where survival demanded tailored clothing and built shelter, and where they met
+        — and interbred with — the Neanderthals. If you have any ancestry outside Africa, a percent or two of your DNA
+        came from them. Later, with an ice age locking up the oceans and lowering the sea, people crossed from Siberia
+        into Alaska and walked, over a few thousand years, all the way to the southern tip of South America.
+      </p>
+      <p>
+        And then the final, most astonishing leg. Beginning about three thousand years ago, Austronesian navigators
+        pushed out into the open Pacific — an ocean covering a third of the planet, with islands the size of villages
+        scattered across it. They found them. They did it without instruments, using the stars, the swells, the flight
+        paths of birds, and a memorised map of the sky, which is precisely the subject of
+        <a href={subPath("7.3")}>§7.3</a>. Hawai'i, Rapa Nui, and Aotearoa New Zealand were settled only a few centuries
+        before European ships arrived. By then, one African ape had occupied every habitable landmass on Earth.
+      </p>
+
+      <hr />
+
+      <p><em>Three hundred thousand years of near-invisibility, then a walk across a planet, then a curve that turns
+        upward and does not stop. The tools that made the last stroke possible were not just ploughs and engines — they
+        were ideas about what the world <em>is</em>. That is where we go next.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

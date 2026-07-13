@@ -1,0 +1,131 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/7.4/Hero";
+import PrevNext from "../../../components/scenes/7.4/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { ComplexityPanel, SearchPanel } from "../../../components/scenes/7.4/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="7.4 — Search for Extraterrestrial Intelligence · AST 100"
+  description="The rise of complexity measured in energy per gram, the search for technosignatures, and an honest reckoning with the Great Silence — the final lesson of Our Cosmic History."
+  activeId="7.4" chapter={7} current="/chapter/7/7.4">
+  <Hero
+    tease="This is where the course ends, and where the story runs out of past. Fourteen billion years of rising complexity have produced a species that can reconstruct its own origin — and that is now, for the first time, listening for anyone else who managed the same trick. So far, the Galaxy has said nothing. The interesting question is what that silence is worth, given how little we have actually listened."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="complexity">The Most Expensive Thing We Know Of</h2>
+      <p>
+        We opened this course, in <a href={subPath("0.2")}>§0.2</a>, with a ladder — Eric Chaisson's measure of
+        complexity as <strong>energy flowing through each gram of a thing, every second</strong>. It is a strange
+        yardstick, but it has the great virtue of comparing things that are otherwise incomparable: a galaxy, a plant,
+        a brain. We can now climb the last rung. Walk it with the arrow keys.
+      </p>
+
+      <FigureFrame label="The rising cost of complexity">
+        <ComplexityPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The result is worth sitting with. A star, gram for gram, is a feeble thing — it just has an enormous number of
+        grams. A plant beats it by a factor of hundreds. An animal beats a plant. Your <strong>brain</strong> —
+        two percent of your body's mass, twenty percent of its energy budget — is one of the most energy-intensive
+        objects known. And at the top sits something that is not a body at all: a <strong>modern society</strong>, people
+        plus machines plus power stations, running hotter per gram than anything else in the known Universe.
+      </p>
+      <p>
+        That is what the Cultural Age <em>is</em>, in physical terms. Not a metaphor, not a flourish — a measurable
+        continuation of the same trend that runs through star formation, planetary chemistry, and biological evolution.
+        The Universe has been building denser and denser rivers of energy for fourteen billion years, and we are, for
+        the moment, the deepest channel it has cut.
+      </p>
+      <p>
+        It also comes with a bill. Every rung on that ladder is a system working harder to hold itself together against
+        the general slide toward disorder — and the energy has to come from somewhere. Ours currently comes from burning
+        the buried remains of the Carboniferous forests of <a href={subPath("6.2")}>§6.2</a>, which is why the lesson of
+        <a href={subPath("6.3")}>§6.3</a> — that what kills is not the size of a climate change but its
+        <em>speed</em> — is not a fact about the past.
+      </p>
+
+      <h2 id="silence">Is Anybody There?</h2>
+      <p>
+        And so to the last question in the course, which is the one everybody wanted to ask on the first day. In 1960 an
+        astronomer named Frank Drake pointed a radio telescope at two nearby stars and listened. He heard nothing. Sixty
+        years later, with vastly better instruments, we have still heard nothing.
+      </p>
+      <p>
+        The modern search has widened well beyond radio. Astronomers now hunt for <strong>technosignatures</strong> in
+        general: narrow-band radio transmissions that nature does not produce; pulses of laser light; the infrared glow
+        of hypothetical structures built around stars; even industrial pollutants in the atmosphere of an exoplanet,
+        which JWST could in principle detect (<a href={subPath("5.4")}>§5.4</a>). The <strong>Allen Telescope Array</strong>
+        in California — this chapter's instrument — was the first telescope built specifically for the job.
+      </p>
+      <p>
+        There have been famous false alarms, and they are instructive. The <strong>"Wow!" signal</strong> of 1977 was a
+        strong, brief, unexplained burst that never repeated — and an unrepeatable event is, scientifically, almost
+        useless. A promising 2020 candidate called BLC-1 turned out to be interference from human equipment. Every claim
+        so far has either evaporated or remained stubbornly unrepeatable, and the honest summary of six decades of
+        listening is: <strong>nothing</strong>.
+      </p>
+      <p>
+        So what does the silence mean? Step through the five leading answers below — and note that one of them is
+        flagged, because it is not a scientific hypothesis at all.
+      </p>
+
+      <FigureFrame label="Why is it so quiet?">
+        <SearchPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The most likely answer is also the least dramatic: <strong>we have barely looked</strong>. The possible
+        combinations of star, frequency, time of observation, and signal type form an enormous space, and by one careful
+        accounting everything humanity has ever searched amounts to a <em>hot tub's</em> worth of water drawn from all
+        Earth's oceans. You cannot conclude the sea has no fish from that. Add the distances of
+        <a href={subPath("6.4")}>§6.4</a> — thousands of light-years even in a well-populated Galaxy — and silence is
+        precisely what you would expect to hear.
+      </p>
+      <p>
+        The darker possibility is the <strong>Great Filter</strong>. If the filter lies behind us — the origin of life
+        (<a href={subPath("5.3")}>§5.3</a>), or the swallowed bacterium of <a href={subPath("6.2")}>§6.2</a> — then we
+        are the beneficiaries of an absurd run of luck and the emptiness is no surprise. If it lies <em>ahead</em> of us,
+        the silence is a warning. And you will sometimes hear a fifth explanation, the <strong>"dark forest"</strong>, in
+        which everyone stays quiet because announcing yourself is suicidal. It is a gripping idea. It is also from a
+        novel, and it makes no testable prediction, and a course in science has a duty to say which of its ideas can be
+        checked and which merely cannot be ruled out.
+      </p>
+
+      <h2 id="end">The End of the Course</h2>
+      <p>
+        Here is where we have been. A hot dense instant became particles (<a href={subPath("1.2")}>chapter 1</a>).
+        Particles became atoms, and gravity gathered them into galaxies (<a href={subPath("2.3")}>chapter 2</a>). Inside
+        galaxies, stars ignited and forged the heavy elements in their cores, then scattered them by dying
+        (<a href={subPath("3.4")}>chapter 3</a>). Around a later star, that debris settled into planets
+        (<a href={subPath("4.3")}>chapter 4</a>). On one of them, chemistry became a cell
+        (<a href={subPath("5.3")}>chapter 5</a>). The cell became a tree of life, most of which is invisible to us
+        (<a href={subPath("6.1")}>chapter 6</a>). And one twig of that tree, in the last hundredth of one percent of the
+        story, worked out the whole preceding sentence.
+      </p>
+      <p>
+        That is the actual claim of this course, and it is worth stating plainly at the end. You are made of hydrogen
+        from the Big Bang, carbon from a dying star, oxygen from an exploding one, and gold — if you are wearing any —
+        from a collision of neutron stars. Those atoms have been assembled into a system that can look up, measure the
+        light, and reconstruct their entire history, including its own. The Universe, in at least one small pocket, has
+        become able to describe itself.
+      </p>
+      <p>
+        Whether it has managed this anywhere else, we do not know. It is the one question in this course that remains
+        completely open, and it will very likely be answered — one way or the other — by people who are students now.
+      </p>
+
+      <hr />
+
+      <p><em>Fourteen billion years, seven ages, one species asking. The story so far is on the timeline; the rest of it
+        has not been written yet.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

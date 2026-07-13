@@ -1,0 +1,106 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/7.0/Hero";
+import PrevNext from "../../../components/scenes/7.0/PrevNext.astro";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="7.0 — Cultural Age · AST 100"
+  description="The last age: fire, farming, cities, industry — and a species that reconstructed the history of the Universe and began listening for anyone else who had done the same. Seven milestones, four lessons, and the end of the course."
+  activeId="7.0"
+  chapter={7}
+  current="/chapter/7/7.0"
+>
+  <Hero
+    tease="The final age, and the shortest by far. In the last million years — a rounding error on this course's clock — one branch of one primate lineage learned to control fire, to farm, to write, to burn buried sunlight, and finally to reconstruct the entire fourteen-billion-year story of which it is the latest sentence. Seven milestones, four lessons, and one question left open."
+    client:load
+  />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="fire">Fire, Farms, and Cities</h2>
+      <p>The <strong>Cultural Age</strong> — Chapter 7 of <em>Our Cosmic History</em>, and its last — covers the shortest
+        span in the course and the fastest change in it. Across <strong>four lessons</strong> and <strong>seven
+        milestones</strong>, it follows one African primate from the edge of a fire to the edge of the observable
+        universe.</p>
+      <p>It begins with <strong>the control of fire</strong> — possibly used as far back as a million years ago, but only
+        an everyday tool after about 400,000. Fire is external digestion: it makes food safe and easy to eat, which pays
+        for an expensive brain. Then the <strong>emergence of humans</strong> (200–300 ky), and a long, quiet stretch in
+        which we are never more than a few hundred thousand strong. What used to be called a sudden <strong>"cultural
+        explosion"</strong> around 50,000 years ago now looks more like the visible tail of a slow African accumulation —
+        art, ornament, and burial appearing gradually across the continent.</p>
+      <p>Then the curve bends. The <strong>Agricultural Revolution</strong> (10 ky) ties people to land and multiplies
+        what a hectare can feed. The <strong>rise of civilisation and the state</strong> (5 ky) brings cities, writing,
+        and specialists — and lets knowledge outlive the person who had it. The <strong>Industrial Revolution</strong>
+        (250 years ago) gives each person the energy of dozens of servants, by burning the buried forests of the
+        Carboniferous. Eight billion of us now live in the <strong>"Life Era"</strong>: the first moment in this story
+        when the dominant force shaping a planet is a species' choices.</p>
+      <a
+        href={subPath("7.1")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">7.1</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">History of the World</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="maps">Redrawing the Universe</h2>
+      <p>Every age draws the universe and puts itself somewhere in the picture. We began at the exact centre of creation,
+        with the Sun and stars wheeling around us — a model that worked for fourteen centuries and predicted the planets
+        well. It broke on a single stubborn observation: the backwards loop of Mars. Copernicus moved the Sun to the
+        middle, Kepler replaced circles with ellipses, and Thomas Digges quietly let the stars run on forever. The modern
+        map is not a map of where at all, but of <em>when</em>: from the Big Bang to us. Every step demoted us, and every
+        demotion turned out to be right.</p>
+      <a
+        href={subPath("7.2")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">7.2</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">History of Mapping the Worlds</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="sky">The Sky We Live By</h2>
+      <p>Long before any of that, the sky was a tool. The Sun's changing height gives the <strong>year</strong> and told
+        every farming society when to plant. The Moon's phases give the <strong>month</strong> — the word is simply
+        "moon", worn down. The seven wandering lights of the naked-eye sky give the <strong>names of the days</strong>,
+        in English and in Bangla alike: Thursday is Jupiter's day, and so is <em>Brihaspatibar</em>. And the constellations
+        are memory devices good enough to carry a canoe across the Pacific. The sky was humanity's first calendar, clock,
+        compass, and library.</p>
+      <a
+        href={subPath("7.3")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">7.3</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Role of the Sky in Culture</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <h2 id="listening">And Now We Listen</h2>
+      <p>The course ends where it must. Measured as energy flowing through each gram — the same complexity ladder we
+        climbed in <a href={subPath("0.2")}>§0.2</a> — a modern society runs hotter than a brain, a plant, a planet, or a
+        star: the most intense thing we know of anywhere. And it is now pointing its instruments outward, listening for
+        anyone else who managed the same climb. The <strong>Allen Telescope Array</strong>, this chapter's instrument,
+        was the first telescope built for that job. Sixty years of listening have produced silence — but we have searched
+        only a hot tub's worth of a cosmic ocean, so the silence is not yet evidence of anything.</p>
+      <a
+        href={subPath("7.4")}
+        class="group flex items-baseline gap-3 no-underline text-white/70 hover:text-white transition-colors duration-500"
+      >
+        <span class="font-mono text-[12px] tracking-[0.18em] text-plasma/80">7.4</span>
+        <span class="font-serif group-hover:text-plasma transition-colors duration-500" style="font-size: clamp(1.2rem, 2vw, 1.55rem);">Search for Extraterrestrial Intelligence</span>
+        <span class="inline-block transition-transform duration-500 group-hover:translate-x-1 text-plasma/70">→</span>
+      </a>
+
+      <hr />
+
+      <blockquote><p>Hydrogen from the Big Bang, carbon from a dying star, gold from a collision of neutron stars — and
+        an arrangement of those atoms that can look up, measure the light, and reconstruct its own entire history. The
+        Universe, in one small pocket, has become able to describe itself. Whether it has managed that anywhere else is
+        the one question this course leaves open.</p></blockquote>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

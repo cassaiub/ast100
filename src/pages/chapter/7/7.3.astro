@@ -1,0 +1,124 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/7.3/Hero";
+import PrevNext from "../../../components/scenes/7.3/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { SeasonsPanel, MoonPanel } from "../../../components/scenes/7.3/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="7.3 — Role of the Sky in Culture · AST 100"
+  description="The year, the month, the week, and the zodiac — how the sky became the first calendar, the first clock, and the first map, and why its fingerprints are all over the names of the days."
+  activeId="7.3" chapter={7} current="/chapter/7/7.3">
+  <Hero
+    tease="Before writing, before farming, before cities, human beings were watching the sky — because it was the only reliable thing there was. The year, the month, the week, the names of the days, the direction of north: all of them were read off the sky first. Almost every unit of time you used today was handed to you by an astronomer who died before writing was invented."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="year">The Sky as a Calendar</h2>
+      <p>
+        Consider the problem facing a farmer eleven thousand years ago, at the very start of the curve in
+        <a href={subPath("7.1")}>§7.1</a>. Plant too early and the seed rots in cold ground. Plant too late and the crop
+        fails before harvest. There is no calendar on the wall — there is no wall — and weather is a liar: a warm week
+        in winter tells you nothing. You need something that repeats with perfect reliability, and there is only one
+        such thing in the world. It is over your head.
+      </p>
+      <p>
+        The Sun's path through the sky changes through the year in a way that never varies. Its height at noon rises and
+        falls; the point on the horizon where it rises swings north and south and back. Mark those extremes with a pair
+        of stones — as people did at Stonehenge, and in a hundred other places on every continent — and you have built a
+        calendar accurate to a day. Explore why it happens in the figure below.
+      </p>
+
+      <FigureFrame label="The year: why there are seasons">
+        <SeasonsPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The cause is the <strong>axial tilt</strong> we met in <a href={subPath("4.1")}>§4.1</a>: Earth's axis leans
+        23.4° and always points the same way in space, so as we go around the Sun, each hemisphere leans alternately
+        toward it and away. What matters is not the distance to the Sun but the <em>angle</em> the sunlight strikes at —
+        steep light concentrates its heat, shallow light spreads it thin. It is worth being blunt here, because this is
+        the most commonly believed falsehood in all of astronomy: <strong>seasons have nothing to do with distance from
+        the Sun</strong>. Earth is actually <em>closest</em> to the Sun in early January, in the depth of the northern
+        winter.
+      </p>
+
+      <h2 id="month">The Month, the Week, and the Zodiac</h2>
+      <p>
+        The Sun gives us the year and the day. The Moon gives us the other unit everyone uses. It cycles through its
+        phases — new, quarter, full, quarter — in <strong>29.5 days</strong>, and that period is the origin of the
+        <strong>month</strong>: the word is simply "moon", worn down by a few thousand years of use, in English and in
+        many other languages. Run the cycle in the figure below.
+      </p>
+
+      <FigureFrame label="The month, the week, and the eclipse">
+        <MoonPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        The figure also settles a question that puzzled the ancients for centuries: if the Moon passes between us and
+        the Sun every single month, why isn't there an eclipse every month? Because its orbit is <strong>tilted about
+        five degrees</strong> from the plane of Earth's orbit, so at most new moons it slips above or below the Sun
+        rather than across it. Only when the Moon happens to be crossing that plane <em>at the same time</em> as it lines
+        up do we get an eclipse. Babylonian astronomers, keeping records for centuries, spotted that eclipses repeat on
+        an 18-year cycle — and could therefore <em>predict</em> them, which is an extraordinary thing to be able to do
+        with no idea whatsoever of what the Moon actually is.
+      </p>
+      <p>
+        Now, a warning about the <strong>week</strong>, because there is a tidy story that is often told and it is
+        false. The seven-day week is <em>not</em> a quarter of the lunar month rounded off; a lunar quarter is 7.4 days,
+        and no ancient calendar tried to force it. The week comes instead from the Jewish sabbath cycle meeting
+        Hellenistic astrology, where each day was assigned to one of the <strong>seven "planets"</strong> visible to the
+        naked eye: the Sun, the Moon, Mars, Mercury, Jupiter, Venus, and Saturn. That origin is still fossilised in the
+        names, in language after language:
+      </p>
+      <ul>
+        <li><strong>Sunday</strong> — the Sun's day; Bangla <em>Robibar</em> (Ravi, the Sun); Italian <em>Domenica</em>.</li>
+        <li><strong>Monday</strong> — the Moon's day; Bangla <em>Shombar</em> (Soma, the Moon); French <em>Lundi</em>.</li>
+        <li><strong>Tuesday</strong> — Tiw's day, the Norse Mars; Bangla <em>Mongolbar</em> (Mangal, Mars); Italian <em>Martedì</em>.</li>
+        <li><strong>Wednesday</strong> — Woden's day, the Norse Mercury; Bangla <em>Budhbar</em> (Budha, Mercury).</li>
+        <li><strong>Thursday</strong> — Thor's day, the Norse Jupiter; Bangla <em>Brihaspatibar</em> (Brihaspati, Jupiter).</li>
+        <li><strong>Friday</strong> — Frigg's day, the Norse Venus; Bangla <em>Shukrobar</em> (Shukra, Venus).</li>
+        <li><strong>Saturday</strong> — Saturn's day, plainly; Bangla <em>Shonibar</em> (Shani, Saturn).</li>
+      </ul>
+      <p>
+        Two cultures, thousands of kilometres apart, naming the same seven days after the same seven wandering lights.
+        Every time you say "Thursday" you are, without knowing it, invoking Jupiter.
+      </p>
+      <p>
+        Those same wandering lights gave us the <strong>zodiac</strong>. The Sun, Moon, and planets all stay within a
+        narrow band of sky — because, as <a href={subPath("4.1")}>§4.1</a> explained, the solar system is a flat disk
+        and we are looking at it edge-on from inside. Babylonian astronomers divided that band into twelve equal
+        30° slices and named each for a constellation in it. That is the origin of the star signs.
+      </p>
+      <p>
+        And it is worth being clear about what happened next, because this course has an obligation to it.
+        <strong>Astrology is not science.</strong> It makes no testable predictions that survive testing; controlled
+        experiments have found no effect. It is also, on its own terms, broken: the Earth's axis wobbles slowly — a
+        26,000-year cycle called <strong>precession</strong> — so the constellations have drifted roughly a full sign
+        since the scheme was invented. Most people described as "Aries" had the Sun in Pisces on the day they were born.
+        The Sun's path also crosses a thirteenth constellation, Ophiuchus, which astrology simply ignores. The zodiac is
+        a beautiful and historically important piece of astronomy. As a theory of personality, it is a museum piece.
+      </p>
+      <p>
+        Which leaves the deepest use of all. Every constellation is a mnemonic — a way to remember the sky well enough
+        to navigate by it. The Austronesian navigators of <a href={subPath("7.1")}>§7.1</a> crossed thousands of
+        kilometres of open Pacific using nothing but stars, swells, and birds, finding islands smaller than a suburb.
+        The sky was humanity's first calendar, first clock, first compass, and first library — and every one of the 88
+        constellations recognised today is a story that somebody, somewhere, told a child so they would remember which
+        way was home.
+      </p>
+
+      <hr />
+
+      <p><em>The year from the tilt, the month from the Moon, the week from seven wandering lights, and a map of stars
+        that could carry a canoe across an ocean. We read the sky for ten thousand years to survive. Now we read it to
+        ask whether anyone is reading back.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>

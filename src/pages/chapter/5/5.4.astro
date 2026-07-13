@@ -1,0 +1,127 @@
+---
+import ChapterLayout from "../../../layouts/ChapterLayout.astro";
+import Hero from "../../../components/scenes/5.4/Hero";
+import PrevNext from "../../../components/scenes/5.4/PrevNext.astro";
+import FigureFrame from "../../../components/shared/FigureFrame.astro";
+import { HabitableZonePanel, SpectrumPanel } from "../../../components/scenes/5.4/figures";
+import { subPath } from "../../../data/course-nav";
+---
+
+<ChapterLayout
+  title="5.4 — Life on Other Planets · AST 100"
+  description="The habitable zone around every kind of star, the rocky worlds we have found inside it, and how starlight filtered through a planet's air could — one day — betray the presence of life."
+  activeId="5.4" chapter={5} current="/chapter/5/5.4">
+  <Hero
+    tease="We now know of more than six thousand planets, and we can read the air of a few of them by the light that passes through it. So: is anyone out there? The honest answer, in 2026, is that we have found a few dozen rocky worlds in the right place, no confirmed sign of life on any of them, and — for the first time in history — the instruments that could actually tell the difference."
+    client:load />
+
+  <article class="topic-page">
+    <div class="prose-cosmic lesson-prose">
+      <h2 id="zone">The Zone Where Water Survives</h2>
+      <p>
+        Everything in <a href={subPath("5.3")}>§5.3</a> — the vents, the protocells, the whole road to a cell — needed
+        one thing above all: <strong>liquid water</strong>. Water is an outstanding solvent; it lets molecules find one
+        another and react without falling apart. We cannot prove that life <em>must</em> use it, but we have exactly one
+        example of life, and it is built around water. So the search starts there.
+      </p>
+      <p>
+        Put a planet too close to its star and its water boils away into space. Too far, and it freezes solid. Between
+        those two disasters lies a band astronomers call the <strong>habitable zone</strong> — sometimes, less formally,
+        the Goldilocks zone. Around our Sun it stretches roughly from <strong>0.95 to 1.67 astronomical units</strong>
+        (an astronomical unit being the Earth–Sun distance). Earth sits comfortably inside. Venus lies just inside the
+        hot edge — and ran away into a suffocating greenhouse. Mars sits out near the cold edge — and froze. The zone is
+        not a technicality; our two nearest neighbours are the cautionary tales.
+      </p>
+      <p>
+        The zone's position depends entirely on the star, and stars vary enormously
+        (<a href={subPath("3.2")}>§3.2</a>). Step through the star types in the figure below with the arrow keys and
+        watch the green band slide inward and shrink as the star dims.
+      </p>
+
+      <FigureFrame label="The habitable zone around different stars">
+        <HabitableZonePanel client:visible />
+      </FigureFrame>
+
+      <p>
+        This produces a genuinely awkward trade-off, and it is one of the most interesting arguments in modern
+        astrobiology. Sun-like <strong>G stars</strong> are hospitable — wide zone, steady light — but they are only
+        about seven in a hundred stars, and they only last ten billion years. <strong>Red dwarf (M) stars</strong> are
+        the opposite: about <em>seventy</em> in a hundred stars are red dwarfs, and they burn so frugally that they live
+        for hundreds of billions of years. No red dwarf anywhere has ever died of old age, because the Universe is not
+        yet old enough. Life around one would have essentially unlimited time.
+      </p>
+      <p>
+        But their habitable zone is squeezed right up against the star, and that is a rough neighbourhood. A planet
+        there is scorched by flares — Proxima Centauri b, our nearest neighbour world at 4.24 light-years, takes a few
+        hundred times Earth's X-ray dose — and it is probably <strong>tidally locked</strong>, one face in permanent
+        day, the other in permanent night. Whether an atmosphere can survive that, and spread the heat around, is an
+        open question. In between sit the orange <strong>K stars</strong>, dim but calm and very long-lived, which is
+        why a growing number of astronomers think they, not stars like ours, are the best place to look.
+      </p>
+      <p>
+        So how many candidates do we have? Of the <strong>6,300-plus</strong> confirmed planets from
+        <a href={subPath("4.4")}>§4.4</a>, only a few dozen are roughly Earth-sized worlds sitting in their star's
+        habitable zone — the <strong>TRAPPIST-1</strong> system, forty light-years away, contributes several of them, and
+        Proxima b is the closest. Every one of them is a <em>candidate</em>. We do not know whether a single one has an
+        atmosphere, let alone an ocean. In fact, when JWST looked hard at the innermost TRAPPIST-1 planets in 2025, they
+        appear to be bare rock with little or no air at all.
+      </p>
+
+      <h2 id="biosignatures">Reading the Air of Another World</h2>
+      <p>
+        Which brings us to the only tool that could actually settle the question from here. When a planet transits its
+        star (<a href={subPath("4.4")}>§4.4</a>), a thin sliver of starlight grazes through the planet's atmosphere on
+        its way to us. Every molecule in that air absorbs its own particular wavelengths — its
+        <strong>spectral fingerprint</strong>, the same principle by which we read the composition of stars themselves
+        (<a href={subPath("0.4")}>§0.4</a>). So the starlight arrives with bites taken out of it, and the pattern of the
+        bites tells us what the planet's air is made of. This is <strong>transmission spectroscopy</strong>, and JWST is
+        the first telescope good enough to do it on small, rocky worlds.
+      </p>
+      <p>
+        Now, which gases would actually mean something? Toggle them in and out of the atmosphere in the figure below —
+        the arrow keys walk the list and the same key adds or removes each gas.
+      </p>
+
+      <FigureFrame label="Reading a planet's atmosphere">
+        <SpectrumPanel client:visible />
+      </FigureFrame>
+
+      <p>
+        Water and carbon dioxide prove nothing: they are everywhere, on dead worlds and live ones alike. The gas that
+        matters is <strong>oxygen</strong> — and the reason is chemistry, not biology. Oxygen is so reactive that it
+        scrubs itself out of an atmosphere in a geological instant, binding to rocks and gases. If a planet's air is
+        full of it, something must be <em>continuously replenishing</em> it. On Earth, that something is life
+        (<a href={subPath("5.2")}>§5.2</a>). Better still is the combination of <strong>oxygen and methane</strong>
+        together: those two destroy each other on contact, so finding both means both are being pumped out faster than
+        they can react away. That state — chemical <strong>disequilibrium</strong> — is the classic
+        <strong>biosignature</strong>.
+      </p>
+      <p>
+        But it is not proof, and this is where a course like this one has a duty to be careful. Non-living processes can
+        counterfeit these signals: ultraviolet light splitting water can build up oxygen on a planet with no life
+        whatsoever. And the field has just given us a textbook lesson in caution. In 2025 a team reported a possible
+        trace of dimethyl sulfide — a gas produced on Earth mainly by marine microbes — in the atmosphere of the
+        planet <strong>K2-18 b</strong>. Headlines around the world announced a hint of alien life. Independent teams
+        then re-analysed the very same data and found the signal was not statistically significant; it may not be there
+        at all. That is not a failure of science. That <em>is</em> science — and it is exactly the process that will have
+        to be survived by any future claim.
+      </p>
+      <p>
+        So here is where we honestly stand, in 2026. We have found thousands of worlds. A few dozen of them are rocky
+        and sit in the right place. Not one shred of confirmed evidence exists that any of them is alive — every
+        candidate so far, from methane on Mars to phosphine on Venus to this year's dimethyl sulfide, has been
+        withdrawn, contested, or explained without life. The search is real, the instruments finally exist, and the
+        answer is still no. What that silence <em>means</em> is a question we will return to, with far more force, in
+        <a href={subPath("6.4")}>§6.4</a> and <a href={subPath("7.4")}>§7.4</a>.
+      </p>
+
+      <hr />
+
+      <p><em>Water needs a zone; oxygen needs an explanation; and every claim needs to survive the people trying to
+        knock it down. We have the telescope, the method, and the targets — and, so far, an empty result. Meanwhile,
+        on the one planet we know is inhabited, that single cell was busy becoming everything else.</em></p>
+    </div>
+  </article>
+
+  <PrevNext />
+</ChapterLayout>
