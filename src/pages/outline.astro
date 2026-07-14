@@ -14,11 +14,17 @@ interface OutlineRow {
 
 /* Quizzes and project progress-reports land on the chapter blocks that
    close out weeks 4, 5 and 6 (Ch1→wk4, Ch2→wk5, Ch3→wk6); the midterm
-   week (7) carries Quiz 4 alongside the midterm itself. Keyed by ch num. */
+   week (7) carries Quiz 4 alongside the midterm itself. The final's three
+   build sessions mirror that rhythm in the second half (Ch5→wk10,
+   Ch6→wk11, Ch7→wk12) — Ch4's weeks are for forming groups and picking
+   destinations. Keyed by ch num. */
 const cadence: Record<string, { quiz?: string; progress?: string }> = {
   "1": { quiz: "Quiz 1", progress: "Progress report 1" },
   "2": { quiz: "Quiz 2", progress: "Progress report 2" },
   "3": { quiz: "Quiz 3", progress: "Progress report 3" },
+  "5": { progress: "Progress report 4" },
+  "6": { progress: "Progress report 5" },
+  "7": { progress: "Progress report 6" },
 };
 
 const outline: OutlineRow[] = [
@@ -42,6 +48,7 @@ const outline: OutlineRow[] = [
     title: c.title,
     weeks: c.weeks,
     href: chapterPath(c.num),
+    ...cadence[String(c.num)],
   })),
   {
     ch: "Fin",

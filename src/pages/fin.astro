@@ -72,23 +72,184 @@ const roles = [
   },
 ];
 
+// The three in-class build sessions = the three "Settling the Solar System"
+// progress reports on Kriterion (Scout → Design → Settle), numbered 4–6 to
+// continue the count after the midterm's Gather/Develop/Weave. Each is submitted
+// as ≤100 words + one annotated image (hand-drawn or AI-assisted), and together
+// they become the report and the talk. Mirrors FINAL_PROGRESS_EVENT_DEFS in the
+// kriterion route.
+const build = [
+  {
+    n: 1,
+    word: "Scout",
+    tag: "Progress report 4 · in class",
+    essence: "Find the real spacecraft findings your part of the mission is built from.",
+    doing: [
+      "Confirm your group's destination and your role; open the mission archives.",
+      "Pull 2–4 real findings about your destination for your role — each from a real mission or instrument.",
+      "Choose ONE as your anchor finding — the fact your design will answer next session.",
+    ],
+    submit:
+      "≤ 100 words listing your findings and your anchor, plus one annotated map or image of your destination — arrows and a label (destination · feature · mission that saw it).",
+  },
+  {
+    n: 2,
+    word: "Design",
+    tag: "Progress report 5 · in class",
+    essence: "Turn your scouted findings into one defensible design decision.",
+    doing: [
+      "Design your role's answer to your anchor finding — the site, system, or plan.",
+      "Ground it in your course chapter: name the concept that makes it work.",
+      "Stress-test it with one “what if” — what breaks it, and what's your backup?",
+    ],
+    submit:
+      "≤ 100 words naming the cause, not just the choice, plus one hand-drawn design diagram — habitat cross-section, life-support loop, trajectory — whose arrows explain WHY.",
+  },
+  {
+    n: 3,
+    word: "Settle",
+    tag: "Progress report 6 · in class",
+    essence: "Link the group's five parts into one launch-to-civilization mission.",
+    doing: [
+      "Order the five parts along one mission timeline — launch, journey, arrival, survival, society.",
+      "Work out your two handoffs: what you receive from the role before, and set up for the role after.",
+      "Agree the mission's name and shared thread, and lock your one or two hero visuals.",
+    ],
+    submit:
+      "≤ 100 words naming the roles before and after you and each handoff, plus one hand-drawn storyboard — your design, an arrow in from the previous role and out to the next.",
+  },
+];
+
+const tools = [
+  {
+    label: "Solar System Exploration",
+    note: "Every planet and moon, mission by mission",
+    href: "https://science.nasa.gov/solar-system/",
+  },
+  {
+    label: "NASA Photojournal",
+    note: "Raw and processed mission imagery",
+    href: "https://photojournal.jpl.nasa.gov",
+  },
+  {
+    label: "ESA Science & Exploration",
+    note: "European missions, Huygens to JUICE",
+    href: "https://www.esa.int/Science_Exploration",
+  },
+  {
+    label: "NASA Trek",
+    note: "Interactive maps of real Moon & Mars terrain",
+    href: "https://trek.nasa.gov",
+  },
+  {
+    label: "NASA Exoplanet Archive",
+    note: "Every confirmed exoplanet, incl. Proxima b",
+    href: "https://exoplanetarchive.ipac.caltech.edu",
+  },
+  {
+    label: "Eyes on the Solar System",
+    note: "Fly real mission trajectories in 3D",
+    href: "https://eyes.nasa.gov",
+  },
+];
+
+const SAMPLE_PRESENTATION = "https://canva.link/g2ii8y73jpzdd7j";
+
+// Both halves are 15 marks, each split into three equal 5-mark parts. The
+// report's three parts ARE the three progress reports (Scout / Design / Settle);
+// the talk's three are fixed on Kriterion (Content / Delivery / Interaction,
+// PRESENTATION_CRITERION_MAX = 5 in @cassa/shared). Keep in sync with Kriterion.
 const reportRubric = [
-  { label: "Research depth", marks: 5 },
-  { label: "Connection to age content", marks: 5 },
-  { label: "Writing & figure presentation", marks: 5 },
+  { label: "Scout", note: "real findings from real missions", marks: 5 },
+  { label: "Design", note: "the reasoning, tied to the chapters", marks: 5 },
+  { label: "Settle", note: "your part connects into one mission", marks: 5 },
 ];
 const presentationRubric = [
-  { label: "Content & narrative arc", marks: 6 },
-  { label: "Delivery & fluency", marks: 5 },
-  { label: "Slide design", marks: 4 },
+  { label: "Content", note: "informative, organised slides", marks: 5 },
+  { label: "Delivery", note: "preparedness and clear speech", marks: 5 },
+  { label: "Interaction", note: "engaging the room, body language", marks: 5 },
 ];
 const reportTotal = reportRubric.reduce((s, r) => s + r.marks, 0);
 const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
+
+// Concise, actionable tips per report criterion — drawn straight from the
+// Scout / Design / Settle progress-report instructions.
+const reportTips = [
+  {
+    label: "Scout",
+    marks: 5,
+    blurb: "The evidence — real findings from real missions.",
+    items: [
+      "Use real mission findings with real names — “Cassini found methane lakes at Titan's poles”, never “it is very cold there”.",
+      "For every finding give the mission or instrument behind it.",
+      "Include your annotated figures — hand-drawn or AI-assisted — a clean, unmarked screenshot doesn't count.",
+    ],
+  },
+  {
+    label: "Design",
+    marks: 5,
+    blurb: "The reasoning — why your systems work on this world.",
+    items: [
+      "Defend each design decision with the cause, not the assertion — why it works there.",
+      "Anchor every design to your course chapter; don't guess the science.",
+      "Include the risk you considered — the “what if” — and its backup.",
+    ],
+  },
+  {
+    label: "Settle",
+    marks: 5,
+    blurb: "The synthesis — five parts, one mission.",
+    items: [
+      "Hand off cleanly — name what you receive from the role before you and set up for the role after.",
+      "Keep the mission's shared thread visible — the destination, the mission's name, the timeline.",
+      "Read as one launch-to-civilization mission, not five stapled essays.",
+    ],
+  },
+];
+
+// Tips per presentation criterion — what earns each of the three 5-mark bands.
+const presentationTips = [
+  {
+    label: "Content",
+    marks: 5,
+    blurb: "How informative, ordered, and well-organised your slides are.",
+    items: [
+      "Curate, don't cram — pick the most interesting points you can summarise well, but never skip the core concepts from class.",
+      "Bullets, not paragraphs — short lists, and balance each slide so it's neither empty nor overloaded.",
+      "Title slide: your name and the title of your assigned part.",
+      "Build from the course materials, not random websites or AI summaries.",
+      "Use explanatory images and diagrams — you may reuse infographics straight from the course pages.",
+    ],
+  },
+  {
+    label: "Delivery",
+    marks: 5,
+    blurb: "How prepared you are and how clearly you convey the material.",
+    items: [
+      "Present entirely in English.",
+      "Rehearse until your speech is fluid and confident.",
+      "Speak to the slide on screen — follow its bullets in order and walk the audience through each image.",
+      "Cut filler: keep only the slides you'll actually present.",
+      "Stay on time — finish within your allotted minutes.",
+    ],
+  },
+  {
+    label: "Interaction",
+    marks: 5,
+    blurb: "How you engage the screen, the audience, and your body language.",
+    items: [
+      "Speak spontaneously — don't read off a phone, laptop, or paper.",
+      "Split your focus between the screen (point out details) and the audience (make eye contact).",
+      "Move around and point toward different parts of the screen; don't freeze in one spot.",
+      "Use natural hand gestures to emphasise your points.",
+    ],
+  },
+];
 ---
 
 <Layout
   title="Final Project — Settling the Solar System · AST 100"
-  description="A near-future mission design from launch to civilization."
+  description="A near-future mission design from launch to civilization, built over three weeks."
   current="/fin"
 >
   {/* ─────────────────────────────  Hero  ───────────────────────────── */}
@@ -130,6 +291,12 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         Each student draws directly from one of the four ages covered in the
         second half of the course. One student serves as mission commander,
         providing either an introduction or synthesis of the entire mission.
+        You build it in three in-class steps —{" "}
+        <span style="color: var(--c-text-strong);">Scout</span>,{" "}
+        <span style="color: var(--c-text-strong);">Design</span>,{" "}
+        <span style="color: var(--c-text-strong);">Settle</span> — using the
+        real findings of the spacecraft that have actually visited these
+        worlds.
       </p>
 
       <div
@@ -144,6 +311,8 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
           ></span>
            groups of 5
         </span>
+        <span style="color: var(--c-text-ghost);">·</span>
+        <span>3 build weeks</span>
         <span style="color: var(--c-text-ghost);">·</span>
         <span>15–20 min</span>
         <span style="color: var(--c-text-ghost);">·</span>
@@ -293,6 +462,175 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
     </div>
   </section>
 
+  {/* ───────────────────────  The three-week build  ─────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 03 · The Build
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Three weeks, three steps.
+        </h2>
+        <p
+          class="mt-4 max-w-[68ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Like the midterm, the mission isn't built the night before — it grows
+          over three in-class sessions, each submitted as a{" "}
+          <span style="color: var(--c-text-strong);">progress report</span> on
+          Kriterion. Every step is a small, real piece of the work: up to 100
+          words and one annotated image — hand-drawn or AI-assisted, either is
+          fine. Scout finds the evidence, Design turns it into a settlement,
+          Settle connects it — and together they become the report you write
+          and the talk you give.
+        </p>
+      </div>
+
+      <ol class="grid md:grid-cols-3 gap-4">
+        {
+          build.map((b, i) => (
+            <li
+              data-fade
+              style={`--delay: ${i * 90}ms`}
+              class="surface-card flex flex-col"
+            >
+              <div class="flex items-baseline justify-between mb-2">
+                <span
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {b.tag}
+                </span>
+                <span
+                  class="font-mono text-[11px]"
+                  style="color: var(--c-text-faint);"
+                >
+                  0{b.n}
+                </span>
+              </div>
+              <div
+                class="font-serif font-medium leading-tight"
+                style="font-size: 1.7rem; color: var(--c-text-strong);"
+              >
+                {b.word}
+              </div>
+              <p
+                class="font-serif italic mt-1 mb-4 text-[15px]"
+                style="color: var(--c-text-soft);"
+              >
+                {b.essence}
+              </p>
+              <ul class="space-y-2 mb-4">
+                {b.doing.map((d) => (
+                  <li
+                    class="flex gap-2.5 text-[13.5px] font-sans leading-[1.5]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    <span
+                      class="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full"
+                      style="background: var(--c-accent);"
+                    />
+                    <span>{d}</span>
+                  </li>
+                ))}
+              </ul>
+              <div
+                class="mt-auto pt-3"
+                style="border-top: 1px dashed var(--c-border);"
+              >
+                <div
+                  class="font-mono text-[10px] tracking-[0.18em] uppercase mb-1"
+                  style="color: var(--c-text-faint);"
+                >
+                  You submit
+                </div>
+                <p
+                  class="text-[12.5px] font-sans leading-[1.5]"
+                  style="color: var(--c-text-soft);"
+                >
+                  {b.submit}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────  Tools  ──────────────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16">
+      <div data-fade>
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 04 · Tools
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.6rem, 3vw, 2.1rem);"
+        >
+          Mission archives & atlases.
+        </h2>
+        <p
+          class="mt-4 text-[14px] max-w-[40ch]"
+          style="color: var(--c-text-soft);"
+        >
+          Every finding is public — real spacecraft have already scouted these
+          worlds for you. You start pulling from the archives in the Scout
+          session and keep drawing on them through Design and Settle.
+        </p>
+      </div>
+
+      <ul data-fade style="--delay: 180ms" class="grid sm:grid-cols-2 gap-3">
+        {
+          tools.map((t) => (
+            <li>
+              <a
+                href={t.href}
+                target="_blank"
+                rel="noopener"
+                class="surface-card is-link block h-full"
+              >
+                <div
+                  class="font-mono text-[11px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {t.label}
+                </div>
+                <div
+                  class="mt-2 text-[13px]"
+                  style="color: var(--c-text-soft);"
+                >
+                  {t.note}
+                </div>
+                <div
+                  class="mt-2 text-[10px] font-mono tracking-[0.2em] uppercase"
+                  style="color: var(--c-text-faint);"
+                >
+                  ↗ open
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
   {/* ─────────────────────────  Deliverables  ──────────────────────── */}
   <section
     class="relative px-6 md:px-10 py-24 md:py-32"
@@ -303,7 +641,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 03 · Deliverables
+          § 05 · Deliverables
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -311,7 +649,68 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         >
           What each group submits.
         </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Your three weeks of Scout, Design, and Settle now converge into two
+          deliverables, both submitted per group on{" "}
+          <span style="color: var(--c-text-strong);">Kriterion</span> — not
+          Google Classroom. All five students prepare their own part; one person
+          merges everything and submits a single file or link on behalf of the
+          whole group.
+        </p>
       </div>
+
+      {/* Sample presentation — large call-to-action button */}
+      <a
+        data-fade
+        style="--delay: 120ms"
+        href={SAMPLE_PRESENTATION}
+        target="_blank"
+        rel="noopener"
+        class="group block mb-6 rounded-2xl px-6 md:px-8 py-6 md:py-7 transition-colors hover:bg-[rgb(var(--c-accent-rgb)/0.06)]"
+        style="border: 1px solid var(--c-border); background: rgb(var(--c-accent-rgb) / 0.04);"
+      >
+        <div class="flex items-center gap-5 flex-wrap">
+          <span
+            class="flex items-center justify-center w-12 h-12 rounded-full shrink-0"
+            style="background: rgb(var(--c-accent-rgb) / 0.12); color: var(--c-accent);"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </span>
+          <div class="min-w-0">
+            <div
+              class="font-mono text-[10px] tracking-[0.28em] uppercase mb-1"
+              style="color: var(--c-accent);"
+            >
+              Sample presentation
+            </div>
+            <div
+              class="font-serif font-medium leading-tight"
+              style="font-size: clamp(1.3rem, 2.6vw, 1.7rem); color: var(--c-text-strong);"
+            >
+              Open the Canva template structure →
+            </div>
+            <p class="mt-1.5 text-[13px] max-w-[60ch]" style="color: var(--c-text-soft);">
+              The same structure as the midterm.{" "}
+              <span style="color: var(--c-text-strong);">Copy it into your own
+              Canva</span> and edit it together as a group — each student
+              builds their segment on the same theme and layout.
+            </p>
+          </div>
+          <span
+            class="ml-auto font-mono text-[10px] tracking-[0.22em] uppercase shrink-0 transition-transform group-hover:translate-x-1"
+            style="color: var(--c-text-faint);"
+          >
+            ↗ open
+          </span>
+        </div>
+      </a>
 
       <div data-fade style="--delay: 180ms" class="grid md:grid-cols-2 gap-4">
         <div class="surface-card">
@@ -319,7 +718,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
             style="color: var(--c-accent);"
           >
-            Report
+            Report → Kriterion · Final report
           </div>
           <div
             class="font-serif font-medium leading-tight mb-2"
@@ -331,11 +730,13 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="text-[14px] font-sans leading-[1.6]"
             style="color: var(--c-text-soft);"
           >
-            Each student writes their own section of 600–800 words with
-            relevant images and diagrams. The group assembles all five
-            sections into one document with a shared introduction and
-            conclusion. Submitted as a PDF via Google Classroom before the
-            final session.
+            Each student writes 600–800 words on their role — the destination
+            findings they scouted, the systems they designed, and how their
+            part settles into the group's single mission — with their annotated
+            figures. One member merges all five sections plus a shared intro
+            and conclusion into a single PDF and uploads it to the{" "}
+            <span style="color: var(--c-text-strong);">Final report</span> on
+            Kriterion. One PDF per group — not per student.
           </p>
         </div>
 
@@ -344,7 +745,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="font-mono text-[10px] tracking-[0.22em] uppercase mb-3"
             style="color: var(--c-accent);"
           >
-            Presentation
+            Presentation → Kriterion · Canva link
           </div>
           <div
             class="font-serif font-medium leading-tight mb-2"
@@ -356,11 +757,41 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             class="text-[14px] font-sans leading-[1.6]"
             style="color: var(--c-text-soft);"
           >
-            Each student presents their section for 3–4 minutes, building
-            the mission story sequentially from Role 1 through Role 5. Same
-            Canva template as midterm.
+            Each student presents their section for 3–4 minutes (the Commander
+            opens or closes; the rest go Role 2 → Role 5 in order), minimum 4
+            slides each including a title slide, following the sample structure
+            above. One member merges every segment into a single Canva deck and
+            submits its{" "}
+            <span style="color: var(--c-text-strong);">link in the
+            presentation section</span> of Kriterion.
           </p>
         </div>
+      </div>
+
+      {/* How submission works on Kriterion — the one-shot, per-group mechanic */}
+      <div
+        data-fade
+        style="--delay: 260ms; border: 1px solid var(--c-border); background: var(--c-bg-soft);"
+        class="mt-4 rounded-xl px-6 py-5"
+      >
+        <div
+          class="font-mono text-[10px] tracking-[0.22em] uppercase mb-2"
+          style="color: var(--c-solar, var(--c-accent));"
+        >
+          ⚠ How submission works on Kriterion
+        </div>
+        <p class="text-[14px] font-sans leading-[1.6]" style="color: var(--c-text-soft);">
+          When you log into Kriterion you'll see the option to submit{" "}
+          <span style="color: var(--c-text-strong);">from your group</span>.
+          The moment one member submits, the submission locks — no one else in
+          the group can submit after that. So decide{" "}
+          <span style="color: var(--c-text-strong);">who is responsible</span>{" "}
+          ahead of time. That person must gather all five parts into the single
+          merged PDF and the single merged Canva deck before submitting, and
+          everyone must confirm they're working on a consistent theme and
+          structure (different topics, same look) before it goes in. There is
+          no individual submission and no resubmission.
+        </p>
       </div>
     </div>
   </section>
@@ -376,7 +807,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
         <div
           class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
         >
-          § 04 · Grading
+          § 06 · Grading
         </div>
         <h2
           class="font-serif font-medium leading-tight"
@@ -385,11 +816,15 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
           30 marks, split evenly.
         </h2>
         <p
-          class="mt-4 max-w-[60ch] text-[14px]"
-          style="color: var(--c-text-faint);"
+          class="mt-4 max-w-[64ch] text-[14px]"
+          style="color: var(--c-text-soft);"
         >
-          Indicative weights below — the detailed rubric will be confirmed
-          before submission.
+          Both halves are 15 marks, and each breaks into three equal parts of 5.
+          The report is scored on the three steps you already did —{" "}
+          <span style="color: var(--c-text-strong);">Scout, Design, Settle</span>;
+          the talk on{" "}
+          <span style="color: var(--c-text-strong);">Content, Delivery,
+          Interaction</span>, graded live on Kriterion.
         </p>
       </div>
 
@@ -400,7 +835,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               class="font-mono text-[10px] tracking-[0.22em] uppercase"
               style="color: var(--c-accent);"
             >
-              Report
+              Report · the PDF
             </div>
             <div
               class="font-serif font-medium"
@@ -410,16 +845,29 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
             </div>
           </div>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             {
               reportRubric.map((r) => (
                 <li
-                  class="flex items-center justify-between font-sans text-[13px]"
-                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                  class="flex items-baseline justify-between gap-3 py-2"
+                  style="border-bottom: 1px dashed var(--c-border);"
                 >
-                  <span class="py-2">{r.label}</span>
+                  <div>
+                    <div
+                      class="font-sans text-[13.5px]"
+                      style="color: var(--c-text-strong);"
+                    >
+                      {r.label}
+                    </div>
+                    <div
+                      class="font-sans text-[11.5px] leading-tight mt-0.5"
+                      style="color: var(--c-text-faint);"
+                    >
+                      {r.note}
+                    </div>
+                  </div>
                   <span
-                    class="font-mono text-[12px]"
+                    class="font-mono text-[12px] shrink-0"
                     style="color: var(--c-text-faint);"
                   >
                     {r.marks}
@@ -436,7 +884,7 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               class="font-mono text-[10px] tracking-[0.22em] uppercase"
               style="color: var(--c-accent);"
             >
-              Presentation
+              Presentation · the talk
             </div>
             <div
               class="font-serif font-medium"
@@ -446,16 +894,29 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
               <span class="font-mono text-[12px] ml-1" style="color: var(--c-text-faint);">/ 15</span>
             </div>
           </div>
-          <ul class="space-y-2">
+          <ul class="space-y-1">
             {
               presentationRubric.map((r) => (
                 <li
-                  class="flex items-center justify-between font-sans text-[13px]"
-                  style="color: var(--c-text-soft); border-bottom: 1px dashed var(--c-border);"
+                  class="flex items-baseline justify-between gap-3 py-2"
+                  style="border-bottom: 1px dashed var(--c-border);"
                 >
-                  <span class="py-2">{r.label}</span>
+                  <div>
+                    <div
+                      class="font-sans text-[13.5px]"
+                      style="color: var(--c-text-strong);"
+                    >
+                      {r.label}
+                    </div>
+                    <div
+                      class="font-sans text-[11.5px] leading-tight mt-0.5"
+                      style="color: var(--c-text-faint);"
+                    >
+                      {r.note}
+                    </div>
+                  </div>
                   <span
-                    class="font-mono text-[12px]"
+                    class="font-mono text-[12px] shrink-0"
                     style="color: var(--c-text-faint);"
                   >
                     {r.marks}
@@ -465,6 +926,166 @@ const presentationTotal = presentationRubric.reduce((s, r) => s + r.marks, 0);
             }
           </ul>
         </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────  How to do well — the talk  ───────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 07 · Doing well — the talk
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Maximise the presentation score.
+        </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          Present the mission you built — the findings you scouted, the systems
+          you designed, the story you settled. The talk is graded on{" "}
+          <span style="color: var(--c-text-strong);">Content</span>,{" "}
+          <span style="color: var(--c-text-strong);">Delivery</span>, and{" "}
+          <span style="color: var(--c-text-strong);">Interaction</span>, 5 marks
+          each. A few tips for each.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        {
+          presentationTips.map((cat, i) => (
+            <div
+              data-fade
+              style={`--delay: ${i * 90}ms`}
+              class="surface-card flex flex-col"
+            >
+              <div class="flex items-baseline justify-between mb-1">
+                <div
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {cat.label}
+                </div>
+                <div
+                  class="font-mono text-[11px]"
+                  style="color: var(--c-text-faint);"
+                >
+                  {cat.marks} marks
+                </div>
+              </div>
+              <p
+                class="text-[13px] font-sans leading-[1.55] mb-4"
+                style="color: var(--c-text-faint);"
+              >
+                {cat.blurb}
+              </p>
+              <ul class="space-y-2.5 mt-auto">
+                {cat.items.map((tip) => (
+                  <li
+                    class="flex gap-2.5 text-[13.5px] font-sans leading-[1.55]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    <span
+                      class="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full"
+                      style="background: var(--c-accent);"
+                    />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────  How to do well — the report  ─────────────────── */}
+  <section
+    class="relative px-6 md:px-10 py-24 md:py-32"
+    style="border-top: 1px solid var(--c-border);"
+  >
+    <div class="max-w-[1100px] mx-auto">
+      <div data-fade class="mb-10">
+        <div
+          class="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--c-accent)] mb-3"
+        >
+          § 08 · Doing well — the report
+        </div>
+        <h2
+          class="font-serif font-medium leading-tight"
+          style="font-size: clamp(1.8rem, 3.4vw, 2.4rem);"
+        >
+          Maximise the report score.
+        </h2>
+        <p
+          class="mt-4 max-w-[64ch] text-[15px]"
+          style="color: var(--c-text-soft);"
+        >
+          The report is your three progress reports, polished and merged into one
+          PDF. It's graded on the same three steps —{" "}
+          <span style="color: var(--c-text-strong);">Scout</span>,{" "}
+          <span style="color: var(--c-text-strong);">Design</span>,{" "}
+          <span style="color: var(--c-text-strong);">Settle</span>, 5 marks each.
+          A few tips for each.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        {
+          reportTips.map((cat, i) => (
+            <div
+              data-fade
+              style={`--delay: ${i * 90}ms`}
+              class="surface-card flex flex-col"
+            >
+              <div class="flex items-baseline justify-between mb-1">
+                <div
+                  class="font-mono text-[10px] tracking-[0.22em] uppercase"
+                  style="color: var(--c-accent);"
+                >
+                  {cat.label}
+                </div>
+                <div
+                  class="font-mono text-[11px]"
+                  style="color: var(--c-text-faint);"
+                >
+                  {cat.marks} marks
+                </div>
+              </div>
+              <p
+                class="text-[13px] font-sans leading-[1.55] mb-4"
+                style="color: var(--c-text-faint);"
+              >
+                {cat.blurb}
+              </p>
+              <ul class="space-y-2.5 mt-auto">
+                {cat.items.map((tip) => (
+                  <li
+                    class="flex gap-2.5 text-[13.5px] font-sans leading-[1.55]"
+                    style="color: var(--c-text-soft);"
+                  >
+                    <span
+                      class="mt-[7px] shrink-0 w-1.5 h-1.5 rounded-full"
+                      style="background: var(--c-accent);"
+                    />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
