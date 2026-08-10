@@ -1,12 +1,13 @@
 import { useRef, useState, useEffect, type CSSProperties, type JSX, type ReactNode } from "react";
+import katex from "katex";
 
 function FigurePanel({
-  idx, kicker, caption, children, fitFs = false, sidebar = false, rail,
+  idx, kicker, caption, children, fitFs = false, sidebar = false, vizFill = false, rail,
 }: {
   idx: string; kicker: string; caption: ReactNode; children: ReactNode;
-  fitFs?: boolean; sidebar?: boolean; rail?: ReactNode;
+  fitFs?: boolean; sidebar?: boolean; vizFill?: boolean; rail?: ReactNode;
 }) {
-  const cls = `figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}${sidebar ? " is-fs-sidebar" : ""}`;
+  const cls = `figure-stub my-12 rounded-md p-4 md:p-6${fitFs ? " is-fs-fit" : ""}${sidebar ? " is-fs-sidebar" : ""}${vizFill ? " is-fs-fill" : ""}`;
   return (
     <figure data-fade className={cls}>
       <div className="figure-body">{children}</div>
@@ -40,194 +41,337 @@ const srOnly: CSSProperties = {
 };
 
 /* ── 7.1.a — A million years of us ─────────────────────────────────
-   Human population on a log-log plot: time before present (log) against
-   population (log). Six turning points are selectable. The curve is the
-   standard reconstruction — a near-flat line for hundreds of millennia,
-   then three kinks (farming, cities, industry) and a near-vertical
-   final stroke. ←/→ or 1–6. */
+   Redrawn after Taagepera & Nemčok (2024), "World population over
+   millennia": calendar year on a log(2150 − t) axis (so the last two
+   millennia spread out while the deep past compresses), population in
+   millions on a log axis, historical estimates with uncertainty bars,
+   and their published two-regime model curve with both equations shown
+   as insets. Nine labelled revolutions on the right are selectable
+   (←/→ or 1–9); in fullscreen the commentary becomes an in-plot inset
+   so the chart keeps the whole screen. */
 
-type Milestone = {
-  id: string;
-  name: string;
-  /** years before present */
-  ybp: number;
-  pop: number;
-  color: string;
-  body: ReactNode;
-};
+/* Taagepera & Nemčok 2024 two-regime model, population in MILLIONS.
+   Early:  P = 2.3×10⁹ / ln[34,000 + e^((100−t)/25.5)]        (t < +400)
+   Late:   P = 3.82×10⁹ / ln[1.25 + e^((1980−t)/25.5)]^0.716  (t > +400) */
+const lnBig = (A: number, x: number) => (x > 30 ? x : Math.log(A + Math.exp(x)));
+function popModel(t: number): number {
+  const early = 2300 / lnBig(34000, (100 - t) / 25.5);
+  const late = 3820 / Math.pow(lnBig(1.25, (1980 - t) / 25.5), 0.716);
+  if (t <= 300) return early;
+  if (t >= 500) return late;
+  const u = (t - 300) / 200, s = u * u * (3 - 2 * u);
+  return Math.pow(10, (1 - s) * Math.log10(early) + s * Math.log10(late));
+}
 
-const MILES: Milestone[] = [
-  { id: "sapiens", name: "Homo sapiens appears", ybp: 300000, pop: 100000, color: "#8ab4f8",
-    body: <>Our species emerges in Africa. For the next two hundred thousand years there are never more than a few hundred thousand of us — fewer than fill a modern stadium. We are, by any measure, a rare and unremarkable large mammal.</> },
-  { id: "ooa", name: "Out of Africa", ybp: 60000, pop: 500000, color: "#38bdf8",
-    body: <>A group leaves Africa — small enough that every non-African alive today carries the genetic signature of that bottleneck. Within forty thousand years their descendants reach Australia, Europe, and eventually the Americas. Still fewer than a million people, spread over three continents.</> },
-  { id: "farming", name: "Farming", ybp: 11000, pop: 5000000, color: "#4ade80",
-    body: <>The first great kink in the curve. Domesticate a plant and a hectare of land feeds a hundred times more people than it does by foraging. Food can be stored, so people stay put; staying put means more children. Population begins to climb — and never really stops.</> },
-  { id: "cities", name: "Cities and writing", ybp: 5000, pop: 50000000, color: "#fbbf24",
-    body: <>Surplus food frees people from growing it, and specialists appear: priests, soldiers, potters, scribes. With <strong>writing</strong>, information escapes the human skull for the first time — knowledge can now outlive the person who had it, and accumulate.</> },
-  { id: "industry", name: "The Industrial Revolution", ybp: 220, pop: 1000000000, color: "#fb923c",
-    body: <>We learn to burn the buried forests of §6.2 — coal, then oil — and a single human commands the energy of dozens of servants. Machines, medicine, and sanitation follow. The first billion people arrive around 1800, after 300,000 years of trying.</> },
-  { id: "now", name: "Today", ybp: 0, pop: 8300000000, color: "#f87171",
-    body: <>Eight billion, and counting. It took our species three hundred thousand years to reach one billion, and about two hundred more to reach eight. The line on this chart is very nearly vertical — and demographers expect it to level off near ten billion later this century.</> },
+/* Historical estimates [year, millions, low, high] — deep past from
+   genetic/archaeological reconstructions (order-of-magnitude bars),
+   recent millennia McEvedy–Jones/HYDE ranges, modern values UN. */
+const POP_DATA: [number, number, number?, number?][] = [
+  [-1000000, 0.055, 0.028, 0.1],
+  [-700000, 0.09, 0.04, 0.4],
+  [-500000, 0.17, 0.05, 1.0],
+  [-400000, 0.28, 0.06, 1.4],
+  [-100000, 1.7, 0.4, 8],
+  [-70000, 0.028, 0.005, 0.6],
+  [-30000, 2.2, 0.8, 6],
+  [-10000, 3.6, 1, 10],
+  [-7000, 6, 3.5, 11],
+  [-5000, 7, 4, 14],
+  [-4000, 12, 7, 22],
+  [-3000, 27, 14, 45],
+  [-2000, 45, 27, 72],
+  [-1000, 72, 50, 115],
+  [-500, 100, 70, 150],
+  [-200, 150, 105, 230],
+  [1, 200, 150, 300],
+  [400, 190, 160, 250],
+  [800, 220, 180, 270],
+  [1000, 265, 230, 345],
+  [1200, 360, 300, 450],
+  [1400, 350, 300, 440],
+  [1500, 461, 420, 540],
+  [1600, 554, 500, 620],
+  [1700, 603, 560, 680],
+  [1750, 770, 700, 850],
+  [1800, 990, 900, 1050],
+  [1850, 1260],
+  [1900, 1650],
+  [1930, 2070],
+  [1950, 2530],
+  [1960, 3030],
+  [1970, 3700],
+  [1980, 4440],
+  [1990, 5320],
+  [2000, 6140],
+  [2010, 6960],
+  [2020, 7790],
+  [2025, 8200],
 ];
 
-/* the population curve: log-log interpolation through the milestones */
-function popAt(ybp: number): number {
-  const pts = [...MILES].sort((a, b) => b.ybp - a.ybp);
-  const x = Math.log10(Math.max(1, ybp));
-  for (let i = 0; i < pts.length - 1; i++) {
-    const x0 = Math.log10(Math.max(1, pts[i].ybp));
-    const x1 = Math.log10(Math.max(1, pts[i + 1].ybp));
-    if (x <= x0 && x >= x1) {
-      const t = (x0 - x) / (x0 - x1 || 1);
-      const y0 = Math.log10(pts[i].pop), y1 = Math.log10(pts[i + 1].pop);
-      return Math.pow(10, y0 + t * (y1 - y0));
-    }
-  }
-  return ybp > 300000 ? 50000 : 8.3e9;
+type PopEvent = { id: string; label: string; name: string; when: string; t: number; body: ReactNode };
+
+const EVENTS: PopEvent[] = [
+  { id: "pleistocene", label: "Mid-Pleistocene transition (1 Ma)", name: "Mid-Pleistocene transition",
+    when: "1 million years ago", t: -1000000,
+    body: <>The ice-age cycles settle into their slow 100,000-year rhythm. The humans of this time are <em>Homo erectus</em> and kin — already walking three continents with fire and hand-axes, but numbering only tens of thousands. Estimates this deep in time come from genetics and sparse archaeology, which is why the uncertainty bars span a factor of ten.</> },
+  { id: "sapiens", label: "Homo sapiens in Africa (300 ka)", name: "Homo sapiens appears",
+    when: "300,000 years ago", t: -300000,
+    body: <>Our species emerges in Africa. For the next quarter of a million years there are never more than a few hundred thousand of us — fewer than fill a modern stadium. We are, by any measure, a rare and unremarkable large mammal.</> },
+  { id: "ooa", label: "Expansion out of Africa (100 ka)", name: "Expansion out of Africa",
+    when: "100,000 years ago", t: -100000,
+    body: <>Modern humans reach the Levant by about 100,000 years ago, but those early excursions left few descendants. The dispersal that stuck came around 60,000 years ago — a group so small that every non-African alive today carries the genetic mark of that bottleneck. Note the low outlier near 70,000 years ago: the whole species may briefly have numbered only tens of thousands.</> },
+  { id: "paleolithic", label: "Upper Paleolithic revolution (50 ka)", name: "Upper Paleolithic revolution",
+    when: "50,000 years ago", t: -50000,
+    body: <>Beads, ochre, buried dead, figurative art, projectile weapons — and the first open-sea crossings, to Australia. Nothing about our anatomy changed; something about our culture did. The curve barely notices yet: about a million people, but now armed with symbols.</> },
+  { id: "farming", label: "Agricultural revolution (10 ka)", name: "Agricultural revolution",
+    when: "10,000 years ago", t: -8000,
+    body: <>The first great kink in the curve. Domesticate a plant and a hectare of land feeds a hundred times more people than it does by foraging. Food can be stored, so people stay put; staying put means more children. Population begins to climb — and never really stops.</> },
+  { id: "cities", label: "Urban revolution (5 ka)", name: "Urban revolution",
+    when: "5,000 years ago", t: -3000,
+    body: <>Surplus food frees people from growing it, and specialists appear: priests, soldiers, potters, scribes. With <strong>writing</strong>, information escapes the human skull for the first time — knowledge can now outlive the person who had it, and accumulate.</> },
+  { id: "industry", label: "Industrial revolution (c. 1800)", name: "Industrial revolution",
+    when: "around 1800 CE", t: 1800,
+    body: <>We learn to burn the buried forests of §6.2 — coal, then oil — and a single human commands the energy of dozens of servants. Machines, medicine, and sanitation follow. The first billion people arrive around 1800, after 300,000 years of trying.</> },
+  { id: "digital", label: "Digital globalization", name: "Digital globalization",
+    when: "around 2000 CE", t: 2000,
+    body: <>The steepest stretch of the curve — and, hidden inside it, the turn. The growth <em>rate</em> peaked around 1968 at about 2.1% per year and has fallen ever since, even as the internet stitched eight billion people into one information network. We passed 8 billion around 2022.</> },
+  { id: "warming", label: "Global warming risk", name: "Global warming risk",
+    when: "toward 2100 (projection)", t: 2090,
+    body: <>Both this model and UN projections level off near 10–11 billion late this century — the first plateau in our history chosen by falling birth rates rather than famine or plague. The label is Taagepera &amp; Nemčok's own caution: whether the plateau is a gentle landing depends on what a planet warmed by that final stroke does next.</> },
+];
+
+const EQ_LATE = "P=\\dfrac{3.82\\times10^{9}}{\\ln\\!\\big[1.25+e^{(1980-t)/25.5}\\big]^{0.716}},\\;\\; t>+400";
+const EQ_EARLY = "P=\\dfrac{2.3\\times10^{9}}{\\ln\\!\\big[34{,}000+e^{(100-t)/25.5}\\big]},\\;\\; t<+400";
+
+function EqBox({ x, y, w, h, tex }: { x: number; y: number; w: number; h: number; tex: string }) {
+  return (
+    <foreignObject x={x} y={y} width={w} height={h}>
+      <div
+        style={{
+          width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center",
+          background: "rgb(var(--c-bg-rgb) / 0.92)", border: "1px solid rgb(var(--c-text-rgb) / 0.3)",
+          borderRadius: 8, color: "rgb(var(--c-text-rgb) / 0.88)", fontSize: 13,
+        }}
+        dangerouslySetInnerHTML={{ __html: katex.renderToString(tex, { throwOnError: false }) }}
+      />
+    </foreignObject>
+  );
 }
 
 export function PopulationPanel(): JSX.Element {
-  const [idx, setIdx] = useState(2);
-  const sel = MILES[idx];
+  const [idx, setIdx] = useState(4);
+  const sel = EVENTS[idx];
   const vizRef = useRef<HTMLDivElement>(null);
   const fs = useFs(vizRef);
   const sz = (r: number) => (fs ? `calc(clamp(16px, 2.1vh, 27px) * ${r})` : undefined);
-  const step = (d: -1 | 1) => setIdx((i) => Math.max(0, Math.min(MILES.length - 1, i + d)));
+  const step = (d: -1 | 1) => setIdx((i) => Math.max(0, Math.min(EVENTS.length - 1, i + d)));
 
-  const W = 904, H = 470;
-  const L = 84, Rm = 40, T = 54, B = 76;
-  /* x: log years before present, 1,000,000 → 1 (left to right = forwards in time) */
+  const W = 960, H = 560;
+  const L = 64, R = 240, T = 26, B = 58;
+  const PW = W - L - R, PH = H - T - B;
   const lg = Math.log10;
-  const xOf = (ybp: number) => L + ((lg(1e6) - lg(Math.max(1, ybp))) / (lg(1e6) - lg(1))) * (W - L - Rm);
-  const yOf = (p: number) => H - B - ((lg(p) - lg(1e4)) / (lg(1e10) - lg(1e4))) * (H - T - B);
 
-  const curve = Array.from({ length: 300 })
-    .map((_, i) => {
-      const ybp = Math.pow(10, 6 - (i / 299) * 6);
-      return `${i === 0 ? "M" : "L"} ${xOf(ybp).toFixed(1)} ${yOf(popAt(ybp)).toFixed(1)}`;
-    })
-    .join(" ");
+  /* x: calendar year on a log(2150 − t) axis, reversed so time runs → */
+  const TS = 2150;
+  const XL0 = lg(TS + 1000000), XL1 = lg(TS - 2100);
+  const xOf = (t: number) => L + ((XL0 - lg(TS - t)) / (XL0 - XL1)) * PW;
+  /* y: population in millions, log 0.01 → 10,000 (headroom to ~14,000) */
+  const YT = 4.15, YB = -2.1;
+  const yOf = (m: number) => T + ((YT - lg(m)) / (YT - YB)) * PH;
 
-  const fmtPop = (p: number) =>
-    p >= 1e9 ? `${(p / 1e9).toFixed(1)} billion` :
-    p >= 1e6 ? `${(p / 1e6).toFixed(0)} million` :
-    `${(p / 1e3).toFixed(0)} thousand`;
-  const fmtYbp = (y: number) =>
-    y === 0 ? "today" :
-    y >= 1000 ? `${(y / 1000).toFixed(0)},000 years ago` :
-    `${y} years ago`;
+  const X_TICKS: [number, string][] = [
+    [-1000000, "-1M"], [-100000, "-100k"], [-10000, "-10k"], [-2000, "-2k"],
+    [0, "0"], [1000, "1k"], [1500, "1500"], [2000, "2000"], [2100, "2100"],
+  ];
+  const Y_TICKS: [number, string][] = [
+    [0.01, "0.01"], [0.1, "0.1"], [1, "1"], [10, "10"], [100, "100"], [1000, "1,000"], [10000, "10,000"],
+  ];
+
+  /* model curve, sampled uniformly in x; dashed before year 0, solid after */
+  const path = (t0: number, t1: number) => {
+    const n = 220, x0 = lg(TS - t0), x1 = lg(TS - t1);
+    return Array.from({ length: n })
+      .map((_, i) => {
+        const t = TS - Math.pow(10, x0 + (i / (n - 1)) * (x1 - x0));
+        return `${i === 0 ? "M" : "L"} ${xOf(t).toFixed(1)} ${yOf(popModel(t)).toFixed(1)}`;
+      })
+      .join(" ");
+  };
+  const dashedCurve = path(-1000000, 0);
+  const solidCurve = path(0, 2100);
+
+  /* right-hand label rows: at the model height of each event. Later events
+     sit higher (smaller y), so relax collisions upward from the top. */
+  const labelY = (() => {
+    const ys = EVENTS.map((e) => yOf(popModel(e.t)) + 4);
+    for (let i = ys.length - 2; i >= 0; i--) if (ys[i] < ys[i + 1] + 21) ys[i] = ys[i + 1] + 21;
+    return ys;
+  })();
+
+  const fmtPop = (m: number) =>
+    m >= 9000 ? "10–11 billion" :
+    m >= 950 ? `${(m / 1000).toFixed(1)} billion` :
+    m >= 1 ? `${Math.round(m)} million` :
+    `${Math.round(m * 1000)} thousand`;
+
+  const ink = (a: number) => `rgb(var(--c-text-rgb) / ${a})`;
+  const accent = "var(--color-solar)";
+  const selX = xOf(sel.t), selY = yOf(popModel(sel.t));
+
+  const detail = (
+    <>
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <span className="font-mono tracking-[0.16em] uppercase" style={{ color: accent, fontSize: sz(0.66) ?? "12px" }}>
+          {sel.name}
+        </span>
+        <span className="font-mono" style={{ color: ink(0.66), fontSize: sz(0.58) ?? "11px" }}>
+          {sel.when} · about {fmtPop(popModel(sel.t))} people
+        </span>
+      </div>
+      <div className="font-sans leading-[1.5] mt-2" style={{ color: ink(0.9), fontSize: sz(0.78) ?? "14px", minHeight: fs ? undefined : "6.2em" }}>
+        {sel.body}
+      </div>
+    </>
+  );
 
   return (
     <FigurePanel
       idx="7.1.a"
       kicker="A million years of us"
+      vizFill
       caption={
         <>
-          The human population, from before our species existed to today. Both axes are logarithmic — the only way to
-          fit a million years and eight billion people on one chart. Step through the turning points with the arrow
-          keys. Notice what the shape says: for 95% of our history the line is flat. Everything you would call
-          history — farming, cities, writing, industry — is crammed into the final stroke.
+          The human population over a million years, redrawn from Taagepera &amp; Nemčok (2024). Both axes are
+          logarithmic — time is plotted as distance from the mid-2100s, which spreads the crowded last two millennia
+          while compressing the deep past — with historical estimates (bars mark the uncertainty) and the published
+          two-regime model curve. Step through the labelled revolutions with ←/→ or 1–9.
         </>
       }
     >
       <div
         ref={vizRef}
         className="fig-viz relative w-full overflow-hidden rounded-md"
-        data-theme="dark"
         style={{
-          background: "radial-gradient(circle at 50% 40%, #14121c 0%, #0a0a12 62%, #07070c 100%)",
-          border: "1px solid rgb(var(--c-text-rgb) / 0.06)",
+          background: "rgb(var(--c-bg-rgb) / 0.55)",
+          border: `1px solid ${ink(0.1)}`,
         }}
       >
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
-          aria-label={`Human population curve; ${sel.name}`}
+          aria-label={`Human population over one million years; selected: ${sel.name}`}
           style={{ width: "100%", height: "auto", display: "block" }}>
 
-          {/* axes */}
-          {[1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10].map((p) => (
-            <g key={p}>
-              <line x1={L} y1={yOf(p)} x2={W - Rm} y2={yOf(p)} stroke="rgb(var(--c-text-rgb) / 0.07)" strokeWidth={1} />
-              <text x={L - 8} y={yOf(p) + 4} textAnchor="end" fontSize="11" fontFamily="JetBrains Mono, monospace"
-                fill="rgb(var(--c-text-rgb) / 0.55)">
-                {p >= 1e9 ? `${p / 1e9}bn` : p >= 1e6 ? `${p / 1e6}m` : `${p / 1e3}k`}
-              </text>
+          {/* grid */}
+          {Y_TICKS.map(([m, lab]) => (
+            <g key={lab}>
+              <line x1={L} y1={yOf(m)} x2={L + PW} y2={yOf(m)} stroke={ink(0.1)} strokeWidth={1} />
+              <text x={L - 8} y={yOf(m) + 4} textAnchor="end" fontSize="12" fontFamily="JetBrains Mono, monospace"
+                fill={ink(0.6)}>{lab}</text>
             </g>
           ))}
-          {[1e6, 1e5, 1e4, 1e3, 100, 10, 1].map((y) => (
-            <g key={y}>
-              <line x1={xOf(y)} y1={H - B} x2={xOf(y)} y2={H - B + 6} stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth={1} />
-              <text x={xOf(y)} y={H - B + 22} textAnchor="middle" fontSize="11" fontFamily="JetBrains Mono, monospace"
-                fill="rgb(var(--c-text-rgb) / 0.55)">
-                {y >= 1e6 ? "1 Myr" : y >= 1000 ? `${y / 1000}k` : y === 1 ? "now" : `${y}`}
-              </text>
+          {X_TICKS.map(([t, lab]) => (
+            <g key={lab}>
+              <line x1={xOf(t)} y1={T} x2={xOf(t)} y2={T + PH} stroke={ink(0.1)} strokeWidth={1} />
+              <line x1={xOf(t)} y1={T + PH} x2={xOf(t)} y2={T + PH + 5} stroke={ink(0.4)} strokeWidth={1} />
+              <text x={xOf(t)} y={T + PH + 20} textAnchor="middle" fontSize="12" fontFamily="JetBrains Mono, monospace"
+                fill={ink(0.6)}>{lab}</text>
             </g>
           ))}
-          <line x1={L} y1={H - B} x2={W - Rm} y2={H - B} stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth={1.2} />
-          <line x1={L} y1={T} x2={L} y2={H - B} stroke="rgb(var(--c-text-rgb) / 0.35)" strokeWidth={1.2} />
-          <text x={(L + W - Rm) / 2} y={H - 16} textAnchor="middle" fontSize="12.5" fontFamily="JetBrains Mono, monospace"
-            fill="rgb(var(--c-text-rgb) / 0.66)">years before present (log scale) — time runs left to right →</text>
-          <text x={24} y={(T + H - B) / 2} textAnchor="middle" fontSize="12.5" fontFamily="JetBrains Mono, monospace"
-            fill="rgb(var(--c-text-rgb) / 0.66)" transform={`rotate(-90 24 ${(T + H - B) / 2})`}>
-            people alive (log scale) →
+          {/* frame + axis titles */}
+          <rect x={L} y={T} width={PW} height={PH} fill="none" stroke={ink(0.35)} strokeWidth={1.2} />
+          <text x={L + PW / 2} y={H - 14} textAnchor="middle" fontSize="13" fontFamily="Inter, sans-serif"
+            fill={ink(0.7)}>Year (logarithmic)</text>
+          <text x={18} y={T + PH / 2} textAnchor="middle" fontSize="13" fontFamily="Inter, sans-serif"
+            fill={ink(0.7)} transform={`rotate(-90 18 ${T + PH / 2})`}>
+            Human population [million; logarithmic]
           </text>
 
-          {/* the curve */}
-          <path d={curve} fill="none" stroke="#f87171" strokeWidth={2.8} />
+          {/* credit, bottom-left inside the plot */}
+          <text x={L + 12} y={T + PH - 12} fontSize="11.5" fontFamily="Inter, sans-serif" fill={ink(0.45)}>
+            Data &amp; model: Taagepera &amp; Nemčok, 2024
+          </text>
 
-          {/* milestones */}
-          {MILES.map((m, i) => {
+          {/* model curve: dashed reconstruction, solid where records firm up */}
+          <path d={dashedCurve} fill="none" stroke={ink(0.5)} strokeWidth={2.4} strokeDasharray="7 6" />
+          <path d={solidCurve} fill="none" stroke={ink(0.55)} strokeWidth={2.6} />
+
+          {/* estimates with uncertainty bars */}
+          {POP_DATA.map(([t, m, lo, hi], i) => (
+            <g key={i}>
+              {lo != null && hi != null && (
+                <>
+                  <line x1={xOf(t)} y1={yOf(lo)} x2={xOf(t)} y2={yOf(hi)} stroke={ink(0.5)} strokeWidth={1.2} />
+                  <line x1={xOf(t) - 3.5} y1={yOf(lo)} x2={xOf(t) + 3.5} y2={yOf(lo)} stroke={ink(0.5)} strokeWidth={1.2} />
+                  <line x1={xOf(t) - 3.5} y1={yOf(hi)} x2={xOf(t) + 3.5} y2={yOf(hi)} stroke={ink(0.5)} strokeWidth={1.2} />
+                </>
+              )}
+              <circle cx={xOf(t)} cy={yOf(m)} r={3} fill={ink(0.85)} />
+            </g>
+          ))}
+
+          {/* the two regimes, as published */}
+          <EqBox x={L + PW * 0.42} y={T + 8} w={318} h={58} tex={EQ_LATE} />
+          <EqBox x={L + PW * 0.26} y={yOf(1) + 12} w={300} h={58} tex={EQ_EARLY} />
+
+          {/* selected event: guide + ring on the model curve */}
+          <line x1={selX} y1={selY} x2={selX} y2={T + PH} stroke={accent} strokeWidth={1} strokeDasharray="3 4" opacity={0.5} />
+          <circle cx={selX} cy={selY} r={7.5} fill="none" stroke={accent} strokeWidth={2.4} />
+          <circle cx={selX} cy={selY} r={3} fill={accent} />
+
+          {/* right-hand event labels (clickable) */}
+          {EVENTS.map((e, i) => {
             const on = i === idx;
-            const x = xOf(m.ybp), y = yOf(m.pop);
             return (
-              <g key={m.id} style={{ cursor: "pointer" }} onClick={() => setIdx(i)}>
-                <circle cx={x} cy={y} r={18} fill="transparent" />
-                <circle cx={x} cy={y} r={on ? 9 : 5.5} fill={m.color} stroke={on ? "#ffffff" : "#0b0d14"}
-                  strokeWidth={on ? 2 : 1.2} />
-                <text x={x} y={y - (on ? 20 : 14)} textAnchor={i >= 4 ? "end" : "middle"} fontSize={on ? 13 : 11.5}
-                  fontWeight={on ? 700 : 500} fontFamily="Inter, sans-serif"
-                  fill={on ? m.color : "rgb(var(--c-text-rgb) / 0.7)"}>
-                  {m.name}
+              <g key={e.id} style={{ cursor: "pointer" }} onClick={() => setIdx(i)}>
+                <rect x={L + PW + 4} y={labelY[i] - 14} width={R - 10} height={20} fill="transparent" />
+                <text x={L + PW + 10} y={labelY[i]} fontSize="12" fontFamily="Inter, sans-serif"
+                  fontWeight={on ? 700 : 450} fill={on ? accent : ink(0.75)}>
+                  {e.label}
                 </text>
               </g>
             );
           })}
 
-          {/* the flat stretch, called out */}
-          <text x={xOf(200000)} y={yOf(3e5) + 34} textAnchor="middle" fontSize="12"
-            fontFamily="JetBrains Mono, monospace" fill="rgb(var(--c-text-rgb) / 0.5)">
-            ← 95% of our history is this flat line →
-          </text>
+          {/* fullscreen only: commentary as a legend-style inset over the
+              empty upper-left grid, in plot coordinates so it scales with
+              the chart and never collides with axes or equations */}
+          {fs && (
+            <foreignObject x={78} y={38} width={252} height={212}>
+              <div style={{
+                width: "100%", height: "100%", overflow: "hidden",
+                background: "rgb(var(--c-bg-rgb) / 0.9)", border: `1px solid ${ink(0.25)}`,
+                borderRadius: 8, padding: "10px 12px",
+              }}>
+                <div style={{ color: accent, fontFamily: "JetBrains Mono, monospace", textTransform: "uppercase",
+                  letterSpacing: "0.14em", fontSize: 10.5 }}>{sel.name}</div>
+                <div style={{ color: ink(0.65), fontFamily: "JetBrains Mono, monospace", fontSize: 9.5, marginTop: 2 }}>
+                  {sel.when} · about {fmtPop(popModel(sel.t))} people
+                </div>
+                <div style={{ color: ink(0.9), fontFamily: "Inter, sans-serif", fontSize: 11, lineHeight: 1.45, marginTop: 6 }}>
+                  {sel.body}
+                </div>
+              </div>
+            </foreignObject>
+          )}
         </svg>
       </div>
 
-      <div className="mt-3 rounded-md" style={{
-        background: "rgb(var(--c-text-rgb) / 0.03)",
-        border: `1px solid ${sel.color}66`,
-        boxShadow: `inset 0 0 0 1px ${sel.color}22`,
-        padding: "12px 14px", flexShrink: 0,
-        transition: "border-color 220ms var(--ease)",
-      }}>
-        <div className="flex flex-wrap items-baseline gap-x-4">
-          <span className="font-mono tracking-[0.18em] uppercase" style={{ color: sel.color, fontSize: sz(0.72) ?? "12px" }}>
-            {sel.name}
-          </span>
-          <span className="font-mono" style={{ color: "rgb(var(--c-text-rgb) / 0.72)", fontSize: sz(0.62) ?? "11px" }}>
-            {fmtYbp(sel.ybp)} · about {fmtPop(sel.pop)} people alive
-          </span>
+      {/* normal flow: commentary as a compact strip under the plot */}
+      {!fs && (
+        <div className="mt-3 rounded-md" style={{
+          background: ink(0.03), border: `1px solid ${ink(0.12)}`,
+          padding: "12px 14px", flexShrink: 0,
+        }}>
+          {detail}
         </div>
-        <div className="font-sans leading-[1.55] mt-2" style={{ color: "rgb(var(--c-text-rgb) / 0.9)", fontSize: sz(0.92) ?? "14px", minHeight: "4.7em" }}>
-          {sel.body}
-        </div>
-      </div>
+      )}
 
       <button aria-hidden tabIndex={-1} data-shortcut="ArrowLeft" onClick={() => step(-1)} style={srOnly} />
       <button aria-hidden tabIndex={-1} data-shortcut="ArrowRight" onClick={() => step(1)} style={srOnly} />
       <div className="sr-only" aria-hidden="false">
-        {MILES.map((m, i) => (
-          <button key={m.id} type="button" onClick={() => setIdx(i)} data-shortcut={String(i + 1)}
+        {EVENTS.map((e, i) => (
+          <button key={e.id} type="button" onClick={() => setIdx(i)} data-shortcut={String(i + 1)}
             className={idx === i ? "is-active" : ""} aria-pressed={idx === i}>
-            {m.name}
+            {e.name}
           </button>
         ))}
       </div>
