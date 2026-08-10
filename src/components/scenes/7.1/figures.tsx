@@ -140,23 +140,8 @@ const EVENTS: PopEvent[] = [
     body: <>Both this model and UN projections level off near 10–11 billion late this century — the first plateau in our history chosen by falling birth rates rather than famine or plague. The label is Taagepera &amp; Nemčok's own caution: whether the plateau is a gentle landing depends on what a planet warmed by that final stroke does next.</> },
 ];
 
-const EQ_LATE = "P=\\dfrac{3.82\\times10^{9}}{\\ln\\!\\big[1.25+e^{(1980-t)/25.5}\\big]^{0.716}},\\;\\; t>+400";
-const EQ_EARLY = "P=\\dfrac{2.3\\times10^{9}}{\\ln\\!\\big[34{,}000+e^{(100-t)/25.5}\\big]},\\;\\; t<+400";
-
-function EqBox({ x, y, w, h, tex }: { x: number; y: number; w: number; h: number; tex: string }) {
-  return (
-    <foreignObject x={x} y={y} width={w} height={h}>
-      <div
-        style={{
-          width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center",
-          background: "rgb(var(--c-bg-rgb) / 0.92)", border: "1px solid rgb(var(--c-text-rgb) / 0.3)",
-          borderRadius: 8, color: "rgb(var(--c-text-rgb) / 0.88)", fontSize: 13,
-        }}
-        dangerouslySetInnerHTML={{ __html: katex.renderToString(tex, { throwOnError: false }) }}
-      />
-    </foreignObject>
-  );
-}
+const EQ_EARLY = "P=\\dfrac{2.3\\times10^{9}}{\\ln\\!\\left[34{,}000+e^{(100-t)/25.5}\\right]},\\quad t<+400";
+const EQ_LATE = "P=\\dfrac{3.82\\times10^{9}}{\\ln\\!\\left[1.25+e^{(1980-t)/25.5}\\right]^{0.716}},\\quad t>+400";
 
 export function PopulationPanel(): JSX.Element {
   const [idx, setIdx] = useState(4);
@@ -308,10 +293,6 @@ export function PopulationPanel(): JSX.Element {
             </g>
           ))}
 
-          {/* the two regimes, as published */}
-          <EqBox x={L + PW * 0.42} y={T + 8} w={318} h={58} tex={EQ_LATE} />
-          <EqBox x={L + PW * 0.26} y={yOf(1) + 12} w={300} h={58} tex={EQ_EARLY} />
-
           {/* selected event: guide + ring on the model curve */}
           <line x1={selX} y1={selY} x2={selX} y2={T + PH} stroke={accent} strokeWidth={1} strokeDasharray="3 4" opacity={0.5} />
           <circle cx={selX} cy={selY} r={7.5} fill="none" stroke={accent} strokeWidth={2.4} />
@@ -330,6 +311,30 @@ export function PopulationPanel(): JSX.Element {
               </g>
             );
           })}
+
+          {/* the two published regimes, bare in the empty bottom-right */}
+          <foreignObject x={L + PW - 342} y={T + PH - 208} width={336} height={200}>
+            <div style={{
+              width: "100%", height: "100%", display: "flex", flexDirection: "column",
+              justifyContent: "flex-end", alignItems: "flex-end", gap: 16,
+              color: ink(0.85), fontSize: 13, textAlign: "right",
+            }}>
+              <div>
+                <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.14em",
+                  textTransform: "uppercase", color: ink(0.55), marginBottom: 4 }}>
+                  the slow millennia — dashed curve
+                </div>
+                <div dangerouslySetInnerHTML={{ __html: katex.renderToString(EQ_EARLY, { throwOnError: false }) }} />
+              </div>
+              <div>
+                <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, letterSpacing: "0.14em",
+                  textTransform: "uppercase", color: ink(0.55), marginBottom: 4 }}>
+                  the modern surge — solid curve
+                </div>
+                <div dangerouslySetInnerHTML={{ __html: katex.renderToString(EQ_LATE, { throwOnError: false }) }} />
+              </div>
+            </div>
+          </foreignObject>
 
           {/* fullscreen only: commentary as a legend-style inset over the
               empty upper-left grid, in plot coordinates so it scales with
