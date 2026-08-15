@@ -15,6 +15,10 @@ jobs:
   deploy:
     name: Build & Sync to Bluehost
     runs-on: ubuntu-latest
+    # Deploys wait in the "production" environment for kmbasad's approval.
+    # Its BLUEHOST_SSH_KEY is a per-repo key locked server-side by rrsync to
+    # THIS site's document root only, so the rsync destination is ":/".
+    environment: production
     timeout-minutes: 10
 
     steps:
@@ -54,4 +58,4 @@ jobs:
           rsync -avz --delete --human-readable \
             -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts" \
             dist/ \
-            "${{ secrets.BLUEHOST_USER }}@${{ secrets.BLUEHOST_HOST }}:public_html/courses/ast100/"
+            "${{ secrets.BLUEHOST_USER }}@${{ secrets.BLUEHOST_HOST }}:/"
